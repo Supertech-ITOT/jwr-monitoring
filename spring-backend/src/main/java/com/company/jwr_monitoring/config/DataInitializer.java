@@ -33,11 +33,11 @@ public class DataInitializer implements CommandLineRunner {
             return;
         }
 
-        categoryRepository.save(Category.builder().name("Positive Room").build());
-        categoryRepository.save(Category.builder().name("Negative Room").build());
-        categoryRepository.save(Category.builder().name("Mezzanine Room").build());
-        categoryRepository.save(Category.builder().name("Ante Room").build());
-        categoryRepository.save(Category.builder().name("Truckdock Room").build());
+        categoryRepository.saveAndFlush(Category.builder().name("Positive Room").build());
+        categoryRepository.saveAndFlush(Category.builder().name("Negative Room").build());
+        categoryRepository.saveAndFlush(Category.builder().name("Mezzanine Room").build());
+        categoryRepository.saveAndFlush(Category.builder().name("Ante Room").build());
+        categoryRepository.saveAndFlush(Category.builder().name("Truckdock Room").build());
 
     }
 
