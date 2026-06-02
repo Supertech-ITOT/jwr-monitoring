@@ -25,6 +25,7 @@ public class Parameter {
     @Column(nullable = false)
     private String uom;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String type;
+    private DataType type;
 }

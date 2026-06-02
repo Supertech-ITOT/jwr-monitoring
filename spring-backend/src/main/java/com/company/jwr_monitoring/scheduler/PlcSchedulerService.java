@@ -1,4 +1,4 @@
-package com.company.jwr_monitoring.plc;
+package com.company.jwr_monitoring.scheduler;
 
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;

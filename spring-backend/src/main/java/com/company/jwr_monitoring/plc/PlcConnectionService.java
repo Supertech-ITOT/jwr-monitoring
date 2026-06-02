@@ -7,11 +7,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class PlcConnectionService {
 
-    public PlcConnection getConnection(String ip, Integer port)
-            throws Exception {
-
+    public PlcConnection getConnection(String ip, Integer port) throws Exception {
         String connectionString = "modbus-tcp://" + ip + ":" + port;
-
         return PlcDriverManager
                 .getDefault()
                 .getConnectionManager()

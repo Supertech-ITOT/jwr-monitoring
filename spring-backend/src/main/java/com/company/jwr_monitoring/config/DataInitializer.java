@@ -4,6 +4,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import com.company.jwr_monitoring.entity.Category;
+import com.company.jwr_monitoring.entity.DataType;
 import com.company.jwr_monitoring.entity.Parameter;
 import com.company.jwr_monitoring.entity.Room;
 import com.company.jwr_monitoring.repository.CategoryRepository;
@@ -83,9 +84,9 @@ public class DataInitializer implements CommandLineRunner {
         if (parameterRepository.count() > 0) {
             return;
         }
-        parameterRepository.save(Parameter.builder().name("Temperature").uom("°C").type("REAL").build());
-        parameterRepository.save(Parameter.builder().name("Energy").uom("Kwh").type("REAL").build());
-        parameterRepository.save(Parameter.builder().name("RH").uom("%").type("REAL").build());
+        parameterRepository.save(Parameter.builder().name("Temperature").uom("°C").type(DataType.REAL).build());
+        parameterRepository.save(Parameter.builder().name("Energy").uom("Kwh").type(DataType.REAL).build());
+        parameterRepository.save(Parameter.builder().name("RH").uom("%").type(DataType.REAL).build());
 
     }
 
