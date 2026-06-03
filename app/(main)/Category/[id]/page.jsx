@@ -6,10 +6,10 @@ import Download from './_components/Download';
 import RoomTitle from './_components/RoomTitle';
 
 export const metadata = {
-    title: "Cold Room",
+    title: "Category",
     description: "",
 };
-const ColdRoomPage = async ({ params }) => {
+const CategoryPage = async ({ params }) => {
     const { id } = await params;
 
     return (
@@ -30,7 +30,9 @@ const ColdRoomPage = async ({ params }) => {
                         <Chart isExport={true} />
                     </div>
                 </div>
-                <div className="flex-1 bg-cardbackground border border-border rounded-xl shadow-xl w-full xl:w-1/3 h-[600px] flex flex-col overflow-hidden"> <TableUI /></div>
+                <div className="flex-1 bg-cardbackground border border-border rounded-xl shadow-xl w-full xl:w-1/3 h-[600px] flex flex-col overflow-hidden">
+                    <TableUI />
+                </div>
             </div>
 
 
@@ -38,4 +40,4 @@ const ColdRoomPage = async ({ params }) => {
     )
 }
 
-export default ColdRoomPage 
+export default CategoryPage 
