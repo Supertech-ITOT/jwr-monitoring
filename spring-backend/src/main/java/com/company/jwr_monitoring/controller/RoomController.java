@@ -15,8 +15,7 @@ public class RoomController {
     private final RoomService roomService;
 
     @GetMapping
-    public List<RoomDto> getRooms(
-            @RequestParam(required = false) Long categoryId) {
-        return roomService.getRooms(categoryId);
+    public List<RoomDto> getRoomsByCategoryId(@RequestParam(required = false) Long categoryId) {
+        return roomService.getRoomsByCategoryId(categoryId);
     }
 }
