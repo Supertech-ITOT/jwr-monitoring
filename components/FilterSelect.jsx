@@ -19,24 +19,60 @@ const FilterSelect = ({
   onSelect,
   valueKey = "id",
   labelKey = "name",
+  loading = false,
 }) => {
   return (
     <div className="flex w-full gap-2 items-center">
-      {Icon && <Icon className="size-8 text-primary" />}
+      {Icon && (
+        <Icon className="size-8 text-primary" />
+      )}
 
-      <Label className="w-[110px]">{label}</Label>
+      <Label className="w-[110px]">
+        {label}
+      </Label>
 
-      <Select value={value?.toString()} onValueChange={onSelect}>
+      <Select
+        value={value?.toString()}
+        onValueChange={onSelect}
+        disabled={loading}
+      >
         <SelectTrigger className="w-full text-text text-xs bg-transparent">
-          <SelectValue placeholder={placeholder} />
+          <SelectValue
+            placeholder={
+              loading
+                ? `Loading ${label}...`
+                : placeholder
+            }
+          />
         </SelectTrigger>
 
         <SelectContent>
-          {options.map((item) => (
-            <SelectItem key={item[valueKey]} value={item[valueKey].toString()}>
-              {item[labelKey]}
-            </SelectItem>
-          ))}
+          {loading ? (
+            <div className="px-3 py-2 text-sm text-muted-foreground">
+              Loading...
+            </div>
+          ) : options.length > 0 ? (
+            options.map((item) => (
+              <SelectItem
+                key={
+                  item[valueKey]
+                }
+                value={item[
+                  valueKey
+                ].toString()}
+              >
+                {
+                  item[
+                  labelKey
+                  ]
+                }
+              </SelectItem>
+            ))
+          ) : (
+            <div className="px-3 py-2 text-sm text-muted-foreground">
+              No data found
+            </div>
+          )}
         </SelectContent>
       </Select>
     </div>

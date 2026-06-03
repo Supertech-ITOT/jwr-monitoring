@@ -5,14 +5,14 @@ import { DataTable } from "@/components/datatable/data-table";
 import { useRoomDashboard } from "@/hooks/useDashboard";
 import { useState } from "react";
 
-const TableUI = () => {
+const TableUI = ({ categoryId, roomId, date }) => {
     const [page, setPage] = useState(0);
     const size = 13;
     const { data, isLoading, error } = useRoomDashboard({
-        categoryId: 1,
-        roomId: 1,
-        fromDate: "2026-06-01T00:00:00",
-        toDate: "2026-06-04T23:59:59",
+        categoryId: categoryId,
+        roomId: roomId,
+        fromDate: date.fromDate,
+        toDate: date.toDate,
         page,
         size,
         sort: "timestamp,desc",

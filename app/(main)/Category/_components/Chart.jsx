@@ -1,5 +1,6 @@
 "use client";
 import { SensorData } from "@/constant/model";
+import { useRoomDashboard } from "@/hooks/useDashboard";
 import { format } from "date-fns";
 import {
     Clock,
@@ -20,7 +21,17 @@ import {
 } from "recharts";
 
 
-const Chart = ({ isExport }) => {
+const Chart = ({ isExport, categoryId, roomId, date }) => {
+
+
+    const { data, isLoading, error } = useRoomDashboard({
+        categoryId: categoryId,
+        roomId: roomId,
+        fromDate: date.fromDate,
+        toDate: date.toDate,
+        sort: "timestamp,desc",
+    });
+    const rows = data?.content || [];
 
     // THEME-BASED COLORS
     const { theme } = useTheme();
@@ -56,7 +67,7 @@ const Chart = ({ isExport }) => {
 
                     <div className="flex gap-2 font-bold h-5 text-primary ">
                         <Thermometer className="size-4  " />
-                        <span>AvgTemp: {data.avgTemp} °C</span>
+                        <span>AvgTemp: {data.avgTemperature} °C</span>
                     </div>
                     <div className="flex gap-2 font-bold h-5 text-secondary ">
                         <Cloud className="size-4 " />
@@ -109,7 +120,7 @@ const Chart = ({ isExport }) => {
         <LineChart
             width={isExport ? width : undefined}
             height={isExport ? height : undefined}
-            data={SensorData}
+            data={rows}
             style={{
                 backgroundColor: isExport ? "#FFFFFF" : undefined,
                 border: isExport ? "#f1f3f4" : undefined,
@@ -201,7 +212,7 @@ const Chart = ({ isExport }) => {
 
             <Line
                 type="monotone"
-                dataKey="avgTemp"
+                dataKey="avgTemperature"
                 yAxisId="left"
                 stroke={primary}
                 strokeWidth={2}

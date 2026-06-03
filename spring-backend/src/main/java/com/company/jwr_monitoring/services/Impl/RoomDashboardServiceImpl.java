@@ -18,8 +18,13 @@ public class RoomDashboardServiceImpl implements RoomDashboardService {
 
     @Override
     public Page<RoomDashboardDto> getRoomDashboard(RoomDashboardRequest request, Pageable pageable) {
+        Pageable finalPageable = pageable.getPageSize() == 20
+                && pageable.getPageNumber() == 0
+                        ? Pageable.unpaged()
+                        : pageable;
+
         Page<RoomDashboardDto> roomDashboardDto = tagLogRepository.getRoomDashboard(request.categoryId(),
-                request.roomId(), request.fromDate(), request.toDate(), pageable);
+                request.roomId(), request.fromDate(), request.toDate(), finalPageable);
         return roomDashboardDto;
     }
 }
