@@ -1,6 +1,6 @@
 package com.company.jwr_monitoring.controller;
 
-import com.company.jwr_monitoring.dto.CategoryDto;
+import com.company.jwr_monitoring.dto.Category.CategoryDto;
 import com.company.jwr_monitoring.services.CategoryService;
 
 import lombok.RequiredArgsConstructor;

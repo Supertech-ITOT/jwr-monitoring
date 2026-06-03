@@ -9,11 +9,12 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.company.jwr_monitoring.dto.ApiResponse;
-import com.company.jwr_monitoring.dto.RoomDashboardDto;
-import com.company.jwr_monitoring.dto.RoomDashboardRequest;
+import com.company.jwr_monitoring.dto.Common.ApiResponse;
+import com.company.jwr_monitoring.dto.RoomDashboard.RoomDashboardDto;
+import com.company.jwr_monitoring.dto.RoomDashboard.RoomDashboardRequest;
 import com.company.jwr_monitoring.services.RoomDashboardService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -26,16 +27,8 @@ public class RoomDashboardController {
 
         @GetMapping
         public ResponseEntity<ApiResponse<Page<RoomDashboardDto>>> getRoomDashboard(
-                        @ModelAttribute RoomDashboardRequest request,
-                        Pageable pageable) {
-
-                Page<RoomDashboardDto> response = roomDashboardService.getRoomDashboard(
-                                request,
-                                pageable);
-
-                return ResponseEntity.ok(
-                                ApiResponse.success(
-                                                "Room dashboard fetched successfully",
-                                                response));
+                        @Valid @ModelAttribute RoomDashboardRequest request, Pageable pageable) {
+                Page<RoomDashboardDto> response = roomDashboardService.getRoomDashboard(request, pageable);
+                return ResponseEntity.ok(ApiResponse.success("Room dashboard fetched successfully", response));
         }
 }

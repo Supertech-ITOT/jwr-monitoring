@@ -3,8 +3,8 @@ package com.company.jwr_monitoring.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.company.jwr_monitoring.dto.ApiResponse;
-import com.company.jwr_monitoring.dto.LoggingConfigDto;
+import com.company.jwr_monitoring.dto.Common.ApiResponse;
+import com.company.jwr_monitoring.dto.LoggingConfig.LoggingConfigDto;
 import com.company.jwr_monitoring.entity.LoggingConfig;
 import com.company.jwr_monitoring.services.LoggingConfigService;
 

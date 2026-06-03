@@ -1,6 +1,6 @@
 package com.company.jwr_monitoring.services;
 
-import com.company.jwr_monitoring.dto.RoomDto;
+import com.company.jwr_monitoring.dto.Room.RoomDto;
 import com.company.jwr_monitoring.mapper.RoomMapper;
 import com.company.jwr_monitoring.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;

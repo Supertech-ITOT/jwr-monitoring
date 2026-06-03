@@ -1,4 +1,4 @@
-package com.company.jwr_monitoring.dto;
+package com.company.jwr_monitoring.dto.Category;
 
 public record CategoryDto(
         Long id,
