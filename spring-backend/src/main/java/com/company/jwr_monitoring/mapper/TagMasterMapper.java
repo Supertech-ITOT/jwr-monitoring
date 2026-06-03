@@ -1,6 +1,6 @@
 package com.company.jwr_monitoring.mapper;
 
-import com.company.jwr_monitoring.dto.TagMasterDto;
+import com.company.jwr_monitoring.dto.TagMaster.TagMasterDto;
 import com.company.jwr_monitoring.entity.Parameter;
 import com.company.jwr_monitoring.entity.Room;
 import com.company.jwr_monitoring.entity.TagMaster;

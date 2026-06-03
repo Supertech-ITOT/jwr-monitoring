@@ -1,5 +1,5 @@
 
-package com.company.jwr_monitoring.dto;
+package com.company.jwr_monitoring.dto.RoomDashboard;
 
 import java.time.LocalDateTime;
 

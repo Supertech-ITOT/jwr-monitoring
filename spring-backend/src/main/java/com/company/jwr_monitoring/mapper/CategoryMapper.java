@@ -2,7 +2,7 @@ package com.company.jwr_monitoring.mapper;
 
 import org.springframework.stereotype.Component;
 
-import com.company.jwr_monitoring.dto.CategoryDto;
+import com.company.jwr_monitoring.dto.Category.CategoryDto;
 import com.company.jwr_monitoring.entity.Category;
 
 @Component

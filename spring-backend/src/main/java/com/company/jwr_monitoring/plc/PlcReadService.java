@@ -3,7 +3,7 @@ package com.company.jwr_monitoring.plc;
 import org.apache.plc4x.java.api.PlcConnection;
 import org.springframework.stereotype.Service;
 
-import com.company.jwr_monitoring.dto.PlcReadResultDto;
+import com.company.jwr_monitoring.dto.TagLog.TagLogDto;
 import com.company.jwr_monitoring.entity.TagMaster;
 
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 public class PlcReadService {
         private final PlcConnectionService plcConnectionService;
 
-        public PlcReadResultDto readTag(TagMaster tag) {
+        public TagLogDto readTag(TagMaster tag) {
                 PlcConnection connection = null;
                 try {
                         connection = plcConnectionService.getConnection(tag.getIpAddress(), tag.getPort());
@@ -22,7 +22,7 @@ public class PlcReadService {
                                 case REAL -> readReal(connection, tag.getRegisterAddress());
                                 case BOOL -> readBool(connection, tag.getRegisterAddress());
                         };
-                        return new PlcReadResultDto(tag.getId(), tag.getTagName(), value);
+                        return new TagLogDto(tag.getId(), tag.getTagName(), value);
 
                 } catch (Exception ex) {
                         System.out.printf(
@@ -30,7 +30,7 @@ public class PlcReadService {
                                         tag.getTagName(),
                                         tag.getRegisterAddress(),
                                         ex.getMessage());
-                        return new PlcReadResultDto(tag.getId(), tag.getTagName(), 0.0);
+                        return new TagLogDto(tag.getId(), tag.getTagName(), 0.0);
                 }
         }
 
