@@ -1,23 +1,6 @@
 "use client";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "./ui/sidebar";
-import {
-  BatteryCharging,
-  LayoutDashboard,
-  LogOut,
-  Radio,
-  Zap,
-} from "lucide-react";
+import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, } from "./ui/sidebar";
+import { BatteryCharging, LayoutDashboard, LogOut, Radio, Zap, } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import { useFilter } from "@/context/FilterContext";
@@ -30,7 +13,7 @@ const item = [
   },
   {
     title: "Category",
-    url: "/Category/cs1",
+    url: "/Category?categoryId=1&roomId=1",
     icon: <Radio className="size-5 " />,
   },
   {

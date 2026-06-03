@@ -11,16 +11,18 @@ import dayjs from 'dayjs';
 import { useFilter } from '@/context/FilterContext';
 import { tableData } from '@/constant/model';
 import { useRouter } from 'next/navigation';
+import { useGetCategory } from '@/hooks/useCategory';
 
 const daylist = ["Yesterday", "Last3Days", "Last5Days", "Last7Days"]
 
-const Filter = ({ pageName, isRoom = true, isDay = true, isDuration = true, day = daylist }) => {
+const Filter = ({ pageName, isRoom = true, isDay = true, isDuration = true, day = daylist, categoryId, roomId }) => {
     const now = dayjs();
     const { roomCategory, selectedRoom, setSelectedRoom } = useFilter();
     const [fromDate, setFromDate] = useState(now);
     const [toDate, setToDate] = useState(now);
     const [selectedRange, setSelectedRange] = useState("yesterday");
     const router = useRouter();
+    const { data: categories, isLoading: categoriesIsLoading } = useGetCategory();
     return (
         <div className='w-[200px] h-8 '>
             <Popover>

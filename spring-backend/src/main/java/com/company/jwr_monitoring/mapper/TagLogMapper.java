@@ -2,10 +2,13 @@ package com.company.jwr_monitoring.mapper;
 
 import java.time.LocalDateTime;
 
+import org.springframework.stereotype.Component;
+
 import com.company.jwr_monitoring.dto.TagLog.TagLogDto;
 import com.company.jwr_monitoring.entity.TagLog;
 import com.company.jwr_monitoring.entity.TagMaster;
 
+@Component
 public class TagLogMapper {
 
     public TagLog toEntity(TagLogDto dto, TagMaster tag) {
