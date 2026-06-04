@@ -1,7 +1,5 @@
 import Card from "./_components/Card";
-import Chart from "./_components/Chart";
-import TableUI from "./_components/TableUI";
-
+import Content from "./_components/Content";
 
 export const metadata = {
   title: "Overview",
@@ -15,19 +13,8 @@ export default function UsersTable() {
       {/* Card */}
       <div className="w-full flex flex-row gap-6 items-center mt-6 overflow-x-auto">
         <Card />
-
-
       </div>
-      <div className="flex xl:flex-row flex-col w-full gap-6 mt-6">
-        {/* Chart */}
-        <div className="flex-2 bg-cardbackground border border-border rounded-xl shadow-xl w-full h-[600px] ">
-          <Chart />
-        </div>
-        {/* Table */}
-        <div className="flex-1 bg-cardbackground border border-border rounded-xl shadow-xl w-full xl:w-1/3 h-[600px]  flex flex-col overflow-hidden">
-          <TableUI />
-        </div>
-      </div>
+      <Content />
     </div>
   );
 }

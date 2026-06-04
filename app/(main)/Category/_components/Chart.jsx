@@ -1,6 +1,6 @@
 "use client";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useRoomDashboard } from "@/hooks/useDashboard";
+import { useGetHistoricalRoomMetrics } from "@/hooks/useDashboard";
 import { format } from "date-fns";
 import { Clock, Cloud, Thermometer, } from "lucide-react";
 import { useTheme } from "next-themes";
@@ -9,7 +9,7 @@ import { useMemo, memo } from "react";
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 const Chart = ({ isExport, categoryId, roomId, date }) => {
-    const { data, isLoading } = useRoomDashboard({
+    const { data, isLoading } = useGetHistoricalRoomMetrics({
         categoryId: categoryId,
         roomId: roomId,
         fromDate: date.fromDate,

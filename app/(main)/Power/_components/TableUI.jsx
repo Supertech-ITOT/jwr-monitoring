@@ -1,6 +1,6 @@
 "use client";
 
-import { useRoomDashboard } from "@/hooks/useDashboard";
+import { useGetHistoricalRoomMetrics } from "@/hooks/useDashboard";
 import { useState } from "react";
 import { columns } from "./datatable/columns";
 import { DataTable } from "./datatable/data-table";
@@ -9,7 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 const TableUI = ({ categoryId, roomId, date }) => {
     const [page, setPage] = useState(0);
     const size = 13;
-    const { data, isLoading, error } = useRoomDashboard({
+    const { data, isLoading, error } = useGetHistoricalRoomMetrics({
         categoryId: categoryId,
         roomId: roomId,
         fromDate: date.fromDate,

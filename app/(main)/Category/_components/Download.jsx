@@ -1,7 +1,7 @@
 "use client"
 import SensorReportPDF from '@/components/pdf/sensorReportpdf';
 import { Button } from '@/components/ui/button'
-import { useRoomDashboard } from '@/hooks/useDashboard';
+import { useGetHistoricalRoomMetrics } from '@/hooks/useDashboard';
 import { pdf } from '@react-pdf/renderer';
 import { format } from 'date-fns';
 import { toPng } from 'html-to-image';
@@ -9,7 +9,7 @@ import { DownloadIcon, Loader2 } from 'lucide-react';
 import React, { useMemo } from 'react'
 
 const Download = ({ categoryId, roomId, date, categoryName, roomName }) => {
-    const { data, isLoading } = useRoomDashboard({
+    const { data, isLoading } = useGetHistoricalRoomMetrics({
         categoryId: categoryId,
         roomId: roomId,
         fromDate: date.fromDate,
