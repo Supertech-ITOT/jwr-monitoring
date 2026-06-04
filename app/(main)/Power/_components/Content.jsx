@@ -31,7 +31,7 @@ export default function Content({ categoryId, roomId }) {
       <div className="mt-6 flex flex-col xl:flex-row gap-6 w-full ">
         <div className="flex-2 bg-cardbackground border border-border rounded-xl shadow-xl w-full h-[600px]">
           <Chart categoryId={categoryId} roomId={roomId} date={filterData} />
-          <div id="sensor-chart-visible" className="hidden pointer-events-none" style={{ width: "1920px" }}>
+          <div id="power-chart-visible" className="hidden pointer-events-none" style={{ width: "1920px" }}>
             <Chart isExport={true} categoryId={categoryId} roomId={roomId} date={filterData} />
           </div>
         </div>

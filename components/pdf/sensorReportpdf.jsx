@@ -7,9 +7,9 @@ import { room } from "@/constant/model";
 
 
 const ITEM_PER_PAGE = 20;
-const columns = ["DATE", "TIME", "TEMP °C", "RH%"];
-const columnWidths = [1, 1, 1, 1];
-const SensorReportPDF = ({ data, roomName, chartImg, category }) => {
+const columns = ["DATETIME", "TEMP °C", "RH%"];
+const columnWidths = [1, 1, 1];
+const SensorReportPDF = ({ data, roomName, chartImg, categoryName, date }) => {
     const pages = [];
     let start = 0;
     // First Page : 10 Item
@@ -43,20 +43,20 @@ const SensorReportPDF = ({ data, roomName, chartImg, category }) => {
 
                     {/* Title On First Page */}
                     {pageIndex === 0 && (
-                        <View style={{ marginBottom: 6 }}>
-                            <Text style={styles.title}>{room[category] ?? "Room"}</Text>
+                        <View style={{ marginBottom: 6 }}>er
+                            <Text style={styles.title}>{categoryName}</Text>
                             {/* Batch Info */}
                             <View style={styles.gridRow}>
                                 <Text style={styles.label}>Room Name:</Text>
                                 <Text>{roomName}</Text>
                             </View>
-                            {/* <View style={styles.gridRow}>
+                            <View style={styles.gridRow}>
                                 <Text style={styles.label}>Duration:</Text>
                                 <Text>
-                                    {format(date.from, "dd-MMM-yyyy")} -{" "}
-                                    {format(date.to, "dd-MMM-yyyy")}
+                                    {format(date.fromDate, "dd-MMM-yyyy hh:mm a")} -{" "}
+                                    {format(date.toDate, "dd-MMM-yyyy hh:mm a")}
                                 </Text>
-                            </View> */}
+                            </View>
                         </View>
                     )}
 
@@ -115,25 +115,17 @@ const SensorReportPDF = ({ data, roomName, chartImg, category }) => {
                                 ]}
                             >
                                 <Text style={[styles.tableCell, { flex: columnWidths[0] }]}>
-                                    {format(item.timestamp, "dd MMM yyyy")}
+                                    {format(item.timestamp, "dd MMM yyyy hh:mm a")}
                                 </Text>
+
+
                                 <Text style={[styles.tableCell, { flex: columnWidths[1] }]}>
-                                    {format(item.timestamp, "hh:mm:ss a")}
+                                    {Number(item.avgTemperature).toFixed(2)}
+
                                 </Text>
 
-                                <Text style={[styles.tableCell, { flex: columnWidths[2] }]}>
-                                    {item.avgTemp}
-                                </Text>
-
-                                <Text
-                                    style={[
-                                        styles.tableCell,
-                                        {
-                                            flex: columnWidths[3],
-                                        },
-                                    ]}
-                                >
-                                    {item.rh}
+                                <Text style={[styles.tableCell, { flex: columnWidths[2], },]}>
+                                    {Number(item.rh).toFixed(2)}
                                 </Text>
 
                             </View>

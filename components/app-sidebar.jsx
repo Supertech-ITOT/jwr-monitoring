@@ -18,7 +18,7 @@ const item = [
   },
   {
     title: "Power",
-    url: "/PowerRoom/CS1",
+    url: "/Power?categoryId=1&roomId=1",
     icon: <BatteryCharging className="size-5 " />,
   },
   {

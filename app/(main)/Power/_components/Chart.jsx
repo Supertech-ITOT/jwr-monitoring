@@ -25,8 +25,6 @@ const Chart = ({ isExport, categoryId, roomId, date }) => {
         return rows.filter((_, index) => index % step === 0);
     }, [rows]);
 
-
-
     // THEME-BASED COLORS
     const { theme } = useTheme();
     const isDark = theme === "dark";
@@ -61,12 +59,9 @@ const Chart = ({ isExport, categoryId, roomId, date }) => {
 
                 <div className="flex gap-2 font-bold h-5 text-primary ">
                     <Thermometer className="size-4  " />
-                    <span>AvgTemp: {Number(data.avgTemperature).toFixed(2)} °C</span>
+                    <span>Energy: {Number(data.energy).toFixed(2)} kw</span>
                 </div>
-                <div className="flex gap-2 font-bold h-5 text-secondary ">
-                    <Cloud className="size-4 " />
-                    <span>RH: {Number(data.rh).toFixed(2)}%</span>
-                </div>
+
             </div>
         );
     });
@@ -154,7 +149,7 @@ const Chart = ({ isExport, categoryId, roomId, date }) => {
                 tickCount={6}
                 tick={{ fontSize: fontSize, className: "fill-current" }}
                 label={{
-                    value: "Temperature (°C)",
+                    value: "Energy (kw)",
                     angle: -90,
                     dx: 10,
                     position: "insideLeft",
@@ -162,24 +157,7 @@ const Chart = ({ isExport, categoryId, roomId, date }) => {
                     style: { fontSize: fontSize, textAnchor: "middle", fontWeight: "bold" },
                 }}
             />
-            <YAxis
-                yAxisId="right"
-                orientation="right"
-                domain={[
-                    (dataMin) => Math.floor(dataMin * 0.95),
-                    (dataMax) => Math.ceil(dataMax * 1.05),
-                ]}
-                tickCount={6}
-                tick={{ fontSize: fontSize, className: "fill-current" }}
-                label={{
-                    value: "Relative Humidity (%)",
-                    angle: 90,
-                    dx: -10,
-                    position: "insideRight",
-                    className: "fill-current",
-                    style: { fontSize: fontSize, textAnchor: "middle", fontWeight: "bold" },
-                }}
-            />
+
 
             {isExport ? null : (
                 <Tooltip
@@ -216,19 +194,9 @@ const Chart = ({ isExport, categoryId, roomId, date }) => {
 
             <Line
                 type="monotone"
-                dataKey="avgTemperature"
+                dataKey="energy"
                 yAxisId="left"
                 stroke={primary}
-                strokeWidth={2}
-                dot={false}
-                isAnimationActive={false}
-                activeDot={{ r: 4 }}
-            />
-            <Line
-                type="monotone"
-                dataKey="rh"
-                yAxisId="right"
-                stroke={secondary}
                 strokeWidth={2}
                 dot={false}
                 isAnimationActive={false}
@@ -246,6 +214,7 @@ const Chart = ({ isExport, categoryId, roomId, date }) => {
     return (
         <div className="glass-card">
             {
+
                 isExport ? (
                     ChartBody
                 ) : (

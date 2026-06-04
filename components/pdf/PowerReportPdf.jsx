@@ -3,13 +3,12 @@ import { Document, Image, Page, Text, View } from "@react-pdf/renderer";
 import { format } from "date-fns";
 import { styles } from "./style";
 import { THEME } from "./theme";
-import { room } from "@/constant/model";
 
 
 const ITEM_PER_PAGE = 20;
-const columns = ["DATE", "TIME", "POWER (KW)"];
-const columnWidths = [1, 1, 1];
-const PowerReport = ({ data, roomName, chartImg, category }) => {
+const columns = ["DATETIME", "ENERGY"];
+const columnWidths = [1, 1];
+const PowerReportPDF = ({ data, roomName, chartImg, categoryName, date }) => {
     const pages = [];
     let start = 0;
     // First Page : 10 Item
@@ -43,20 +42,20 @@ const PowerReport = ({ data, roomName, chartImg, category }) => {
 
                     {/* Title On First Page */}
                     {pageIndex === 0 && (
-                        <View style={{ marginBottom: 6 }}>
-                            <Text style={styles.title}>{room[category] ?? "Room"}</Text>
+                        <View style={{ marginBottom: 6 }}>er
+                            <Text style={styles.title}>{categoryName}</Text>
                             {/* Batch Info */}
                             <View style={styles.gridRow}>
                                 <Text style={styles.label}>Room Name:</Text>
                                 <Text>{roomName}</Text>
                             </View>
-                            {/* <View style={styles.gridRow}>
+                            <View style={styles.gridRow}>
                                 <Text style={styles.label}>Duration:</Text>
                                 <Text>
-                                    {format(date.from, "dd-MMM-yyyy")} -{" "}
-                                    {format(date.to, "dd-MMM-yyyy")}
+                                    {format(date.fromDate, "dd-MMM-yyyy hh:mm a")} -{" "}
+                                    {format(date.toDate, "dd-MMM-yyyy hh:mm a")}
                                 </Text>
-                            </View> */}
+                            </View>
                         </View>
                     )}
 
@@ -115,14 +114,12 @@ const PowerReport = ({ data, roomName, chartImg, category }) => {
                                 ]}
                             >
                                 <Text style={[styles.tableCell, { flex: columnWidths[0] }]}>
-                                    {format(item.timestamp, "dd MMM yyyy")}
-                                </Text>
-                                <Text style={[styles.tableCell, { flex: columnWidths[1] }]}>
-                                    {format(item.timestamp, "hh:mm:ss a")}
+                                    {format(item.timestamp, "dd MMM yyyy hh:mm a")}
                                 </Text>
 
-                                <Text style={[styles.tableCell, { flex: columnWidths[2] }]}>
-                                    {item.kw}
+
+                                <Text style={[styles.tableCell, { flex: columnWidths[1] }]}>
+                                    {Number(item.energy).toFixed(2)}
                                 </Text>
                             </View>
                         ))}
@@ -133,4 +130,4 @@ const PowerReport = ({ data, roomName, chartImg, category }) => {
     );
 };
 
-export default PowerReport;
+export default PowerReportPDF;

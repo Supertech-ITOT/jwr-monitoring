@@ -1,5 +1,6 @@
 "use client"
-import SensorReportPDF from '@/components/pdf/sensorReportpdf';
+
+import PowerReportPDF from '@/components/pdf/PowerReportPdf';
 import { Button } from '@/components/ui/button'
 import { useRoomDashboard } from '@/hooks/useDashboard';
 import { pdf } from '@react-pdf/renderer';
@@ -22,7 +23,7 @@ const Download = ({ categoryId, roomId, date, categoryName, roomName }) => {
         if (isLoading || !rows) {
             return;
         }
-        const chart = document.getElementById("sensor-chart-visible");
+        const chart = document.getElementById("power-chart-visible");
         chart.style.display = "block";
         await new Promise((res) => setTimeout(res, 10));
         const dataUrl = await toPng(chart, {
@@ -31,13 +32,13 @@ const Download = ({ categoryId, roomId, date, categoryName, roomName }) => {
         });
         chart.style.display = "none";
         const blob = await pdf(
-            <SensorReportPDF data={rows} roomName={roomName} chartImg={dataUrl} categoryName={categoryName} date={date} />
+            <PowerReportPDF data={rows} roomName={roomName} chartImg={dataUrl} categoryName={categoryName} date={date} />
         ).toBlob();
 
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;
-        link.download = `SensorReport-[${format(date.fromDate, "dd-MMM-yyyy")}-${format(date.toDate, "dd-MMM-yyyy")}]`;
+        link.download = `PowerReport-[${format(date.fromDate, "dd-MMM-yyyy")}-${format(date.toDate, "dd-MMM-yyyy")}]`;
         link.click();
         URL.revokeObjectURL(url);
     }

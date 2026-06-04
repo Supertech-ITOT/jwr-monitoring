@@ -15,7 +15,7 @@ public interface TagCurrentValueRepository extends JpaRepository<TagCurrentValue
     Optional<TagCurrentValue> findByTagId(Long tagId);
 
     @Query("""
-                SELECT new com.company.jwr_monitoring.dto.RoomDashboard.RoomCurrentValueDto(
+                SELECT new com.company.jwr_monitoring.dto.Dashboard.RoomCurrentValueDto(
                     r.id,
                     r.name,
                     AVG(CASE WHEN p.name = 'Temperature' THEN tcv.value END),
