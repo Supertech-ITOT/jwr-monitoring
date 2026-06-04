@@ -1,9 +1,6 @@
 package com.company.jwr_monitoring.mapper;
 
-import java.time.LocalDateTime;
-
 import org.springframework.stereotype.Component;
-
 import com.company.jwr_monitoring.dto.TagLog.TagLogDto;
 import com.company.jwr_monitoring.entity.TagLog;
 import com.company.jwr_monitoring.entity.TagMaster;
@@ -15,7 +12,7 @@ public class TagLogMapper {
         return TagLog.builder()
                 .tag(tag)
                 .value(dto.value())
-                .timestamp(LocalDateTime.now())
+                .timestamp(dto.timestamp())
                 .build();
     }
 
@@ -23,6 +20,7 @@ public class TagLogMapper {
         return new TagLogDto(
                 entity.getTag().getId(),
                 entity.getTag().getTagName(),
-                entity.getValue());
+                entity.getValue(),
+                entity.getTimestamp());
     }
 }

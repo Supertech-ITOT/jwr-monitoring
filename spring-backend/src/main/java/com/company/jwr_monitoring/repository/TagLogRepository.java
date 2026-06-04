@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.company.jwr_monitoring.dto.RoomDashboard.RoomDashboardDto;
+import com.company.jwr_monitoring.dto.Dashboard.RoomHistoricalValueDto;
 import com.company.jwr_monitoring.entity.TagLog;
 
 public interface TagLogRepository extends JpaRepository<TagLog, Long> {
@@ -39,7 +39,7 @@ public interface TagLogRepository extends JpaRepository<TagLog, Long> {
         AND r.id = :roomId
         AND tl.timestamp BETWEEN :fromDate AND :toDate
       """)
-  Page<RoomDashboardDto> getRoomDashboard(
+  Page<RoomHistoricalValueDto> getHistoricalRoomMetrics(
       @Param("categoryId") Long categoryId,
       @Param("roomId") Long roomId,
       @Param("fromDate") LocalDateTime fromDate,

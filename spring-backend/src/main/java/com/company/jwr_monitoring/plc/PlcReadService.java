@@ -1,11 +1,11 @@
 package com.company.jwr_monitoring.plc;
 
+import java.time.LocalDateTime;
+
 import org.apache.plc4x.java.api.PlcConnection;
 import org.springframework.stereotype.Service;
-
 import com.company.jwr_monitoring.dto.TagLog.TagLogDto;
 import com.company.jwr_monitoring.entity.TagMaster;
-
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -22,7 +22,7 @@ public class PlcReadService {
                                 case REAL -> readReal(connection, tag.getRegisterAddress());
                                 case BOOL -> readBool(connection, tag.getRegisterAddress());
                         };
-                        return new TagLogDto(tag.getId(), tag.getTagName(), value);
+                        return new TagLogDto(tag.getId(), tag.getTagName(), value, LocalDateTime.now());
 
                 } catch (Exception ex) {
                         System.out.printf(
@@ -30,7 +30,7 @@ public class PlcReadService {
                                         tag.getTagName(),
                                         tag.getRegisterAddress(),
                                         ex.getMessage());
-                        return new TagLogDto(tag.getId(), tag.getTagName(), 0.0);
+                        return new TagLogDto(tag.getId(), tag.getTagName(), 0.0, LocalDateTime.now());
                 }
         }
 
