@@ -1,29 +1,13 @@
 "use client";
-import { SensorData } from "@/constant/model";
 import { useRoomDashboard } from "@/hooks/useDashboard";
 import { format } from "date-fns";
-import {
-    Clock,
-    Cloud,
-    Thermometer,
-} from "lucide-react";
+import { Clock, Cloud, Thermometer, } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
-import {
-    CartesianGrid,
-    Legend,
-    Line,
-    LineChart,
-    ResponsiveContainer,
-    Tooltip,
-    XAxis,
-    YAxis,
-} from "recharts";
-
+import { useMemo, memo } from "react";
+import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 const Chart = ({ isExport, categoryId, roomId, date }) => {
-
-
     const { data, isLoading, error } = useRoomDashboard({
         categoryId: categoryId,
         roomId: roomId,
@@ -31,56 +15,93 @@ const Chart = ({ isExport, categoryId, roomId, date }) => {
         toDate: date.toDate,
         sort: "timestamp,desc",
     });
-    const rows = data?.content || [];
+    const rows = useMemo(() => data?.content ?? [], [data?.content]);
+    const chartRows = useMemo(() => {
+        if (rows.length <= 1000) {
+            return rows;
+        }
+        const step = Math.ceil(rows.length / 1000);
+        return rows.filter((_, index) => index % step === 0);
+    }, [rows]);
+
+    const { tempMin, tempMax, rhMin, rhMax } = useMemo(() => {
+        if (!chartRows.length) {
+            return {
+                tempMin: 20,
+                tempMax: 40,
+                rhMin: 40,
+                rhMax: 80,
+            };
+        }
+
+        const temps = chartRows.map(r => r.avgTemperature);
+        const rhs = chartRows.map(r => r.rh);
+
+        const minTemp = Math.min(...temps);
+        const maxTemp = Math.max(...temps);
+
+        const minRh = Math.min(...rhs);
+        const maxRh = Math.max(...rhs);
+
+        return {
+            tempMin: Math.floor(minTemp - 2),
+            tempMax: Math.ceil(maxTemp + 2),
+            rhMin: Math.floor(minRh - 5),
+            rhMax: Math.ceil(maxRh + 5),
+        };
+    }, [chartRows]);
 
     // THEME-BASED COLORS
     const { theme } = useTheme();
     const isDark = theme === "dark";
-    const isMobile = typeof window !== "undefined" && window.innerWidth < 640;
+    const [isMobile, setIsMobile] = useState(false);
     const [ht, setHeight] = useState(200);
     const primary = "#3dcd58";
     const secondary = "#3a80f6";
 
-
     useEffect(() => {
-        const updateHeight = () => {
+        const update = () => {
+            setIsMobile(window.innerWidth < 640);
             setHeight(window.innerWidth < 768 ? 200 : 600);
         };
-        updateHeight();
-        window.addEventListener("resize", updateHeight);
-        return () => window.removeEventListener("resize", updateHeight);
+
+        update();
+
+        window.addEventListener("resize", update);
+
+        return () =>
+            window.removeEventListener("resize", update);
     }, []);
 
     // CUSTOM HOVER
-    const CustomTooltip = ({ active, payload }) => {
-        if (active && payload && payload.length) {
-            const data = payload[0].payload;
-            return (
-                <div
-                    style={{ width: 250 }}
-                    className="p-3 rounded-xl shadow-xl border border-border  bg-card/60 backdrop-blur-xl text-[9px] sm:text-xs"
-                >
-                    <div className="flex gap-2 font-bold h-5 text-text ">
-                        <Clock className="size-4  " />
-                        <span>TimeStamp: {format(data.timestamp, "dd MMM yy hh:mm:ss a")}</span>
-                    </div>
+    const CustomTooltip = memo(({ active, payload }) => {
+        if (!active || !payload?.length) return null;
 
-                    <div className="flex gap-2 font-bold h-5 text-primary ">
-                        <Thermometer className="size-4  " />
-                        <span>AvgTemp: {data.avgTemperature} °C</span>
-                    </div>
-                    <div className="flex gap-2 font-bold h-5 text-secondary ">
-                        <Cloud className="size-4 " />
-                        <span>RH: {data.rh}%</span>
-                    </div>
-
+        const data = payload[0].payload;
+        return (
+            <div
+                style={{ width: 250 }}
+                className="p-3 rounded-xl shadow-xl border border-border  bg-card/60 backdrop-blur-xl text-[9px] sm:text-xs"
+            >
+                <div className="flex gap-2 font-bold h-5 text-text ">
+                    <Clock className="size-4  " />
+                    <span>TimeStamp: {format(data.timestamp, "dd MMM yy hh:mm:ss a")}</span>
                 </div>
-            );
-        }
-        return null;
-    };
 
-    const CustomLegend = ({ payload }) => {
+                <div className="flex gap-2 font-bold h-5 text-primary ">
+                    <Thermometer className="size-4  " />
+                    <span>AvgTemp: {data.avgTemperature} °C</span>
+                </div>
+                <div className="flex gap-2 font-bold h-5 text-secondary ">
+                    <Cloud className="size-4 " />
+                    <span>RH: {data.rh}%</span>
+                </div>
+            </div>
+        );
+    });
+    CustomTooltip.displayName = "CustomTooltip";
+
+    const CustomLegend = memo(({ payload = [] }) => {
         return (
             <div className="flex gap-4 justify-center items-center mt-4">
                 {payload.map((entry, index) => (
@@ -111,7 +132,9 @@ const Chart = ({ isExport, categoryId, roomId, date }) => {
                 ))}
             </div>
         );
-    };
+    });
+
+    CustomLegend.displayName = "CustomLegend";
 
     const width = isExport ? 1920 : undefined;
     const height = isExport ? 720 : 400;
@@ -120,7 +143,7 @@ const Chart = ({ isExport, categoryId, roomId, date }) => {
         <LineChart
             width={isExport ? width : undefined}
             height={isExport ? height : undefined}
-            data={rows}
+            data={chartRows}
             style={{
                 backgroundColor: isExport ? "#FFFFFF" : undefined,
                 border: isExport ? "#f1f3f4" : undefined,
@@ -153,6 +176,8 @@ const Chart = ({ isExport, categoryId, roomId, date }) => {
 
             <YAxis
                 yAxisId="left"
+                domain={[tempMin, tempMax]}
+                tickCount={6}
                 tick={{ fontSize: fontSize, className: "fill-current" }}
                 label={{
                     value: "Temperature (°C)",
@@ -166,6 +191,8 @@ const Chart = ({ isExport, categoryId, roomId, date }) => {
             <YAxis
                 yAxisId="right"
                 orientation="right"
+                domain={[rhMin, rhMax]}
+                tickCount={6}
                 tick={{ fontSize: fontSize, className: "fill-current" }}
                 label={{
                     value: "Relative Humidity (%)",
@@ -179,7 +206,7 @@ const Chart = ({ isExport, categoryId, roomId, date }) => {
 
             {isExport ? null : (
                 <Tooltip
-                    content={CustomTooltip}
+                    content={<CustomTooltip />}
                     position={
                         isMobile
                             ? {
@@ -217,6 +244,8 @@ const Chart = ({ isExport, categoryId, roomId, date }) => {
                 stroke={primary}
                 strokeWidth={2}
                 dot={false}
+                isAnimationActive={false}
+                activeDot={{ r: 4 }}
             />
             <Line
                 type="monotone"
@@ -225,8 +254,11 @@ const Chart = ({ isExport, categoryId, roomId, date }) => {
                 stroke={secondary}
                 strokeWidth={2}
                 dot={false}
+                isAnimationActive={false}
+                activeDot={{ r: 4 }}
             />
         </LineChart>
+
     );
 
     return (
@@ -240,6 +272,5 @@ const Chart = ({ isExport, categoryId, roomId, date }) => {
             )}
         </div>
     );
-};
-
+}
 export default Chart;
