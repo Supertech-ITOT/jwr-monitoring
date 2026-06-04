@@ -14,6 +14,6 @@ public class PlcSchedulerService {
     @Scheduled(fixedRate = 60000)
     public void executeLogging() {
 
-        // tagLoggingService.logAllTags();
+        tagLoggingService.logAllTags();
     }
 }

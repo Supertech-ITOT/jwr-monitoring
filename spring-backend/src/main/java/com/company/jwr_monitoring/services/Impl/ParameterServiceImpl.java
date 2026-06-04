@@ -18,7 +18,7 @@ public class ParameterServiceImpl implements ParameterService {
     private final ParameterMapper parameterMapper;
 
     @Override
-    public List<ParameterDto> getParameters() {
+    public List<ParameterDto> getAllParameters() {
         return parameterRepository.findAll().stream().map(parameterMapper::toDto).toList();
     }
 
