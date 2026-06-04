@@ -165,10 +165,6 @@ const Chart = ({ isExport, categoryId, roomId, date }) => {
             <YAxis
                 yAxisId="right"
                 orientation="right"
-                domain={[
-                    (dataMin) => Math.floor(dataMin * 0.95),
-                    (dataMax) => Math.ceil(dataMax * 1.05),
-                ]}
                 tickCount={6}
                 tick={{ fontSize: fontSize, className: "fill-current" }}
                 label={{

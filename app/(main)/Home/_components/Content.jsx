@@ -19,7 +19,7 @@ export default function Content() {
   const { data: categories, isLoading: categoriesIsLoading } = useGetCategory();
   const { data: parameters, isLoading: parametersIsLoading } =
     useGetParameter();
-  const loading = isLoading || categoriesIsLoading || parametersIsLoading;
+  const loading = isLoading || categoriesIsLoading || parametersIsLoading || !data;
   return (
     <div>
       <div className="flex justify-end my-2">
@@ -33,11 +33,11 @@ export default function Content() {
         />
       </div>
       <div className="flex xl:flex-row flex-col w-full gap-6 ">
-        <div className="flex-2 bg-cardbackground border border-border rounded-xl shadow-xl w-full h-[600px] ">
-          <Chart />
+        <div className="flex-2 bg-cardbackground border border-border scrollbar-hide rounded-xl shadow-xl w-full h-[600px] ">
+          <Chart rows={data} loading={isLoading} filterData={filterData} />
         </div>
         <div className="flex-1 bg-cardbackground border border-border rounded-xl shadow-xl w-full xl:w-1/3 h-[600px]  flex flex-col overflow-hidden">
-          <TableUI rows={data} loading={isLoading} />
+          <TableUI rows={data} loading={isLoading} filterData={filterData} />
         </div>
       </div>
     </div>

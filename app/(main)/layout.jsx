@@ -20,9 +20,14 @@ const DashboardLayout = async ({ children }) => {
       <DateProvider>
         <SidebarStateBridge defaultOpen={defaultOpen}>
           <AppSidebar />
-          <main className='min-h-screen w-full bg-background'>
-            <div className='z-12 fixed top-1/2 '><SidebarTrigger /></div>
-            <div className='h-full flex justify-center items-center  p-2 xl:px-24 '>{children}</div>
+          <main className="min-h-screen w-full bg-background overflow-x-hidden">
+            <div className="fixed top-1/2 z-12">
+              <SidebarTrigger />
+            </div>
+
+            <div className="h-full w-full min-w-0 p-2 xl:px-24">
+              {children}
+            </div>
           </main>
         </SidebarStateBridge>
       </DateProvider>
