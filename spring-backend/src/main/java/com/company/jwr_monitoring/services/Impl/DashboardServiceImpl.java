@@ -1,5 +1,6 @@
 package com.company.jwr_monitoring.services.Impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -9,6 +10,9 @@ import org.springframework.stereotype.Service;
 import com.company.jwr_monitoring.dto.Dashboard.RoomCurrentValueDto;
 import com.company.jwr_monitoring.dto.Dashboard.RoomHistoricalValueDto;
 import com.company.jwr_monitoring.dto.Dashboard.RoomHistoricalValueRequest;
+import com.company.jwr_monitoring.dto.Dashboard.RoomStatCardDto;
+import com.company.jwr_monitoring.repository.CategoryRepository;
+import com.company.jwr_monitoring.repository.RoomRepository;
 import com.company.jwr_monitoring.repository.TagCurrentValueRepository;
 import com.company.jwr_monitoring.repository.TagLogRepository;
 import com.company.jwr_monitoring.services.DashboardService;
@@ -21,9 +25,12 @@ public class DashboardServiceImpl implements DashboardService {
 
     private final TagLogRepository tagLogRepository;
     private final TagCurrentValueRepository tagCurrentValueRepository;
+    private final CategoryRepository categoryRepository;
+    private final RoomRepository roomRepository;
 
     @Override
-    public Page<RoomHistoricalValueDto> getHistoricalRoomMetrics(RoomHistoricalValueRequest request, Pageable pageable) {
+    public Page<RoomHistoricalValueDto> getHistoricalRoomMetrics(RoomHistoricalValueRequest request,
+            Pageable pageable) {
         Pageable finalPageable = pageable.getPageSize() == 20
                 && pageable.getPageNumber() == 0
                         ? Pageable.unpaged()
@@ -38,5 +45,13 @@ public class DashboardServiceImpl implements DashboardService {
     @Override
     public List<RoomCurrentValueDto> getCurrentRoomMetricsByCategory(Long categoryId) {
         return tagCurrentValueRepository.getCurrentRoomMetricsByCategory(categoryId);
+    }
+
+    @Override
+    public List<RoomStatCardDto> getRoomStatCard() {
+        List<RoomStatCardDto> response = new ArrayList<>();
+        response.add(new RoomStatCardDto(0L, "Total Rooms", roomRepository.count()));
+        response.addAll(categoryRepository.getRoomStatCard());
+        return response;
     }
 }

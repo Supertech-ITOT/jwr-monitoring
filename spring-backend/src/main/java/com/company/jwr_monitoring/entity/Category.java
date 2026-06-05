@@ -1,5 +1,7 @@
 package com.company.jwr_monitoring.entity;
 
+import java.util.List;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,4 +22,7 @@ public class Category {
 
     @Column(nullable = false)
     private String name;
+
+    @OneToMany(mappedBy = "category")
+    private List<Room> rooms;
 }

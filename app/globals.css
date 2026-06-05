@@ -1,5 +1,9 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@plugin 'tailwind-scrollbar' {
+    nocompatible: true;
+    preferredStrategy: 'pseudoelements';
+}
 
 @custom-variant dark (&:is(.dark *));
 
@@ -126,13 +130,18 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+
+@utility scrollbar-prop{
+    @apply  scrollbar-thin scrollbar-thumb-primary scrollbar-track-background;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground scrollbar-prop;
   }
 
 }
@@ -142,13 +151,4 @@ html {
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
 
-}
-
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
 }

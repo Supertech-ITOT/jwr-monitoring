@@ -16,6 +16,7 @@ import com.company.jwr_monitoring.dto.Common.ApiResponse;
 import com.company.jwr_monitoring.dto.Dashboard.RoomCurrentValueDto;
 import com.company.jwr_monitoring.dto.Dashboard.RoomHistoricalValueDto;
 import com.company.jwr_monitoring.dto.Dashboard.RoomHistoricalValueRequest;
+import com.company.jwr_monitoring.dto.Dashboard.RoomStatCardDto;
 import com.company.jwr_monitoring.services.DashboardService;
 
 import jakarta.validation.Valid;
@@ -43,6 +44,13 @@ public class DashboardController {
                 List<RoomCurrentValueDto> response = roomDashboardService.getCurrentRoomMetricsByCategory(categoryId);
                 return ResponseEntity.ok(
                                 ApiResponse.success("Current Room Metrics By Category fetched successfully", response));
+        }
+
+        @GetMapping("/room-stat")
+        public ResponseEntity<ApiResponse<List<RoomStatCardDto>>> getRoomStatCard() {
+                List<RoomStatCardDto> response = roomDashboardService.getRoomStatCard();
+                return ResponseEntity.ok(
+                                ApiResponse.success("Room Stat fetched successfully", response));
         }
 
 }
