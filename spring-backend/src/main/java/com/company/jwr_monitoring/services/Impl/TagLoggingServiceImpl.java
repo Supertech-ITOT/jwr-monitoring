@@ -33,6 +33,8 @@ public class TagLoggingServiceImpl implements TagLoggingService {
         List<TagMaster> tags = tagMasterRepository.findAllWithParameter();
         for (TagMaster tag : tags) {
             TagLogDto result = plcReadService.readTag(tag);
+            if (result == null)
+                continue;
             TagLog log = tagLogMapper.toEntity(result, tag);
             tagLogRepository.save(log);
             updateCurrentValue(tag, result);

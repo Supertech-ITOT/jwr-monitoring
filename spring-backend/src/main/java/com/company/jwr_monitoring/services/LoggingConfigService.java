@@ -1,5 +1,7 @@
 package com.company.jwr_monitoring.services;
 
+import java.time.LocalDateTime;
+
 import org.springframework.stereotype.Service;
 
 import com.company.jwr_monitoring.entity.LoggingConfig;
@@ -13,21 +15,28 @@ public class LoggingConfigService {
 
     private final LoggingConfigRepository repository;
 
-    public Integer getIntervalMinutes() {
-
+    public LoggingConfig getConfig() {
         return repository.findById(1L)
-                .map(LoggingConfig::getLoggingIntervalMinutes)
-                .orElse(5);
+                .orElseGet(() -> {
+                    LoggingConfig config = new LoggingConfig();
+                    config.setId(1L);
+                    config.setLoggingIntervalMinutes(5);
+                    config.setLastExecutionTime(LocalDateTime.now());
+                    return repository.save(config);
+                });
+    }
+
+    public Integer getIntervalMinutes() {
+        return getConfig().getLoggingIntervalMinutes();
     }
 
     public LoggingConfig saveInterval(Integer interval) {
-
-        LoggingConfig config = repository.findById(1L)
-                .orElse(new LoggingConfig());
-
-        config.setId(1L);
+        LoggingConfig config = getConfig();
         config.setLoggingIntervalMinutes(interval);
+        return repository.save(config);
+    }
 
+    public LoggingConfig save(LoggingConfig config) {
         return repository.save(config);
     }
 }

@@ -1,13 +1,17 @@
 package com.company.jwr_monitoring.config;
 
+import java.time.LocalDateTime;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import com.company.jwr_monitoring.entity.Category;
 import com.company.jwr_monitoring.entity.DataType;
+import com.company.jwr_monitoring.entity.LoggingConfig;
 import com.company.jwr_monitoring.entity.Parameter;
 import com.company.jwr_monitoring.entity.Room;
 import com.company.jwr_monitoring.repository.CategoryRepository;
+import com.company.jwr_monitoring.repository.LoggingConfigRepository;
 import com.company.jwr_monitoring.repository.ParameterRepository;
 import com.company.jwr_monitoring.repository.RoomRepository;
 
@@ -19,6 +23,7 @@ public class DataInitializer implements CommandLineRunner {
     private final CategoryRepository categoryRepository;
     private final RoomRepository roomRepository;
     private final ParameterRepository parameterRepository;
+    private final LoggingConfigRepository loggingConfigRepository;
 
     @Override
     public void run(String... args) {
@@ -26,6 +31,7 @@ public class DataInitializer implements CommandLineRunner {
         initializeCategories();
         initializeRooms();
         initializeParameters();
+        initializeLoggingConfig();
     }
 
     private void initializeCategories() {
@@ -88,6 +94,16 @@ public class DataInitializer implements CommandLineRunner {
         parameterRepository.save(Parameter.builder().name("Energy").uom("Kwh").type(DataType.REAL).build());
         parameterRepository.save(Parameter.builder().name("RH").uom("%").type(DataType.REAL).build());
 
+    }
+
+    private void initializeLoggingConfig() {
+
+        if (loggingConfigRepository.existsById(1L)) {
+            return;
+        }
+
+        loggingConfigRepository.save(LoggingConfig.builder().id(1L).loggingIntervalMinutes(3)
+                .lastExecutionTime(LocalDateTime.now()).build());
     }
 
 }

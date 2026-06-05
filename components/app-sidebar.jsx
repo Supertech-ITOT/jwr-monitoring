@@ -21,11 +21,6 @@ const item = [
     url: "/Power?categoryId=1&roomId=1",
     icon: <BatteryCharging className="size-5 " />,
   },
-  {
-    title: "Energy",
-    url: "/Energy",
-    icon: <Zap className="size-5 " />,
-  },
 ];
 
 const AppSidebar = () => {

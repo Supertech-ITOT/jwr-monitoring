@@ -18,6 +18,7 @@ export const useGetHistoricalRoomMetrics = (params) => {
 export const useGetCurrentRoomMetricsByCategory = (params) => {
   return useQuery({
     queryKey: ["current-room-metrics", params],
+    refetchInterval: 5000,
     queryFn: async () => {
       const res = await getCurrentRoomMetricsByCategory(params);
       return res.data;

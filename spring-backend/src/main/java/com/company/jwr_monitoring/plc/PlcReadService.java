@@ -22,7 +22,8 @@ public class PlcReadService {
                                 case REAL -> readReal(connection, tag.getRegisterAddress());
                                 case BOOL -> readBool(connection, tag.getRegisterAddress());
                         };
-                        return new TagLogDto(tag.getId(), tag.getTagName(), value, LocalDateTime.now());
+                        return new TagLogDto(tag.getId(), tag.getTagName(), value,
+                                        LocalDateTime.now().withSecond(0).withNano(0));
 
                 } catch (Exception ex) {
                         System.out.printf(
@@ -30,7 +31,7 @@ public class PlcReadService {
                                         tag.getTagName(),
                                         tag.getRegisterAddress(),
                                         ex.getMessage());
-                        return new TagLogDto(tag.getId(), tag.getTagName(), 0.0, LocalDateTime.now());
+                        return null;
                 }
         }
 

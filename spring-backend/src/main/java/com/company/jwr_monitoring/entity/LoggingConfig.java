@@ -1,5 +1,7 @@
 package com.company.jwr_monitoring.entity;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,6 +11,7 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class LoggingConfig {
 
     @Id
@@ -16,4 +19,6 @@ public class LoggingConfig {
 
     @Column(nullable = false)
     private Integer loggingIntervalMinutes;
+
+    private LocalDateTime lastExecutionTime;
 }
