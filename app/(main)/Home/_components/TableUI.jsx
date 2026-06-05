@@ -5,7 +5,7 @@ import { DataTable } from "./datatable/data-table";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const TableUI = ({ rows, loading, filterData }) => {
-  if (loading) {
+  if (loading || !rows) {
     return <Skeleton className="w-full h-full" />;
   }
 

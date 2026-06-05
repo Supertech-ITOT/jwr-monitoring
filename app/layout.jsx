@@ -10,7 +10,6 @@ const inter = Inter({
 
 export const metadata = {
   title: "Login",
-  description: "",
 };
 
 export default function RootLayout({ children }) {
@@ -19,9 +18,7 @@ export default function RootLayout({ children }) {
       <body className={`${inter.variable} antialiased bg-background`}>
         <QueryProvider>
           <Toaster position="bottom-center" richColors />
-          <main className="h-screen">
-            {children}
-          </main>
+          <main className="h-screen">{children}</main>
         </QueryProvider>
       </body>
     </html>
