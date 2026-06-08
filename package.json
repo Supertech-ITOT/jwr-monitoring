@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "concurrently --timestamp-format \"HH:mm:ss\" --names \"NEXT,SPRING\" --prefix-colors \"blue,green\" --kill-others-on-fail \"npm run dev:next\" \"npm run dev:spring\"",
-    "dev:next": "next dev -H 192.168.1.233 -p 3000",
+    "dev:next": "next dev -H 0.0.0.0 -p 3000",
     "dev:spring": "cd spring-backend && mvnw.cmd spring-boot:run",
     "build": "next build",
     "start": "next start",
