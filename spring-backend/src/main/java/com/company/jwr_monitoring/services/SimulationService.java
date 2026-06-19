@@ -32,7 +32,7 @@ public class SimulationService implements CommandLineRunner {
         int year = 2026;
         int month = 6;
 
-        generateMonthLogs(year, month);
+        // generateMonthLogs(year, month);
     }
 
     public void generateMonthLogs(int year, int month) {

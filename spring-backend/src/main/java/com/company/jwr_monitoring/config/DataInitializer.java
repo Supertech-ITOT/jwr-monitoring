@@ -91,7 +91,7 @@ public class DataInitializer implements CommandLineRunner {
             return;
         }
         parameterRepository.save(Parameter.builder().name("Temperature").uom("°C").type(DataType.REAL).build());
-        parameterRepository.save(Parameter.builder().name("Energy").uom("Kwh").type(DataType.REAL).build());
+        parameterRepository.save(Parameter.builder().name("Energy").uom("Kw").type(DataType.REAL).build());
         parameterRepository.save(Parameter.builder().name("RH").uom("%").type(DataType.REAL).build());
 
     }
