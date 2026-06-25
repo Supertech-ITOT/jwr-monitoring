@@ -27,6 +27,10 @@ export const columns = (filterData) => {
           : "-",
     },
     {
+      accessorKey: "roomName",
+      header: "ROOM",
+    },
+    {
       accessorKey: field,
       header,
       cell: ({ row }) => {

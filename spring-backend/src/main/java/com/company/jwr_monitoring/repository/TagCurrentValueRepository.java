@@ -18,9 +18,9 @@ public interface TagCurrentValueRepository extends JpaRepository<TagCurrentValue
                 SELECT new com.company.jwr_monitoring.dto.Dashboard.RoomCurrentValueDto(
                     r.id,
                     r.name,
-                    AVG(CASE WHEN p.name = 'Temperature' THEN tcv.value END),
-                    MAX(CASE WHEN p.name = 'RH' THEN tcv.value END),
-                    MAX(CASE WHEN p.name = 'Energy' THEN tcv.value END),
+                   ROUND(MAX(CASE WHEN p.name = 'Temperature' THEN tcv.value END),2),
+                    ROUND(MAX(CASE WHEN p.name = 'RH' THEN tcv.value END),2),
+                    ROUND(MAX(CASE WHEN p.name = 'Energy' THEN tcv.value END),2),
                     MAX(tcv.lastUpdated)
                 )
                 FROM TagCurrentValue tcv
