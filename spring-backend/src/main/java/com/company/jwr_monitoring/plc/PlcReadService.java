@@ -28,16 +28,11 @@ public class PlcReadService {
                                         LocalDateTime.now().withSecond(0).withNano(0));
 
                 } catch (Exception ex) {
-
-                        plcConnectionService.invalidateConnection(
-                                        tag.getIpAddress(),
-                                        tag.getPort());
-
+                        plcConnectionService.invalidateConnection(tag.getIpAddress(), tag.getPort());
                         log.error("PLC Read Failed | Tag={} | Register={} | Error={}",
                                         tag.getTagName(),
                                         tag.getRegisterAddress(),
                                         ex.getMessage());
-
                         return null;
                 }
         }
@@ -56,25 +51,26 @@ public class PlcReadService {
 
         private Double readReal(PlcConnection connection, int registerAddress) throws Exception {
                 int modbusAddress = registerAddress - 40000;
-                var response = connection
-                                .readRequestBuilder()
-                                .addTagAddress("value", "holding-register:" + modbusAddress + ":REAL")
+                var response = connection.readRequestBuilder()
+                                .addTagAddress("r1", "holding-register:" + modbusAddress)
+                                .addTagAddress("r2", "holding-register:" + (modbusAddress + 1))
                                 .build()
                                 .execute()
                                 .get();
 
-                return response.getFloat("value").doubleValue();
+                int r1 = response.getShort("r1") & 0xFFFF;
+                int r2 = response.getShort("r2") & 0xFFFF;
+                float value = Float.intBitsToFloat((r2 << 16) | r1);
+                return (double) value;
         }
 
         private Double readBool(PlcConnection connection, int registerAddress) throws Exception {
-
                 var response = connection
                                 .readRequestBuilder()
                                 .addTagAddress("value", "coil:" + registerAddress + ":BOOL")
                                 .build()
                                 .execute()
                                 .get();
-
                 return response.getBoolean("value") ? 1.0 : 0.0;
         }
 }
