@@ -25,7 +25,7 @@ public class PlcSchedulerService {
         long minutesElapsed = Duration.between(config.getLastExecutionTime(), LocalDateTime.now()).toMinutes();
         if (minutesElapsed >= config.getLoggingIntervalMinutes()) {
             tagLoggingService.logAllTags();
-            config.setLastExecutionTime(LocalDateTime.now());
+            config.setLastExecutionTime(LocalDateTime.now().withSecond(0).withNano(0));
             loggingConfigService.save(config);
         }
     }

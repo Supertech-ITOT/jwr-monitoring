@@ -29,8 +29,8 @@ public class SimulationService implements CommandLineRunner {
     public void run(String... args) {
 
         // Change this month/year as needed
-        int year = 2026;
-        int month = 6;
+        // int year = 2026;
+        // int month = 6;
 
         // generateMonthLogs(year, month);
     }

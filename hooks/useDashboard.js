@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 export const useGetHistoricalRoomMetrics = (params) => {
   return useQuery({
     queryKey: ["historical-metric", params],
+    refetchInterval: 60000,
     queryFn: async () => {
       const res = await getHistoricalRoomMetrics(params);
       return res.data;
@@ -18,7 +19,6 @@ export const useGetHistoricalRoomMetrics = (params) => {
 export const useGetCurrentRoomMetricsByCategory = (params) => {
   return useQuery({
     queryKey: ["current-room-metrics", params],
-    refetchInterval: 5000,
     queryFn: async () => {
       const res = await getCurrentRoomMetricsByCategory(params);
       return res.data;

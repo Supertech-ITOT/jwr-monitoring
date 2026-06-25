@@ -7,9 +7,11 @@ import org.springframework.stereotype.Service;
 import com.company.jwr_monitoring.dto.TagLog.TagLogDto;
 import com.company.jwr_monitoring.entity.TagMaster;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PlcReadService {
         private final PlcConnectionService plcConnectionService;
 
@@ -26,11 +28,16 @@ public class PlcReadService {
                                         LocalDateTime.now().withSecond(0).withNano(0));
 
                 } catch (Exception ex) {
-                        System.out.printf(
-                                        "PLC Read Failed | Tag=%s | Register=%d | Error=%s%n",
+
+                        plcConnectionService.invalidateConnection(
+                                        tag.getIpAddress(),
+                                        tag.getPort());
+
+                        log.error("PLC Read Failed | Tag={} | Register={} | Error={}",
                                         tag.getTagName(),
                                         tag.getRegisterAddress(),
                                         ex.getMessage());
+
                         return null;
                 }
         }
