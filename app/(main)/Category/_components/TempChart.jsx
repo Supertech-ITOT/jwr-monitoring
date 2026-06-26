@@ -2,7 +2,7 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGetHistoricalRoomMetrics } from "@/hooks/useDashboard";
 import { format } from "date-fns";
-import { Clock, Thermometer } from "lucide-react";
+import { Clock, Cloud, Thermometer } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { useMemo, memo } from "react";
@@ -17,7 +17,7 @@ import {
   YAxis,
 } from "recharts";
 
-const Chart = ({ isExport, categoryId, roomId, date }) => {
+const TempChart = ({ isExport, categoryId, roomId, date }) => {
   const { data, isLoading } = useGetHistoricalRoomMetrics({
     categoryId: categoryId,
     roomId: roomId,
@@ -27,7 +27,7 @@ const Chart = ({ isExport, categoryId, roomId, date }) => {
   });
   const chartRows = useMemo(() => {
     const filteredRows = (data?.content ?? []).filter(
-      (row) => row.energy != null,
+      (row) => row.avgTemperature != null,
     );
 
     const sampledRows =
@@ -37,9 +37,9 @@ const Chart = ({ isExport, categoryId, roomId, date }) => {
             (_, index) => index % Math.ceil(filteredRows.length / 1000) === 0,
           );
 
-    return sampledRows.map(({ timestamp, energy }) => ({
+    return sampledRows.map(({ timestamp, avgTemperature }) => ({
       timestamp,
-      energy,
+      avgTemperature,
     }));
   }, [data?.content]);
 
@@ -49,11 +49,12 @@ const Chart = ({ isExport, categoryId, roomId, date }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [ht, setHeight] = useState(200);
   const primary = "#3dcd58";
+  const secondary = "#3a80f6";
 
   useEffect(() => {
     const update = () => {
       setIsMobile(window.innerWidth < 640);
-      setHeight(window.innerWidth < 768 ? 200 : 600);
+      setHeight(window.innerWidth < 768 ? 200 : 300);
     };
     update();
     window.addEventListener("resize", update);
@@ -78,10 +79,7 @@ const Chart = ({ isExport, categoryId, roomId, date }) => {
 
         <div className="flex gap-2 font-bold h-5 text-primary ">
           <Thermometer className="size-4  " />
-          <span>
-            Energy:{" "}
-            {data.energy != null ? Number(data.energy).toFixed(2) : "--"} kwh
-          </span>
+          <span>AvgTemp: {Number(data.avgTemperature).toFixed(2)} °C</span>
         </div>
       </div>
     );
@@ -133,6 +131,7 @@ const Chart = ({ isExport, categoryId, roomId, date }) => {
       width={isExport ? width : undefined}
       height={isExport ? height : undefined}
       data={chartRows}
+      margin={{ top: 20, right: 10 }}
       style={{
         backgroundColor: isExport ? "#FFFFFF" : undefined,
         border: isExport ? "#f1f3f4" : undefined,
@@ -168,11 +167,14 @@ const Chart = ({ isExport, categoryId, roomId, date }) => {
       />
 
       <YAxis
-        yAxisId="left"
+        domain={[
+          (dataMin) => Math.floor(dataMin * 0.95),
+          (dataMax) => Math.ceil(dataMax * 1.05),
+        ]}
         tickCount={6}
         tick={{ fontSize: fontSize, className: "fill-current" }}
         label={{
-          value: "ENERGY (KWH)",
+          value: "TEMPERATURE (°C)",
           angle: -90,
           dx: 10,
           position: "insideLeft",
@@ -184,7 +186,6 @@ const Chart = ({ isExport, categoryId, roomId, date }) => {
           },
         }}
       />
-
       {isExport ? null : (
         <Tooltip
           content={<CustomTooltip />}
@@ -220,7 +221,7 @@ const Chart = ({ isExport, categoryId, roomId, date }) => {
 
       <Line
         type="monotoneX"
-        dataKey="energy"
+        dataKey="avgTemperature"
         stroke={primary}
         strokeWidth={3}
         dot={false}
@@ -245,4 +246,4 @@ const Chart = ({ isExport, categoryId, roomId, date }) => {
     </div>
   );
 };
-export default Chart;
+export default TempChart;

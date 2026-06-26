@@ -19,13 +19,22 @@ public class PlcSchedulerService {
     private final TagLoggingService tagLoggingService;
     private final LoggingConfigService loggingConfigService;
 
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(cron = "0 * * * * *")
     public void executeLogging() {
+
         LoggingConfig config = loggingConfigService.getConfig();
-        long minutesElapsed = Duration.between(config.getLastExecutionTime(), LocalDateTime.now()).toMinutes();
+
+        LocalDateTime now = LocalDateTime.now()
+                .withSecond(0)
+                .withNano(0);
+
+        long minutesElapsed = Duration.between(config.getLastExecutionTime(), now).toMinutes();
+
         if (minutesElapsed >= config.getLoggingIntervalMinutes()) {
+
             tagLoggingService.logAllTags();
-            config.setLastExecutionTime(LocalDateTime.now().withSecond(0).withNano(0));
+
+            config.setLastExecutionTime(now);
             loggingConfigService.save(config);
         }
     }

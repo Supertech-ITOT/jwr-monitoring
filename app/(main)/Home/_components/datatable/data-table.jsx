@@ -25,7 +25,7 @@ export function DataTable({ columns, data }) {
     getPaginationRowModel: getPaginationRowModel(),
     initialState: {
       pagination: {
-        pageSize: 10,
+        pageSize: 13,
       },
     },
   });

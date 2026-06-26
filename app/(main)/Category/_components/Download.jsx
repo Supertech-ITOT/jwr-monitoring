@@ -40,19 +40,29 @@ const Download = ({ categoryId, roomId, date, categoryName, roomName }) => {
     if (isLoading || !rows) {
       return;
     }
-    const chart = document.getElementById("sensor-chart-visible");
-    chart.style.display = "block";
+    const tchart = document.getElementById("temp-chart-visible");
+    tchart.style.display = "block";
     await new Promise((res) => setTimeout(res, 10));
-    const dataUrl = await toPng(chart, {
+    const tdataUrl = await toPng(tchart, {
       cacheBust: true,
       quality: 1,
     });
-    chart.style.display = "none";
+    tchart.style.display = "none";
+    // -----
+    const rchart = document.getElementById("rh-chart-visible");
+    rchart.style.display = "block";
+    await new Promise((res) => setTimeout(res, 10));
+    const rdataUrl = await toPng(rchart, {
+      cacheBust: true,
+      quality: 1,
+    });
+    rchart.style.display = "none";
     const blob = await pdf(
       <SensorReportPDF
         data={rows}
         roomName={roomName}
-        chartImg={dataUrl}
+        tchartImg={tdataUrl}
+        rchartImg={rdataUrl}
         categoryName={categoryName}
         date={date}
         name={name}

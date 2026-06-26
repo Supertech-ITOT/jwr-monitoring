@@ -3,25 +3,25 @@ import { Document, Image, Page, Text, View } from "@react-pdf/renderer";
 import { format } from "date-fns";
 import { styles } from "./style";
 import { THEME } from "./theme";
-import { room } from "@/constant/model";
 
-const ITEM_PER_PAGE = 20;
+const ITEM_PER_PAGE = 25;
 const columns = ["DATETIME", "TEMP °C", "RH%"];
 const columnWidths = [1, 1, 1];
 const SensorReportPDF = ({
   data,
   roomName,
-  chartImg,
+  tchartImg,
+  rchartImg,
   categoryName,
   date,
   name,
 }) => {
   const pages = [];
   let start = 0;
-  // First Page : 10 Item
-  pages.push(data.slice(start, 10));
-  // 15 Item Per Page
-  for (let start = 10; start < data.length; start += ITEM_PER_PAGE) {
+  // First Page : 5 Item
+  pages.push(data.slice(start, 5));
+  // 5 Item Per Page
+  for (let start = 5; start < data.length; start += ITEM_PER_PAGE) {
     pages.push(data.slice(start, start + ITEM_PER_PAGE));
   }
   return (
@@ -53,7 +53,6 @@ const SensorReportPDF = ({
           {/* Title On First Page */}
           {pageIndex === 0 && (
             <View style={{ marginBottom: 6 }}>
-              er
               <Text style={styles.title}>{categoryName}</Text>
               {/* Batch Info */}
               <View style={styles.gridRow}>
@@ -69,7 +68,6 @@ const SensorReportPDF = ({
               </View>
             </View>
           )}
-          Chart
           {pageIndex === 0 && (
             <View
               style={{
@@ -85,7 +83,10 @@ const SensorReportPDF = ({
                 Overview
               </Text>
               <View style={styles.chartContainer}>
-                <Image src={chartImg} style={styles.chartImg} />
+                <Image src={tchartImg} style={styles.chartImg} />
+              </View>
+              <View style={styles.chartContainer}>
+                <Image src={rchartImg} style={styles.chartImg} />
               </View>
               <Text
                 style={{

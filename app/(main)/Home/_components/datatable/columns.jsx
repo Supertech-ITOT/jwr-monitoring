@@ -23,7 +23,7 @@ export const columns = (filterData) => {
       header: "TIMESTAMP",
       cell: ({ row }) =>
         row.original.timestamp
-          ? format(new Date(row.original.timestamp), "dd MMM yyyy HH:mm:ss")
+          ? format(new Date(row.original.timestamp), "dd MMM yyyy hh:mm a")
           : "-",
     },
     {
@@ -37,9 +37,7 @@ export const columns = (filterData) => {
         const value = row.original[field];
 
         return (
-          <span>
-            {typeof value === "number" ? value.toFixed(2) : "-"}
-          </span>
+          <span>{typeof value === "number" ? value.toFixed(2) : "-"}</span>
         );
       },
     },

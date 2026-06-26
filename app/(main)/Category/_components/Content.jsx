@@ -1,6 +1,6 @@
 "use client";
 import FrequencyBtn from "@/components/FrequencyBtn";
-import Chart from "./Chart";
+import Chart from "./TempChart";
 import TableUI from "./TableUI";
 import CategoryFilter from "./CategoryFilter";
 import { useGetCategory } from "@/hooks/useCategory";
@@ -8,6 +8,8 @@ import { useGetRoomByCategoryId } from "@/hooks/useRoom";
 import { useState } from "react";
 import dayjs from "dayjs";
 import Download from "./Download";
+import TempChart from "./TempChart";
+import RhChart from "./RhChart";
 
 export default function Content({ categoryId, roomId }) {
   const now = dayjs();
@@ -49,19 +51,44 @@ export default function Content({ categoryId, roomId }) {
         />
       </div>
       <div className="mt-6 flex flex-col xl:flex-row gap-6 w-full ">
-        <div className="flex-2 bg-cardbackground border border-border rounded-xl shadow-xl w-full h-[600px]">
-          <Chart categoryId={categoryId} roomId={roomId} date={filterData} />
-          <div
-            id="sensor-chart-visible"
-            className="hidden pointer-events-none"
-            style={{ width: "1920px" }}
-          >
-            <Chart
-              isExport={true}
+        <div className="flex-2 bg-cardbackground border border-border rounded-xl shadow w-full h-[600px] gap-2 overflow-hidden">
+          <div className="flex-1 h-1/2! border">
+            <TempChart
               categoryId={categoryId}
               roomId={roomId}
               date={filterData}
             />
+            <div
+              id="temp-chart-visible"
+              className="hidden pointer-events-none"
+              style={{ width: "1920px" }}
+            >
+              <TempChart
+                isExport={true}
+                categoryId={categoryId}
+                roomId={roomId}
+                date={filterData}
+              />
+            </div>
+          </div>
+          <div className="flex-1 h-1/2! border">
+            <RhChart
+              categoryId={categoryId}
+              roomId={roomId}
+              date={filterData}
+            />
+            <div
+              id="rh-chart-visible"
+              className="hidden pointer-events-none"
+              style={{ width: "1920px" }}
+            >
+              <RhChart
+                isExport={true}
+                categoryId={categoryId}
+                roomId={roomId}
+                date={filterData}
+              />
+            </div>
           </div>
         </div>
         <div className="flex-1 bg-cardbackground border border-border rounded-xl shadow-xl w-full xl:w-1/3 h-[600px] flex flex-col overflow-hidden">

@@ -77,6 +77,11 @@
 			<artifactId>plc4j-api</artifactId>
 			<version>0.13.1</version>
 		</dependency>
+		<dependency>
+			<groupId>org.eclipse.milo</groupId>
+			<artifactId>milo-sdk-client</artifactId>
+			<version>1.1.4</version>
+	    </dependency>
 	</dependencies>
 
 	<build>

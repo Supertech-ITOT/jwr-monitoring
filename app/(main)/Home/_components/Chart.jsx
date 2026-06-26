@@ -1,19 +1,28 @@
 "use client";
-import { Skeleton } from '@/components/ui/skeleton';
-import { Cloud, House, Thermometer, Zap } from 'lucide-react';
-import React, { useMemo } from 'react'
-import { Bar, BarChart, CartesianGrid, Cell, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
-
+import { Skeleton } from "@/components/ui/skeleton";
+import { Cloud, House, Thermometer, Zap } from "lucide-react";
+import React, { useMemo } from "react";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  LabelList,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 const parameterConfig = {
   1: {
     field: "avgTemperature",
-    label: "Temperature",
+    label: "TEMPERATURE",
     icon: Thermometer,
   },
   2: {
     field: "energy",
-    label: "Energy",
+    label: "ENERGY",
     icon: Zap,
   },
   3: {
@@ -24,7 +33,11 @@ const parameterConfig = {
 };
 
 const Chart = ({ rows, loading, filterData }) => {
-  const { field, label, icon: Icon } = parameterConfig[filterData?.parameterId] || parameterConfig[1];
+  const {
+    field,
+    label,
+    icon: Icon,
+  } = parameterConfig[filterData?.parameterId] || parameterConfig[1];
 
   const chartData = useMemo(
     () =>
@@ -32,7 +45,7 @@ const Chart = ({ rows, loading, filterData }) => {
         ...item,
         value: item[field],
       })) || [],
-    [rows, field]
+    [rows, field],
   );
 
   const CustomTooltip = React.memo(({ active, payload, Icon, label }) => {
@@ -61,28 +74,19 @@ const Chart = ({ rows, loading, filterData }) => {
   const cells = useMemo(
     () =>
       chartData.map((_, index) => (
-        <Cell
-          key={index}
-          fill={index % 2 === 0 ? "#3dcd58" : "#3a80f6"}
-        />
+        <Cell key={index} fill={index % 2 === 0 ? "#3dcd58" : "#3a80f6"} />
       )),
-    [chartData]
+    [chartData],
   );
 
   if (loading) {
-    return (
-      <Skeleton className="w-full h-full" />
-    );
+    return <Skeleton className="w-full h-full" />;
   }
-
 
   return (
     <div className="h-[260px] sm:h-[550px] w-full">
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart
-          margin={{ bottom: 20, top: 10, right: 10 }}
-          data={chartData}
-        >
+        <BarChart margin={{ bottom: 20, top: 20, right: 10 }} data={chartData}>
           <CartesianGrid
             stroke="#03030314"
             strokeDasharray="0"
@@ -94,7 +98,7 @@ const Chart = ({ rows, loading, filterData }) => {
             tickMargin={10}
             interval={0}
             label={{
-              value: "Room Name",
+              value: "ROOM NAME",
               position: "insideBottom",
               dy: 20,
               style: { textAnchor: "middle", fontSize: 12, fontWeight: "bold" },
@@ -118,11 +122,7 @@ const Chart = ({ rows, loading, filterData }) => {
           />
           <Tooltip
             content={(props) => (
-              <CustomTooltip
-                {...props}
-                Icon={Icon}
-                label={label}
-              />
+              <CustomTooltip {...props} Icon={Icon} label={label} />
             )}
           />
           <Bar dataKey="value">
@@ -135,11 +135,10 @@ const Chart = ({ rows, loading, filterData }) => {
               style={{ fontSize: 12 }}
             />
           </Bar>
-
-        </BarChart >
+        </BarChart>
       </ResponsiveContainer>
     </div>
-  )
-}
+  );
+};
 
 export default React.memo(Chart);

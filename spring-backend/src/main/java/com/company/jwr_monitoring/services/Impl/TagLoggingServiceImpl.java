@@ -10,7 +10,7 @@ import com.company.jwr_monitoring.entity.TagLog;
 import com.company.jwr_monitoring.entity.TagMaster;
 import com.company.jwr_monitoring.mapper.TagCurrentValueMapper;
 import com.company.jwr_monitoring.mapper.TagLogMapper;
-import com.company.jwr_monitoring.plc.PlcReadService;
+import com.company.jwr_monitoring.plc.OpcUaReadService;
 import com.company.jwr_monitoring.repository.TagCurrentValueRepository;
 import com.company.jwr_monitoring.repository.TagLogRepository;
 import com.company.jwr_monitoring.repository.TagMasterRepository;
@@ -25,15 +25,15 @@ public class TagLoggingServiceImpl implements TagLoggingService {
     private final TagCurrentValueRepository tagCurrentValueRepository;
     private final TagLogRepository tagLogRepository;
     private final TagLogMapper tagLogMapper;
-    private final PlcReadService plcReadService;
+    private final OpcUaReadService opcUaReadService;
     private final TagCurrentValueMapper tagCurrentValueMapper;
 
     @Override
     public void logAllTags() {
         List<TagMaster> tags = tagMasterRepository.findAllWithParameter();
         for (TagMaster tag : tags) {
-            TagLogDto result = plcReadService.readTag(tag);
-            if (result == null)
+            TagLogDto result = opcUaReadService.readTagLog(tag);
+            if (result == null || result.value() == null)
                 continue;
             TagLog log = tagLogMapper.toEntity(result, tag);
             tagLogRepository.save(log);
