@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -17,48 +17,45 @@ const daylist = ["Current", "Yesterday", "Last3Days", "Last5Days", "Last7Days"];
 
 const FilterDuration = ({ onChange, dayInput = true }) => {
   const now = dayjs();
-
   const [selectedDay, setSelectedDay] = useState("Current");
-
   const [fromDate, setFromDate] = useState(now.subtract(1, "day"));
-
   const [toDate, setToDate] = useState(now);
+
+  useEffect(() => {
+    onChange?.({
+      fromDate,
+      toDate,
+      day: selectedDay,
+    });
+  }, []);
 
   const updateRange = (type) => {
     const current = dayjs();
-
     let from = current;
     let to = current;
-
     switch (type) {
       case "Current":
         from = current.subtract(24, "hour");
         break;
-
       case "Yesterday":
         from = current.subtract(1, "day");
         to = current.subtract(1, "minute");
         break;
-
       case "Last3Days":
         from = current.subtract(3, "day");
         break;
-
       case "Last5Days":
         from = current.subtract(5, "day");
         break;
-
       case "Last7Days":
         from = current.subtract(7, "day");
         break;
-
       default:
         break;
     }
 
     setFromDate(from);
     setToDate(to);
-
     onChange?.({
       fromDate: from,
       toDate: to,
@@ -73,9 +70,7 @@ const FilterDuration = ({ onChange, dayInput = true }) => {
 
   const handleFromChange = (value) => {
     setSelectedDay("");
-
     setFromDate(value);
-
     onChange?.({
       fromDate: value,
       toDate,
@@ -85,9 +80,7 @@ const FilterDuration = ({ onChange, dayInput = true }) => {
 
   const handleToChange = (value) => {
     setSelectedDay("");
-
     setToDate(value);
-
     onChange?.({
       fromDate,
       toDate: value,

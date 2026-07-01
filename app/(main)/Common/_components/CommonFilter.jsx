@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import FilterSelect from "@/components/FilterSelect";
 import FilterDuration from "@/components/FiltrationDuration";
 import FilterMultiSelect from "@/components/FilterMultiSelect";
@@ -15,25 +14,29 @@ import { useGetCategory } from "@/hooks/useCategory";
 import { useGetRoomByCategoryId } from "@/hooks/useRoom";
 import { toast } from "sonner";
 
-export default function CommonFilter({ onFilterChange }) {
-  const [categoryId, setCategoryId] = useState(null);
-  const [roomIds, setRoomIds] = useState([]);
-  const [fromDate, setFromDate] = useState(null);
-  const [toDate, setToDate] = useState(null);
+export default function CommonFilter({ filterData, onFilterChange }) {
+  const { categoryId, roomIds, fromDate, toDate } = filterData;
   const { data: categories, isLoading: categoriesLoading } = useGetCategory();
   const { data: rooms, isLoading: roomsLoading } =
     useGetRoomByCategoryId(categoryId);
 
   const onApply = () => {
-    if (!categoryId || !roomIds || !fromDate || !toDate) {
+    if (!categoryId || roomIds.length === 0 || !fromDate || !toDate) {
       toast.error("Please select all the inputs.");
+      return;
     }
     onFilterChange?.({
       categoryId,
       roomIds,
-      fromDate,
-      toDate,
+      fromDate: fromDate,
+      toDate: toDate,
     });
+    toast.success("Filters applied");
+    toast.success(`Category Id: ${categoryId} 
+      Rooms: ${roomIds}
+      From Date: ${fromDate}
+      To Date: ${toDate}
+      `);
   };
 
   return (
@@ -56,10 +59,13 @@ export default function CommonFilter({ onFilterChange }) {
             loading={categoriesLoading}
             options={categories ?? []}
             value={categoryId}
-            onSelect={(id) => {
-              setCategoryId(id);
-              setRoomIds([]); // Clear rooms when category changes
-            }}
+            onSelect={(id) =>
+              onFilterChange((prev) => ({
+                ...prev,
+                categoryId: id,
+                roomIds: [],
+              }))
+            }
           />
 
           <FilterMultiSelect
@@ -68,16 +74,22 @@ export default function CommonFilter({ onFilterChange }) {
             loading={roomsLoading || !rooms}
             options={rooms ?? []}
             value={roomIds}
-            onChange={(ids) => {
-              setRoomIds(ids);
-            }}
+            onChange={(ids) =>
+              onFilterChange((prev) => ({
+                ...prev,
+                roomIds: ids,
+              }))
+            }
           />
 
           <FilterDuration
-            onChange={({ fromDate, toDate }) => {
-              setFromDate(fromDate?.format("YYYY-MM-DDTHH:mm:ss") ?? null);
-              setToDate(toDate?.format("YYYY-MM-DDTHH:mm:ss") ?? null);
-            }}
+            onChange={({ fromDate, toDate }) =>
+              onFilterChange((prev) => ({
+                ...prev,
+                fromDate: fromDate?.format("YYYY-MM-DDTHH:mm:ss") ?? null,
+                toDate: toDate?.format("YYYY-MM-DDTHH:mm:ss") ?? null,
+              }))
+            }
             dayInput={false}
           />
 
