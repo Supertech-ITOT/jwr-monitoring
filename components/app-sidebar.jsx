@@ -1,6 +1,6 @@
 "use client";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, } from "./ui/sidebar";
-import { BatteryCharging, LayoutDashboard, LogOut, Radio, Zap, } from "lucide-react";
+import { BatteryCharging, DoorOpen, LayoutDashboard, LogOut, Radio, Warehouse, Zap, } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import { useFilter } from "@/context/FilterContext";
@@ -21,6 +21,11 @@ const item = [
     url: "/Power?categoryId=1&roomId=1",
     icon: <BatteryCharging className="size-5 " />,
   },
+  {
+    title:"Common Room",
+    url:"/Common",
+    icon: <Warehouse className="size-5 "/>
+  }
 ];
 
 const AppSidebar = () => {

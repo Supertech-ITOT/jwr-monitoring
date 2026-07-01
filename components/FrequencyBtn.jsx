@@ -76,11 +76,9 @@ const FrequencyBtn = () => {
 
                             <SelectContent>
                                 <SelectItem value="1">1 Min</SelectItem>
-                                <SelectItem value="3">3 Min</SelectItem>
-                                <SelectItem value="5">5 Min</SelectItem>
-                                <SelectItem value="10">10 Min</SelectItem>
                                 <SelectItem value="15">15 Min</SelectItem>
                                 <SelectItem value="30">30 Min</SelectItem>
+                                <SelectItem value="60">60 Min</SelectItem>
                             </SelectContent>
                         </Select>
 
