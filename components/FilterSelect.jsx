@@ -23,13 +23,9 @@ const FilterSelect = ({
 }) => {
   return (
     <div className="flex w-full gap-2 items-center">
-      {Icon && (
-        <Icon className="size-8 text-primary" />
-      )}
+      {Icon && <Icon className="size-8 text-primary" />}
 
-      <Label className="w-[110px]">
-        {label}
-      </Label>
+      <Label className="w-[110px]">{label}</Label>
 
       <Select
         value={value?.toString()}
@@ -38,11 +34,7 @@ const FilterSelect = ({
       >
         <SelectTrigger className="w-full text-text text-xs bg-transparent">
           <SelectValue
-            placeholder={
-              loading
-                ? `Loading ${label}...`
-                : placeholder
-            }
+            placeholder={loading ? `Loading ${label}...` : placeholder}
           />
         </SelectTrigger>
 
@@ -54,18 +46,10 @@ const FilterSelect = ({
           ) : options.length > 0 ? (
             options.map((item) => (
               <SelectItem
-                key={
-                  item[valueKey]
-                }
-                value={item[
-                  valueKey
-                ].toString()}
+                key={item[valueKey]}
+                value={item[valueKey].toString()}
               >
-                {
-                  item[
-                  labelKey
-                  ]
-                }
+                {item[labelKey]}
               </SelectItem>
             ))
           ) : (

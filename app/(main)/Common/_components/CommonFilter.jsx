@@ -1,26 +1,40 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import FilterSelect from "@/components/FilterSelect";
 import FilterDuration from "@/components/FiltrationDuration";
 import FilterMultiSelect from "@/components/FilterMultiSelect";
 import { Button } from "@/components/ui/button";
-import {Popover,PopoverContent,PopoverTrigger,} from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Factory, Funnel, DoorOpen } from "lucide-react";
 import { useGetCategory } from "@/hooks/useCategory";
 import { useGetRoomByCategoryId } from "@/hooks/useRoom";
+import { toast } from "sonner";
 
 export default function CommonFilter({ onFilterChange }) {
   const [categoryId, setCategoryId] = useState(null);
   const [roomIds, setRoomIds] = useState([]);
   const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState(null);
-  const [day, setDay] = useState(null);
   const { data: categories, isLoading: categoriesLoading } = useGetCategory();
-  const { data: rooms, isLoading: roomsLoading } = useGetRoomByCategoryId(categoryId);
-  useEffect(() => {
-    onFilterChange?.({categoryId,roomIds,fromDate,toDate,day,});
-  }, [categoryId, roomIds, fromDate, toDate, day, onFilterChange]);
+  const { data: rooms, isLoading: roomsLoading } =
+    useGetRoomByCategoryId(categoryId);
+
+  const onApply = () => {
+    if (!categoryId || !roomIds || !fromDate || !toDate) {
+      toast.error("Please select all the inputs.");
+    }
+    onFilterChange?.({
+      categoryId,
+      roomIds,
+      fromDate,
+      toDate,
+    });
+  };
 
   return (
     <div className="w-[200px] h-8">
@@ -51,7 +65,7 @@ export default function CommonFilter({ onFilterChange }) {
           <FilterMultiSelect
             label="Room"
             icon={DoorOpen}
-            loading={roomsLoading}
+            loading={roomsLoading || !rooms}
             options={rooms ?? []}
             value={roomIds}
             onChange={(ids) => {
@@ -60,16 +74,16 @@ export default function CommonFilter({ onFilterChange }) {
           />
 
           <FilterDuration
-            onChange={({ fromDate, toDate, day }) => {
-              setFromDate(
-                fromDate?.format("YYYY-MM-DDTHH:mm:ss") ?? null
-              );
-              setToDate(
-                toDate?.format("YYYY-MM-DDTHH:mm:ss") ?? null
-              );
-              setDay(day ?? null);
+            onChange={({ fromDate, toDate }) => {
+              setFromDate(fromDate?.format("YYYY-MM-DDTHH:mm:ss") ?? null);
+              setToDate(toDate?.format("YYYY-MM-DDTHH:mm:ss") ?? null);
             }}
+            dayInput={false}
           />
+
+          <Button className="w-full" onClick={onApply}>
+            Apply
+          </Button>
         </PopoverContent>
       </Popover>
     </div>

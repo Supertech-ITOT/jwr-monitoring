@@ -28,43 +28,45 @@ export default function FilterMultiSelect({
   };
 
   return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <div className="flex w-full gap-2 items-center">
-          {Icon && <Icon className="size-8 text-primary" />}
-          <Label className="w-[110px]">{label}</Label>
+    <div className="flex w-full gap-2 items-center">
+      {Icon && <Icon className="size-8 text-primary" />}
+      <Label className="w-[110px]">{label}</Label>
+      <Popover>
+        <PopoverTrigger asChild>
           <Button
             variant="outline"
-            className="w-full! text-text text-xs bg-transparent"
+            className="w-[162px] text-text text-xs bg-transparent flex justify-between"
             disabled={loading}
           >
             <div className="flex items-center gap-2">
-              <span>{value.length ? `${value.length} selected` : label}</span>
+              <span>
+                {value.length ? `${value.length} selected` : "Select"}
+              </span>
             </div>
 
             <ChevronDown className="h-4 w-4" />
           </Button>
-        </div>
-      </PopoverTrigger>
+        </PopoverTrigger>
 
-      <PopoverContent className="w-full p-0">
-        <ScrollArea className="max-h-60">
-          {options.map((option) => (
-            <div
-              key={option.id}
-              className="flex items-center gap-2 px-3 py-2 hover:bg-muted cursor-pointer"
-              onClick={() => toggleValue(option.id)}
-            >
-              <Checkbox checked={value.includes(option.id)} />
-              <span className="flex-1">{option.name}</span>
+        <PopoverContent className="w-(--radix-popover-trigger-width) p-0 overflow-y-auto scrollbar-prop">
+          <ScrollArea className="max-h-60">
+            {options.map((option) => (
+              <div
+                key={option.id}
+                className="flex items-center gap-2 px-3 py-2 hover:bg-muted cursor-pointer"
+                onClick={() => toggleValue(option.id)}
+              >
+                <Checkbox checked={value.includes(option.id)} />
+                <span className="flex-1">{option.name}</span>
 
-              {value.includes(option.id) && (
-                <Check className="h-4 w-4 text-primary" />
-              )}
-            </div>
-          ))}
-        </ScrollArea>
-      </PopoverContent>
-    </Popover>
+                {value.includes(option.id) && (
+                  <Check className="h-4 w-4 text-primary" />
+                )}
+              </div>
+            ))}
+          </ScrollArea>
+        </PopoverContent>
+      </Popover>
+    </div>
   );
 }
