@@ -1,5 +1,5 @@
 import {
-  getCurrentRoomMetricsByCategory,
+  getCurrentRoomMetrics,
   getHistoricalRoomMetrics,
   getRoomStatCard,
 } from "@/services/DashboardService";
@@ -16,11 +16,11 @@ export const useGetHistoricalRoomMetrics = (params) => {
   });
 };
 
-export const useGetCurrentRoomMetricsByCategory = (params) => {
+export const useGetCurrentRoomMetrics = (params) => {
   return useQuery({
     queryKey: ["current-room-metrics", params],
     queryFn: async () => {
-      const res = await getCurrentRoomMetricsByCategory(params);
+      const res = await getCurrentRoomMetrics(params);
       return res.data;
     },
   });

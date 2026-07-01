@@ -13,7 +13,7 @@ import com.company.jwr_monitoring.dto.Dashboard.RoomStatCardDto;
 public interface DashboardService {
     Page<RoomHistoricalValueDto> getHistoricalRoomMetrics(RoomHistoricalValueRequest request, Pageable pageable);
 
-    List<RoomCurrentValueDto> getCurrentRoomMetricsByCategory(Long categoryId);
+    List<RoomCurrentValueDto> getCurrentRoomMetricsByCategory(Long categoryId, Long parameter);
 
     List<RoomStatCardDto> getRoomStatCard();
 }

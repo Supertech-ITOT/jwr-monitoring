@@ -39,9 +39,10 @@ public class DashboardController {
         }
 
         @GetMapping("/current-metrics")
-        public ResponseEntity<ApiResponse<List<RoomCurrentValueDto>>> getCurrentRoomMetricsByCategory(
-                        @RequestParam Long categoryId) {
-                List<RoomCurrentValueDto> response = roomDashboardService.getCurrentRoomMetricsByCategory(categoryId);
+        public ResponseEntity<ApiResponse<List<RoomCurrentValueDto>>> getCurrentRoomMetrics(
+                        @RequestParam Long categoryId, Long parameterId) {
+                List<RoomCurrentValueDto> response = roomDashboardService.getCurrentRoomMetricsByCategory(categoryId,
+                                parameterId);
                 return ResponseEntity.ok(
                                 ApiResponse.success("Current Room Metrics By Category fetched successfully", response));
         }

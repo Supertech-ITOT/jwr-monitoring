@@ -12,7 +12,7 @@ const item = [
     icon: <LayoutDashboard className="size-5 " />,
   },
   {
-    title: "Category",
+    title: "Single Room",
     url: "/Category?categoryId=1&roomId=1",
     icon: <Radio className="size-5 " />,
   },
@@ -22,7 +22,7 @@ const item = [
     icon: <BatteryCharging className="size-5 " />,
   },
   {
-    title:"Common Room",
+    title:"Multiple Room",
     url:"/Common",
     icon: <Warehouse className="size-5 "/>
   }

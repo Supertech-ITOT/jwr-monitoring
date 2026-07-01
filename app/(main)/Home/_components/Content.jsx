@@ -1,12 +1,12 @@
 "use client";
 
 import { useGetCategory } from "@/hooks/useCategory";
-import { useGetCurrentRoomMetricsByCategory } from "@/hooks/useDashboard";
 import { useGetParameter } from "@/hooks/useParameter";
 import { useMemo, useState } from "react";
 import CategoryFilter from "./CategoryFilter";
 import Chart from "./Chart";
 import TableUI from "./TableUI";
+import { useGetCurrentRoomMetrics } from "@/hooks/useDashboard";
 
 export default function Content() {
   const [filterData, setFilterData] = useState({
@@ -14,8 +14,9 @@ export default function Content() {
     categoryId: 1,
   });
 
-  const { data, isLoading } = useGetCurrentRoomMetricsByCategory({
+  const { data, isLoading } = useGetCurrentRoomMetrics({
     categoryId: filterData.categoryId,
+    parameterId:filterData.parameterId
   });
 
   const { data: categories, isLoading: categoriesIsLoading } = useGetCategory();

@@ -1,6 +1,4 @@
 "use client";
-import FrequencyBtn from "@/components/FrequencyBtn";
-import Chart from "./TempChart";
 import TableUI from "./TableUI";
 import CategoryFilter from "./CategoryFilter";
 import { useGetCategory } from "@/hooks/useCategory";
@@ -33,7 +31,7 @@ export default function Content({ categoryId, roomId }) {
         {categoryName} : {roomName}
       </h1>
       <div className="flex justify-end gap-2 mt-4">
-        <FrequencyBtn />
+
         <CategoryFilter
           categories={categories}
           rooms={rooms}

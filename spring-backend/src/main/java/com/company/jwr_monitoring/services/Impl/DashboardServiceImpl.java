@@ -1,5 +1,6 @@
 package com.company.jwr_monitoring.services.Impl;
 
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,8 +44,8 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     @Override
-    public List<RoomCurrentValueDto> getCurrentRoomMetricsByCategory(Long categoryId) {
-        return tagCurrentValueRepository.getCurrentRoomMetricsByCategory(categoryId);
+    public List<RoomCurrentValueDto> getCurrentRoomMetricsByCategory(Long categoryId, Long parameterId) {
+        return tagCurrentValueRepository.getCurrentRoomMetricsByCategoryAndParameter(categoryId, parameterId);
     }
 
     @Override

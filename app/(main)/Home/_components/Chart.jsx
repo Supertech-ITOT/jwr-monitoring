@@ -16,17 +16,17 @@ import {
 
 const parameterConfig = {
   1: {
-    field: "avgTemperature",
+    field: "value",
     label: "TEMPERATURE",
     icon: Thermometer,
   },
   2: {
-    field: "energy",
+    field: "value",
     label: "ENERGY",
     icon: Zap,
   },
   3: {
-    field: "rh",
+    field: "value",
     label: "RH",
     icon: Cloud,
   },

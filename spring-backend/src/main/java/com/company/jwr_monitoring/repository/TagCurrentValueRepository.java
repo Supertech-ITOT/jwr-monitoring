@@ -18,9 +18,7 @@ public interface TagCurrentValueRepository extends JpaRepository<TagCurrentValue
                 SELECT new com.company.jwr_monitoring.dto.Dashboard.RoomCurrentValueDto(
                     r.id,
                     r.name,
-                   ROUND(MAX(CASE WHEN p.name = 'Temperature' THEN tcv.value END),2),
-                    ROUND(MAX(CASE WHEN p.name = 'RH' THEN tcv.value END),2),
-                    ROUND(MAX(CASE WHEN p.name = 'Energy' THEN tcv.value END),2),
+                    ROUND(MAX(tcv.value), 2),
                     MAX(tcv.lastUpdated)
                 )
                 FROM TagCurrentValue tcv
@@ -29,9 +27,11 @@ public interface TagCurrentValueRepository extends JpaRepository<TagCurrentValue
                 JOIN r.category c
                 JOIN t.parameter p
                 WHERE c.id = :categoryId
+                  AND p.id = :parameterId
                 GROUP BY r.id, r.name
                 ORDER BY r.name ASC
             """)
-    List<RoomCurrentValueDto> getCurrentRoomMetricsByCategory(
-            @Param("categoryId") Long categoryId);
+    List<RoomCurrentValueDto> getCurrentRoomMetricsByCategoryAndParameter(
+            @Param("categoryId") Long categoryId,
+            @Param("parameterId") Long parameterId);
 }
