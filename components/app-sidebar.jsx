@@ -1,6 +1,25 @@
 "use client";
-import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, } from "./ui/sidebar";
-import { BatteryCharging, DoorOpen, LayoutDashboard, LogOut, Radio, Warehouse, Zap, } from "lucide-react";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "./ui/sidebar";
+import {
+  BatteryCharging,
+  DoorOpen,
+  LayoutDashboard,
+  LogOut,
+  Radio,
+  Warehouse,
+  Zap,
+} from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import { useFilter } from "@/context/FilterContext";
@@ -22,10 +41,10 @@ const item = [
     icon: <BatteryCharging className="size-5 " />,
   },
   {
-    title:"Multiple Room",
-    url:"/Common",
-    icon: <Warehouse className="size-5 "/>
-  }
+    title: "Multiple Room",
+    url: "/Multiple Room",
+    icon: <Warehouse className="size-5 " />,
+  },
 ];
 
 const AppSidebar = () => {
@@ -40,7 +59,6 @@ const AppSidebar = () => {
   };
 
   return (
-
     <Sidebar collapsible="icon">
       <SidebarHeader>
         <SidebarMenu>
@@ -114,7 +132,6 @@ const AppSidebar = () => {
         </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
-
   );
 };
 
