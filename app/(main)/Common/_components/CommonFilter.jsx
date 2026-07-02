@@ -13,15 +13,24 @@ import { Factory, Funnel, DoorOpen } from "lucide-react";
 import { useGetCategory } from "@/hooks/useCategory";
 import { useGetRoomByCategoryId } from "@/hooks/useRoom";
 import { toast } from "sonner";
+import { Label } from "@/components/ui/label";
+import FilterInterval from "@/components/FilterInterval";
+import { interval } from "date-fns";
 
 export default function CommonFilter({ filterData, onFilterChange }) {
-  const { categoryId, roomIds, fromDate, toDate } = filterData;
+  const { categoryId, roomIds, fromDate, toDate, interval } = filterData;
   const { data: categories, isLoading: categoriesLoading } = useGetCategory();
   const { data: rooms, isLoading: roomsLoading } =
     useGetRoomByCategoryId(categoryId);
 
   const onApply = () => {
-    if (!categoryId || roomIds.length === 0 || !fromDate || !toDate) {
+    if (
+      !categoryId ||
+      roomIds.length === 0 ||
+      !fromDate ||
+      !toDate ||
+      !interval
+    ) {
       toast.error("Please select all the inputs.");
       return;
     }
@@ -30,12 +39,14 @@ export default function CommonFilter({ filterData, onFilterChange }) {
       roomIds,
       fromDate: fromDate,
       toDate: toDate,
+      interval: interval,
     });
     toast.success("Filters applied");
     toast.success(`Category Id: ${categoryId} 
       Rooms: ${roomIds}
       From Date: ${fromDate}
       To Date: ${toDate}
+      Interval : ${interval}
       `);
   };
 
@@ -91,6 +102,15 @@ export default function CommonFilter({ filterData, onFilterChange }) {
               }))
             }
             dayInput={false}
+          />
+
+          <FilterInterval
+            onChange={(value) =>
+              onFilterChange((prev) => ({
+                ...prev,
+                interval: value,
+              }))
+            }
           />
 
           <Button className="w-full" onClick={onApply}>

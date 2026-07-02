@@ -14,6 +14,7 @@ export default function Content() {
       .startOf("month")
       .format("YYYY-MM-DDTHH:mm:ss"),
     toDate: now.format("YYYY-MM-DDTHH:mm:ss"),
+    interval: null,
   });
   const data = null;
   return (
