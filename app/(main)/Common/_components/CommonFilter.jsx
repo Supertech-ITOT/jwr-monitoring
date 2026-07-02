@@ -13,19 +13,19 @@ import { Factory, Funnel, DoorOpen } from "lucide-react";
 import { useGetCategory } from "@/hooks/useCategory";
 import { useGetRoomByCategoryId } from "@/hooks/useRoom";
 import { toast } from "sonner";
-import { Label } from "@/components/ui/label";
 import FilterInterval from "@/components/FilterInterval";
-import { interval } from "date-fns";
 
-export default function CommonFilter({ filterData, onFilterChange }) {
-  const { categoryId, roomIds, fromDate, toDate, interval } = filterData;
+export default function CommonFilter({ filterData, onFilterChange, onApply }) {
+  const { categoryId, categoryName, roomIds, fromDate, toDate, interval } =
+    filterData;
   const { data: categories, isLoading: categoriesLoading } = useGetCategory();
   const { data: rooms, isLoading: roomsLoading } =
     useGetRoomByCategoryId(categoryId);
 
-  const onApply = () => {
+  const handleApply = () => {
     if (
       !categoryId ||
+      !categoryName ||
       roomIds.length === 0 ||
       !fromDate ||
       !toDate ||
@@ -34,20 +34,8 @@ export default function CommonFilter({ filterData, onFilterChange }) {
       toast.error("Please select all the inputs.");
       return;
     }
-    onFilterChange?.({
-      categoryId,
-      roomIds,
-      fromDate: fromDate,
-      toDate: toDate,
-      interval: interval,
-    });
+    onApply({ categoryId, categoryName, roomIds, fromDate, toDate, interval });
     toast.success("Filters applied");
-    toast.success(`Category Id: ${categoryId} 
-      Rooms: ${roomIds}
-      From Date: ${fromDate}
-      To Date: ${toDate}
-      Interval : ${interval}
-      `);
   };
 
   return (
@@ -74,6 +62,7 @@ export default function CommonFilter({ filterData, onFilterChange }) {
               onFilterChange((prev) => ({
                 ...prev,
                 categoryId: id,
+                categoryName: categories.find((f) => f.id === id).name,
                 roomIds: [],
               }))
             }
@@ -105,6 +94,7 @@ export default function CommonFilter({ filterData, onFilterChange }) {
           />
 
           <FilterInterval
+            value={interval}
             onChange={(value) =>
               onFilterChange((prev) => ({
                 ...prev,
@@ -113,7 +103,7 @@ export default function CommonFilter({ filterData, onFilterChange }) {
             }
           />
 
-          <Button className="w-full" onClick={onApply}>
+          <Button className="w-full" onClick={handleApply}>
             Apply
           </Button>
         </PopoverContent>

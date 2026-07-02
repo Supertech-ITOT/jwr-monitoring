@@ -1,4 +1,5 @@
 import {
+  getCommonRoomLog,
   getCurrentRoomMetrics,
   getHistoricalRoomMetrics,
   getRoomStatCard,
@@ -31,6 +32,17 @@ export const useGetRoomStatCard = () => {
     queryKey: ["room-stat"],
     queryFn: async () => {
       const res = await getRoomStatCard();
+      return res.data;
+    },
+  });
+};
+
+export const useGetCommonRoomLog = (filter, page, size) => {
+  return useQuery({
+    queryKey: ["common-room-log", filter, page, size],
+    enabled: !!filter,
+    queryFn: async () => {
+      const res = await getCommonRoomLog(filter, page, size);
       return res.data;
     },
   });

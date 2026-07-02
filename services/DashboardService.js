@@ -19,3 +19,14 @@ export const getRoomStatCard = async (params) => {
   const res = await api.get("/dashboard/room-stat");
   return res.data;
 };
+
+export const getCommonRoomLog = async (filter, page = 0, size = 1) => {
+  const res = await api.post("/dashboard/common-logs", filter, {
+    params: {
+      page,
+      size,
+    },
+  });
+
+  return res.data;
+};

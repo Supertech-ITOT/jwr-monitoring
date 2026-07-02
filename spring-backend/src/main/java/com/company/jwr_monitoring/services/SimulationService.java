@@ -1,5 +1,6 @@
 package com.company.jwr_monitoring.services;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.ArrayList;
@@ -7,124 +8,158 @@ import java.util.List;
 import java.util.Random;
 
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
-import com.company.jwr_monitoring.entity.TagLog;
 import com.company.jwr_monitoring.entity.TagMaster;
 import com.company.jwr_monitoring.repository.TagLogRepository;
 import com.company.jwr_monitoring.repository.TagMasterRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class SimulationService implements CommandLineRunner {
+
+    private static final int BATCH_SIZE = 5000;
 
     private final TagMasterRepository tagMasterRepository;
     private final TagLogRepository tagLogRepository;
+    private final JdbcTemplate jdbcTemplate;
 
     private final Random random = new Random();
 
     @Override
     public void run(String... args) {
 
-        // Change this month/year as needed
-        // int year = 2026;
-        // int month = 6;
+        log.info("Simulation Service Started...");
 
-        // generateMonthLogs(year, month);
+        generateMonthLogs(2026, 6);
     }
 
     public void generateMonthLogs(int year, int month) {
 
-        // Optional: skip if already exists
         if (tagLogRepository.count() > 0) {
-            System.out.println("Tag logs already exist. Skipping initializer.");
+            log.info("Tag logs already exist. Skipping generation.");
             return;
         }
 
         List<TagMaster> tags = tagMasterRepository.findAll();
 
         if (tags.isEmpty()) {
-            System.out.println("No TagMaster found.");
+            log.info("No TagMaster records found.");
             return;
         }
 
         YearMonth yearMonth = YearMonth.of(year, month);
 
         LocalDateTime current = yearMonth.atDay(1).atStartOfDay();
+        LocalDateTime end = yearMonth.atEndOfMonth().atTime(23, 59);
 
-        LocalDateTime end = yearMonth.atEndOfMonth().atTime(23, 55);
-
-        List<TagLog> logs = new ArrayList<>();
-
-        // Base values (to create smooth transitions)
         double temperature = 30.0;
         double rh = 60.0;
         double energy = 100.0;
 
+        List<Object[]> batch = new ArrayList<>(BATCH_SIZE);
+
+        long totalInserted = 0;
+
+        long start = System.currentTimeMillis();
+
         while (!current.isAfter(end)) {
 
-            // Smooth realistic movement
             temperature = simulateTemperature(temperature);
             rh = simulateRH(rh, temperature);
             energy = simulateEnergy(energy);
 
+            Timestamp timestamp = Timestamp.valueOf(current);
+
             for (TagMaster tag : tags) {
 
-                Long parameterId = tag.getParameter().getId();
+                double value;
 
-                double value = switch (parameterId.intValue()) {
+                switch (tag.getParameter().getId().intValue()) {
 
-                    // Temperature
-                    case 1 -> temperature;
+                    case 1:
+                        value = temperature;
+                        break;
 
-                    // RH
-                    case 2 -> rh;
+                    case 2:
+                        value = rh;
+                        break;
 
-                    // Energy
-                    case 3 -> energy;
+                    case 3:
+                        value = energy;
+                        break;
 
-                    default -> roundHalf(random.nextDouble() * 100);
-                };
+                    default:
+                        value = roundHalf(random.nextDouble() * 100);
+                }
 
-                logs.add(
-                        TagLog.builder()
-                                .tag(tag)
-                                .value(value)
-                                .timestamp(current)
-                                .build());
+                batch.add(new Object[] {
+                        tag.getId(),
+                        value,
+                        timestamp
+                });
+
+                if (batch.size() >= BATCH_SIZE) {
+
+                    insertBatch(batch);
+
+                    totalInserted += batch.size();
+
+                    log.info("Inserted {} records...", totalInserted);
+
+                    batch.clear();
+                }
             }
 
-            // 5 min interval
-            current = current.plusMinutes(5);
+            current = current.plusMinutes(1);
         }
 
-        tagLogRepository.saveAll(logs);
+        if (!batch.isEmpty()) {
 
-        System.out.println(
-                "[INITIALIZER] Inserted "
-                        + logs.size()
-                        + " tag logs");
+            insertBatch(batch);
+
+            totalInserted += batch.size();
+
+            batch.clear();
+        }
+
+        long endTime = System.currentTimeMillis();
+
+        log.info("---------------------------------------");
+        log.info("Simulation Completed");
+        log.info("Total Records : {}", totalInserted);
+        log.info("Time Taken    : {} sec", (endTime - start) / 1000.0);
+        log.info("---------------------------------------");
+    }
+
+    private void insertBatch(List<Object[]> batch) {
+
+        jdbcTemplate.batchUpdate(
+                """
+                        INSERT INTO tag_logs(tag_id, value, timestamp)
+                        VALUES (?, ?, ?)
+                        """,
+                batch);
     }
 
     private double simulateTemperature(double currentTemp) {
 
-        // small realistic fluctuation
         double change = (random.nextDouble() - 0.5);
 
         double next = currentTemp + change;
 
-        // keep inside realistic range
         next = Math.max(28.0, Math.min(38.0, next));
 
         return roundHalf(next);
     }
 
-    private double simulateRH(double currentRH,
-            double temperature) {
+    private double simulateRH(double currentRH, double temperature) {
 
-        // RH tends to slightly decrease as temp rises
         double change = (random.nextDouble() - 0.5);
 
         double next = currentRH
@@ -138,7 +173,6 @@ public class SimulationService implements CommandLineRunner {
 
     private double simulateEnergy(double currentEnergy) {
 
-        // gradual increase like consumption
         double next = currentEnergy + (0.3 + random.nextDouble());
 
         return roundHalf(next);
@@ -146,7 +180,6 @@ public class SimulationService implements CommandLineRunner {
 
     private double roundHalf(double value) {
 
-        // rounds to nearest 0.5
         return Math.round(value * 2.0) / 2.0;
     }
 }

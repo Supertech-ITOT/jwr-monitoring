@@ -4,21 +4,19 @@ import { format } from "date-fns";
 
 export const columns = [
   {
-    accessorKey: "timestamp",
+    accessorKey: "timeStamp",
     header: "DATE",
     cell: ({ row }) =>
-      format(new Date(row.original.timestamp), "dd MMM yyyy hh:mm a"),
+      format(new Date(row.original.timeStamp), "dd MMM yyyy hh:mm a"),
   },
-
   {
-    accessorKey: "avgTemperature",
+    accessorKey: "avgTemp",
     header: "TEMP °C",
-    cell: ({ row }) => row.original.avgTemperature?.toFixed(2) ?? "-",
+    cell: ({ row }) => row.original.avgTemp?.toFixed(2) ?? "-",
   },
-
   {
     accessorKey: "rh",
-    header: "RH%",
+    header: "RH %",
     cell: ({ row }) => row.original.rh?.toFixed(2) ?? "-",
   },
 ];

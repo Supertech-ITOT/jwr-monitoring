@@ -16,7 +16,7 @@ public class PlcSchedulerService {
     @Scheduled(cron = "0 * * * * *")
     public void executeLogging() {
 
-        tagLoggingService.logAllTags();
+        // tagLoggingService.logAllTags();
 
     }
 }

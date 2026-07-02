@@ -8,11 +8,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.company.jwr_monitoring.dto.Common.ApiResponse;
+import com.company.jwr_monitoring.dto.Dashboard.CommonRoomRequest;
+import com.company.jwr_monitoring.dto.Dashboard.CommonRoomResponse;
 import com.company.jwr_monitoring.dto.Dashboard.RoomCurrentValueDto;
 import com.company.jwr_monitoring.dto.Dashboard.RoomHistoricalValueDto;
 import com.company.jwr_monitoring.dto.Dashboard.RoomHistoricalValueRequest;
@@ -52,6 +56,17 @@ public class DashboardController {
                 List<RoomStatCardDto> response = roomDashboardService.getRoomStatCard();
                 return ResponseEntity.ok(
                                 ApiResponse.success("Room Stat fetched successfully", response));
+        }
+
+        @PostMapping("/common-logs")
+        public ResponseEntity<ApiResponse<Page<CommonRoomResponse>>> getCommonRoomLog(
+                        @RequestBody CommonRoomRequest request,
+                        Pageable pageable) {
+
+                return ResponseEntity.ok(
+                                ApiResponse.success(
+                                                "Common Room Log fetched successfully",
+                                                roomDashboardService.getCommonRoomLog(request, pageable)));
         }
 
 }

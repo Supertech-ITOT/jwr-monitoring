@@ -9,8 +9,8 @@ const intervals = [
   { label: "60M", value: 60 },
 ];
 
-export default function FilterInterval({ onChange }) {
-  const [interval, setInterval] = useState();
+export default function FilterInterval({ value, onChange }) {
+  const [interval, setInterval] = useState(value);
 
   const handleSelect = (value) => {
     setInterval(value);
