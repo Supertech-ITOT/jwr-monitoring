@@ -45,11 +45,6 @@ const item = [
     url: "/Power?categoryId=1&roomId=1",
     icon: <BatteryCharging className="size-5 " />,
   },
-  {
-    title: "Multiple Room",
-    url: "/Common",
-    icon: <Warehouse className="size-5 " />,
-  },
 ];
 
 const AppSidebar = () => {
