@@ -1,6 +1,25 @@
 "use client";
-import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, } from "./ui/sidebar";
-import { BatteryCharging, DoorOpen, LayoutDashboard, LogOut, Radio, Warehouse, Zap, } from "lucide-react";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "./ui/sidebar";
+import {
+  BatteryCharging,
+  DoorOpen,
+  LayoutDashboard,
+  LogOut,
+  Radio,
+  Warehouse,
+  Zap,
+} from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import { useFilter } from "@/context/FilterContext";
@@ -17,15 +36,15 @@ const item = [
     icon: <Radio className="size-5 " />,
   },
   {
-    title: "Power",
+    title: "Multiple Room",
+    url: "/Common",
+    icon: <Warehouse className="size-5 " />,
+  },
+  {
+    title: "Power Consumption",
     url: "/Power?categoryId=1&roomId=1",
     icon: <BatteryCharging className="size-5 " />,
   },
-  {
-    title:"Multiple Room",
-    url:"/Common",
-    icon: <Warehouse className="size-5 "/>
-  }
 ];
 
 const AppSidebar = () => {
@@ -40,7 +59,6 @@ const AppSidebar = () => {
   };
 
   return (
-
     <Sidebar collapsible="icon">
       <SidebarHeader>
         <SidebarMenu>
@@ -52,7 +70,7 @@ const AppSidebar = () => {
               <div className="flex justify-start items-center gap-4 w-full h-full">
                 <div className="bg-cardbackground size-10 rounded-full flex justify-center items-center border border-border overflow-hidden">
                   <Image
-                    src="/icon.png"
+                    src="/logo.jpg"
                     className="object-contain"
                     width={50}
                     height={50}
@@ -114,7 +132,6 @@ const AppSidebar = () => {
         </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
-
   );
 };
 

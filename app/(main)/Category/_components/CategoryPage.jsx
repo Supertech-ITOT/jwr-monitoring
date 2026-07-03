@@ -24,7 +24,7 @@ export default function CategoryContent() {
   return (
     <div className="h-full w-full bg-cardbackground rounded-xl shadow-xl p-6">
       <h1 className="font-bold sm:text-6xl text-3xl text-primary tracking-[2px] uppercase animate-in slide-in-from-top-100 duration-1200">
-        Category
+        Single Room
       </h1>
 
       <Content categoryId={categoryId} roomId={roomId} />

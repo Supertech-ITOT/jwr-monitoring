@@ -40,7 +40,7 @@ const Download = ({ filter }) => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `CommonReport-[${format(filter.fromDate, "dd-MMM-yyyy")}-${format(filter.toDate, "dd-MMM-yyyy")}]`;
+    link.download = `MultipleReport-[${format(filter.fromDate, "dd-MMM-yyyy")}-${format(filter.toDate, "dd-MMM-yyyy")}]`;
     link.click();
     URL.revokeObjectURL(url);
 

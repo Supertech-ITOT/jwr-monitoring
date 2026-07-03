@@ -83,6 +83,7 @@ export default function CommonFilter({ filterData, onFilterChange, onApply }) {
           />
 
           <FilterDuration
+            initial={filterData}
             onChange={({ fromDate, toDate }) =>
               onFilterChange((prev) => ({
                 ...prev,

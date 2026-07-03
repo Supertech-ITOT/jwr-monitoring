@@ -8,6 +8,7 @@ import dayjs from "dayjs";
 import Download from "./Download";
 import TempChart from "./TempChart";
 import RhChart from "./RhChart";
+import { useGetHistoricalRoomMetrics } from "@/hooks/useDashboard";
 
 export default function Content({ categoryId, roomId }) {
   const now = dayjs();
@@ -18,8 +19,16 @@ export default function Content({ categoryId, roomId }) {
     fromDate: now.subtract(1, "day").format("YYYY-MM-DDTHH:mm:ss"),
     toDate: now.format("YYYY-MM-DDTHH:mm:ss"),
     day: "Current",
+    sort: "timestamp,desc",
   });
-  const loading = categoriesLoading || roomsLoading;
+  const { data, isLoading } = useGetHistoricalRoomMetrics({
+    categoryId: categoryId,
+    roomId: roomId,
+    fromDate: filterData.fromDate,
+    toDate: filterData.toDate,
+    sort: filterData.sort,
+  });
+  const loading = categoriesLoading || roomsLoading || isLoading;
   if (loading) {
     return null;
   }
@@ -31,8 +40,8 @@ export default function Content({ categoryId, roomId }) {
         {categoryName} : {roomName}
       </h1>
       <div className="flex justify-end gap-2 mt-4">
-
         <CategoryFilter
+          filterData={filterData}
           categories={categories}
           rooms={rooms}
           categoryId={categoryId}
@@ -41,56 +50,42 @@ export default function Content({ categoryId, roomId }) {
           onFilterChange={setFilterData}
         />
         <Download
-          categoryId={categoryId}
-          roomId={roomId}
-          date={filterData}
+          filter={filterData}
           categoryName={categoryName}
           roomName={roomName}
+          data={data}
+          isLoading={loading}
         />
       </div>
       <div className="mt-6 flex flex-col xl:flex-row gap-6 w-full ">
         <div className="flex-2 bg-cardbackground border border-border rounded-xl shadow w-full h-[600px] gap-2 overflow-hidden">
           <div className="flex-1 h-1/2! border">
-            <TempChart
-              categoryId={categoryId}
-              roomId={roomId}
-              date={filterData}
-            />
+            <TempChart data={data} />
             <div
               id="temp-chart-visible"
               className="hidden pointer-events-none"
               style={{ width: "1920px" }}
             >
-              <TempChart
-                isExport={true}
-                categoryId={categoryId}
-                roomId={roomId}
-                date={filterData}
-              />
+              <TempChart isExport={true} data={data} />
             </div>
           </div>
           <div className="flex-1 h-1/2! border">
-            <RhChart
-              categoryId={categoryId}
-              roomId={roomId}
-              date={filterData}
-            />
+            <RhChart data={data} />
             <div
               id="rh-chart-visible"
               className="hidden pointer-events-none"
               style={{ width: "1920px" }}
             >
-              <RhChart
-                isExport={true}
-                categoryId={categoryId}
-                roomId={roomId}
-                date={filterData}
-              />
+              <RhChart isExport={true} data={data} />
             </div>
           </div>
         </div>
         <div className="flex-1 bg-cardbackground border border-border rounded-xl shadow-xl w-full xl:w-1/3 h-[600px] flex flex-col overflow-hidden">
-          <TableUI categoryId={categoryId} date={filterData} roomId={roomId} />
+          <TableUI
+            categoryId={categoryId}
+            filter={filterData}
+            roomId={roomId}
+          />
         </div>
       </div>
     </>

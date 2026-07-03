@@ -8,7 +8,6 @@ import { toast } from "sonner";
 const Fixed_Username = "super";
 const Fixed_Password = "super@123";
 export default function Home() {
-
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
@@ -19,15 +18,14 @@ export default function Home() {
   const handleLogin = (e) => {
     e.preventDefault();
     if (username === Fixed_Username && password === Fixed_Password) {
-      toast.success("Login Successfully")
+      toast.success("Login Successfully");
       router.push("/Home");
     } else {
-      toast.error("Invalid username and Password")
+      toast.error("Invalid username and Password");
     }
-  }
+  };
   return (
     <div className="relative min-h-screen w-full">
-
       {/* Green Bar */}
       <div className="w-full bg-primary text-cardbackground text-center py-1 font-semibold">
         Where real-time data becomes real-world decisions.
@@ -36,7 +34,7 @@ export default function Home() {
       {/* White Header with Logo */}
       <div className="w-full bg-white py-2 flex items-center">
         <div className="ml-6 bg-[#f2eef4] rounded-[20px] px-1 py-1 shadow-md flex items-center">
-          <img src="/logo.png" alt="JWR Logo" className="h-12" />
+          <img src="/logo.jpg" alt="JWR Logo" className="h-12" />
         </div>
       </div>
 
@@ -52,7 +50,7 @@ export default function Home() {
         <div className="relative z-10 w-full min-h-[calc(100vh-104px)] flex justify-center items-center shadow-md">
           <div className="bg-[#fdffff] border border-[#e0e3e5] w-[300px] h-[380px] rounded-3xl shadow-md">
             <div className="w-full flex justify-center mb-4 pt-7">
-              <img src="/logo.png" alt="logo" className="h-10 mr-4" />
+              <img src="/logo.jpg" alt="logo" className="h-10 mr-4" />
             </div>
 
             {/* */}
@@ -62,7 +60,9 @@ export default function Home() {
             <form onSubmit={handleLogin}>
               <div className="w-full px-6 -mt-2">
                 {/* Username */}
-                <label className="text-sm font-bold text-[#1f1f1f]">User Name</label>
+                <label className="text-sm font-bold text-[#1f1f1f]">
+                  User Name
+                </label>
                 <input
                   type="text"
                   placeholder="Your User Name"
@@ -74,7 +74,9 @@ export default function Home() {
                   ${isCorrectUsername ? "font-bold" : ""}`}
                 />
                 {/* Password */}
-                <label className="text-sm font-bold text-[#1f1f1f]">Password</label>
+                <label className="text-sm font-bold text-[#1f1f1f]">
+                  Password
+                </label>
                 <input
                   type="password"
                   placeholder="Your Password"
@@ -88,13 +90,13 @@ export default function Home() {
               </div>
               <Button
                 type="submit"
-                className="w-[calc(100%-50px)] ml-5 py-2 rounded-full bg-primary text-background font-bold text-lg mt-2 hover:scale-95 duration-300 cursor-pointer">
+                className="w-[calc(100%-50px)] ml-5 py-2 rounded-full bg-primary text-background font-bold text-lg mt-2 hover:scale-95 duration-300 cursor-pointer"
+              >
                 Login
               </Button>
             </form>
           </div>
         </div>
-
       </div>
     </div>
   );

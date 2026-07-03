@@ -20,14 +20,7 @@ import { DownloadIcon, Loader2 } from "lucide-react";
 import React, { useMemo, useState } from "react";
 import { toast } from "sonner";
 
-const Download = ({ categoryId, roomId, date, categoryName, roomName }) => {
-  const { data, isLoading } = useGetHistoricalRoomMetrics({
-    categoryId: categoryId,
-    roomId: roomId,
-    fromDate: date.fromDate,
-    toDate: date.toDate,
-    sort: "timestamp,desc",
-  });
+const Download = ({ filter, categoryName, roomName, data, isLoading }) => {
   const rows = useMemo(() => data?.content ?? [], [data?.content]);
   const [name, setName] = useState("");
   const [open, setOpen] = useState(false);
@@ -64,7 +57,7 @@ const Download = ({ categoryId, roomId, date, categoryName, roomName }) => {
         tchartImg={tdataUrl}
         rchartImg={rdataUrl}
         categoryName={categoryName}
-        date={date}
+        date={filter}
         name={name}
       />,
     ).toBlob();
@@ -72,7 +65,7 @@ const Download = ({ categoryId, roomId, date, categoryName, roomName }) => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `SensorReport-[${format(date.fromDate, "dd-MMM-yyyy")}-${format(date.toDate, "dd-MMM-yyyy")}]`;
+    link.download = `${categoryName}-[${format(filter.fromDate, "dd-MMM-yyyy")}-${format(filter.toDate, "dd-MMM-yyyy")}]`;
     link.click();
     URL.revokeObjectURL(url);
 

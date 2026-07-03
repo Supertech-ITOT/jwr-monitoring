@@ -3,7 +3,6 @@
 import { format } from "date-fns";
 
 export const columns = (filterData) => {
-
   const header =
     filterData?.parameterId === 1
       ? "TEMP (°C)"
@@ -31,7 +30,7 @@ export const columns = (filterData) => {
         const value = row.original.value;
 
         return (
-          <span>{typeof value === "number" ? value.toFixed(2) : "-"}</span>
+          <span>{typeof value === "number" ? value.toFixed(1) : "-"}</span>
         );
       },
     },

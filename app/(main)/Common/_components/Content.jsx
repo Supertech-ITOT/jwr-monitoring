@@ -23,7 +23,10 @@ export default function Content() {
       .subtract(1, "month")
       .startOf("month")
       .format("YYYY-MM-DDTHH:mm:ss"),
-    toDate: now.format("YYYY-MM-DDTHH:mm:ss"),
+    toDate: now
+      .subtract(1, "month")
+      .endOf("month")
+      .format("YYYY-MM-DDTHH:mm:ss"),
     interval: 60,
   };
   const [draftFilter, setDraftFilter] = useState(initialFilter);

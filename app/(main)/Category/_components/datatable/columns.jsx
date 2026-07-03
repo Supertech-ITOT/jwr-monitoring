@@ -13,7 +13,7 @@ export const columns = [
   {
     accessorKey: "avgTemperature",
     header: "TEMP °C",
-    cell: ({ row }) => row.original.avgTemperature?.toFixed(2) ?? "-",
+    cell: ({ row }) => row.original.avgTemperature?.toFixed(1) ?? "-",
   },
 
   {

@@ -16,7 +16,7 @@ public interface TagLogRepository extends JpaRepository<TagLog, Long> {
 
     @Query(value = """
             SELECT new com.company.jwr_monitoring.dto.Dashboard.RoomHistoricalValueDto(
-                ROUND(MAX(CASE WHEN p.name = 'Temperature' THEN tl.value END),2),
+                ROUND(MAX(CASE WHEN p.name = 'Temperature' THEN tl.value END),1),
                 ROUND(MAX(CASE WHEN p.name = 'RH' THEN tl.value END),2),
                 ROUND(MAX(CASE WHEN p.name = 'Energy' THEN tl.value END),2),
                 tl.timestamp
@@ -58,7 +58,7 @@ public interface TagLogRepository extends JpaRepository<TagLog, Long> {
                     * (:interval * 60)
                     * INTERVAL '1 second',
 
-                ROUND(AVG(CASE WHEN tm.parameter_id = 1 THEN tl.value END)::numeric,2),
+                ROUND(AVG(CASE WHEN tm.parameter_id = 1 THEN tl.value END)::numeric,1),
 
                 ROUND(AVG(CASE WHEN tm.parameter_id = 3 THEN tl.value END)::numeric,2)
 

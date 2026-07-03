@@ -15,11 +15,28 @@ import dayjs from "dayjs";
 
 const daylist = ["Current", "Yesterday", "Last3Days", "Last5Days", "Last7Days"];
 
-const FilterDuration = ({ onChange, dayInput = true }) => {
+const FilterDuration = ({ onChange, dayInput = true, initial }) => {
   const now = dayjs();
-  const [selectedDay, setSelectedDay] = useState("Current");
-  const [fromDate, setFromDate] = useState(now.subtract(1, "day"));
-  const [toDate, setToDate] = useState(now);
+  const [selectedDay, setSelectedDay] = useState(initial?.day ?? "Current");
+
+  const [fromDate, setFromDate] = useState(
+    initial?.fromDate ? dayjs(initial.fromDate) : now.subtract(1, "day"),
+  );
+
+  const [toDate, setToDate] = useState(
+    initial?.toDate ? dayjs(initial.toDate) : now,
+  );
+
+  // Update when parent changes initial values
+  useEffect(() => {
+    if (!initial) return;
+
+    setSelectedDay(initial.day ?? "");
+    setFromDate(
+      initial.fromDate ? dayjs(initial.fromDate) : now.subtract(1, "day"),
+    );
+    setToDate(initial.toDate ? dayjs(initial.toDate) : now);
+  }, [initial]);
 
   useEffect(() => {
     onChange?.({

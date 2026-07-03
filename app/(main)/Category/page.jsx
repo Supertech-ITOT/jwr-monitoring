@@ -4,7 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import CategoryContent from "./_components/CategoryPage";
 
 export const metadata = {
-  title: "Category",
+  title: "Single Room",
 };
 
 export default function CategoryPage() {

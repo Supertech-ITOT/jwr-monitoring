@@ -2,23 +2,41 @@
 
 import FilterSelect from "@/components/FilterSelect";
 import { Button } from "@/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger, } from "@/components/ui/popover";
-import { Factory, Funnel, Home, } from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { ArrowUpDown, Factory, Funnel, Home } from "lucide-react";
 import { useRouter } from "next/navigation";
 import FilterDuration from "@/components/FiltrationDuration";
 import { useEffect } from "react";
 
-export default function CategoryFilter({ categories, rooms, categoryId, roomId, loading, onFilterChange, }) {
+const sortOptions = [
+  { id: "timestamp,desc", name: "Newest First" },
+  { id: "timestamp,asc", name: "Oldest First" },
+];
+
+export default function CategoryFilter({
+  categories,
+  rooms,
+  categoryId,
+  roomId,
+  loading,
+  onFilterChange,
+  filterData,
+}) {
   const router = useRouter();
   useEffect(() => {
     if (!rooms?.length) return;
     const roomExists = rooms.some((room) => room.id === roomId);
     if (!roomExists) {
-      router.replace(`/Category?categoryId=${categoryId}&roomId=${rooms[0].id}`);
+      router.replace(
+        `/Category?categoryId=${categoryId}&roomId=${rooms[0].id}`,
+      );
     }
   }, [rooms, roomId, categoryId, router]);
   return (
-
     <div className="w-[200px] h-8">
       <Popover>
         <PopoverTrigger asChild>
@@ -50,28 +68,36 @@ export default function CategoryFilter({ categories, rooms, categoryId, roomId, 
             options={rooms || []}
             value={roomId}
             onSelect={(selectedId) => {
-              router.push(`/Category?categoryId=${categoryId}&roomId=${selectedId}`);
+              router.push(
+                `/Category?categoryId=${categoryId}&roomId=${selectedId}`,
+              );
             }}
           />
 
           <FilterDuration
-            onChange={({
-              fromDate,
-              toDate,
-              day,
-            }) => {
-              onFilterChange?.({
-                fromDate:
-                  fromDate?.format(
-                    "YYYY-MM-DDTHH:mm:ss"
-                  ),
-                toDate:
-                  toDate?.format(
-                    "YYYY-MM-DDTHH:mm:ss"
-                  ),
+            initial={filterData}
+            onChange={({ fromDate, toDate, day }) => {
+              onFilterChange((prev) => ({
+                ...prev,
+                fromDate: fromDate?.format("YYYY-MM-DDTHH:mm:ss"),
+                toDate: toDate?.format("YYYY-MM-DDTHH:mm:ss"),
                 day,
-              });
+              }));
             }}
+          />
+
+          <FilterSelect
+            label="Sort"
+            icon={ArrowUpDown}
+            loading={false}
+            options={sortOptions}
+            value={filterData.sort}
+            onSelect={(sort) =>
+              onFilterChange((prev) => ({
+                ...prev,
+                sort,
+              }))
+            }
           />
         </PopoverContent>
       </Popover>
