@@ -70,7 +70,7 @@ const TempChart = ({ isExport, data }) => {
 
         <div className="flex gap-2 font-bold h-5 text-primary ">
           <Thermometer className="size-4  " />
-          <span>AvgTemp: {Number(data.avgTemperature).toFixed(2)} °C</span>
+          <span>AvgTemp: {Number(data.avgTemperature).toFixed(1)} °C</span>
         </div>
       </div>
     );

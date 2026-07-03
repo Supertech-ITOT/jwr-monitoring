@@ -67,7 +67,7 @@ const RhChart = ({ isExport, data }) => {
 
         <div className="flex gap-2 font-bold h-5 text-secondary ">
           <Cloud className="size-4 " />
-          <span>RH: {Number(data.rh).toFixed(2)}%</span>
+          <span>RH: {Math.round(Number(data.rh))}%</span>
         </div>
       </div>
     );

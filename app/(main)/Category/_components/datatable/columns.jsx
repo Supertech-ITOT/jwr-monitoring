@@ -19,6 +19,6 @@ export const columns = [
   {
     accessorKey: "rh",
     header: "RH%",
-    cell: ({ row }) => row.original.rh?.toFixed(2) ?? "-",
+    cell: ({ row }) => Math.round(Number(row.original.rh)) ?? "-",
   },
 ];

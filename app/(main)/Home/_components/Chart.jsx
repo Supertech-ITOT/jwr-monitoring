@@ -1,5 +1,6 @@
 "use client";
 import { Skeleton } from "@/components/ui/skeleton";
+import { formatValue } from "@/lib/formatValue";
 import { Cloud, House, Thermometer, Zap } from "lucide-react";
 import React, { useMemo } from "react";
 import {
@@ -65,7 +66,7 @@ const Chart = ({ rows, loading, filterData }) => {
           {Icon && <Icon className="text-primary size-4 shrink-0" />}
           <span className="text-primary font-bold">{label}:</span>
           <strong className="text-secondary">
-            {Number(item.value ?? 0).toFixed(2)}
+            {formatValue(item.value, filterData?.parameterId)}
           </strong>
         </div>
       </div>
@@ -130,7 +131,7 @@ const Chart = ({ rows, loading, filterData }) => {
             <LabelList
               dataKey="value"
               position="top"
-              formatter={(value) => Number(value).toFixed(2)}
+              formatter={(value) => formatValue(value, filterData.parameterId)}
               className=" fill-current"
               style={{ fontSize: 12 }}
             />

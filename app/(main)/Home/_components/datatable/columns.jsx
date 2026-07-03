@@ -1,5 +1,6 @@
 "use client";
 
+import { formatValue } from "@/lib/formatValue";
 import { format } from "date-fns";
 
 export const columns = (filterData) => {
@@ -30,7 +31,11 @@ export const columns = (filterData) => {
         const value = row.original.value;
 
         return (
-          <span>{typeof value === "number" ? value.toFixed(1) : "-"}</span>
+          <span>
+            {typeof value === "number"
+              ? formatValue(value, filterData.parameterId)
+              : "-"}
+          </span>
         );
       },
     },

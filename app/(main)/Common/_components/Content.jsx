@@ -5,13 +5,13 @@ import dayjs from "dayjs";
 import CommonFilter from "./CommonFilter";
 import Download from "./Download";
 import { useGetCommonRoomLog } from "@/hooks/useDashboard";
-import { DataTable } from "./datatable/data-table";
-import { columns } from "./datatable/columns";
+
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
+import CommonRoomTable from "./CommonRoomTable";
 
 export default function Content() {
   const now = dayjs();
@@ -35,9 +35,9 @@ export default function Content() {
   const { data, isLoading, isError } = useGetCommonRoomLog(
     appliedFilter,
     page,
-    1,
+    5,
   );
-  const room = data?.content?.[0];
+  const rooms = data?.content ?? [];
 
   return (
     <div className="space-y-5">
@@ -63,9 +63,7 @@ export default function Content() {
                 <Skeleton className="h-7 w-40" />
               ) : (
                 <>
-                  <h2 className="text-xl font-semibold">
-                    {room?.roomName ?? "Room"}
-                  </h2>
+                  <h2 className="text-xl font-semibold"></h2>
                   <p className="text-sm text-muted-foreground mt-1">
                     Historical Temperature & RH Select filter to show data.
                   </p>
@@ -80,7 +78,7 @@ export default function Content() {
             )}
           </div>
         </CardHeader>
-        <CardContent className="p-0! h-160 overflow-hidden">
+        <CardContent className="p-0 flex flex-col h-[70vh] overflow-hidden">
           {/* Loading */}
           {isLoading && (
             <div className="space-y-3 p-6">
@@ -102,21 +100,41 @@ export default function Content() {
           )}
 
           {/* Empty */}
-          {!isLoading && !isError && !room && (
+          {!isLoading && !isError && rooms?.length == 0 && (
             <div className="h-full flex items-center justify-center text-muted-foreground">
               No logs found.
             </div>
           )}
 
           {/* Table */}
-          {!isLoading && !isError && room?.logs?.length > 0 && (
-            <DataTable
-              columns={columns}
-              data={room.logs}
-              page={page}
-              setPage={setPage}
-              totalPages={data.page.totalPages}
-            />
+          {!isLoading && !isError && rooms.length > 0 && (
+            <div className="flex flex-col flex-1 min-h-0">
+              <div className="flex-1 min-h-0">
+                <CommonRoomTable rooms={rooms} />
+              </div>
+
+              <div className="flex items-center justify-between border-t bg-white p-4">
+                <button
+                  onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
+                  disabled={page === 0}
+                  className="border rounded px-4 py-2 disabled:opacity-50"
+                >
+                  Previous
+                </button>
+
+                <p>
+                  Page {page + 1} of {data.page.totalPages}
+                </p>
+
+                <button
+                  onClick={() => setPage((prev) => prev + 1)}
+                  disabled={page + 1 >= data.page.totalPages}
+                  className="border rounded px-4 py-2 disabled:opacity-50"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
           )}
         </CardContent>
       </Card>
