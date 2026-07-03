@@ -13,7 +13,7 @@ export const columns = (filterData) => {
   return [
     {
       accessorKey: "timestamp",
-      header: "TIMESTAMP",
+      header: "DATETIME",
       cell: ({ row }) =>
         row.original.timestamp
           ? format(new Date(row.original.timestamp), "dd MMM yyyy hh:mm a")

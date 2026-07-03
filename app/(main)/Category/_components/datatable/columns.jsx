@@ -5,7 +5,7 @@ import { format } from "date-fns";
 export const columns = [
   {
     accessorKey: "timestamp",
-    header: "DATE",
+    header: "DATETIME",
     cell: ({ row }) =>
       format(new Date(row.original.timestamp), "dd MMM yyyy hh:mm a"),
   },
