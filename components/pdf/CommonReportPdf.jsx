@@ -54,7 +54,8 @@ export default function CommonReportPDF({ data = [], filter, name }) {
 
             {pageIndex === 0 && (
               <>
-                <Text style={styles.title}>MULTIPLE ROOM REPORT</Text>
+                <Text style={styles.title}>COMMON ROOM REPORT</Text>
+
                 <View style={styles.gridContainer}>
                   <View style={styles.gridRow}>
                     <Text style={styles.label}>Room :</Text>
