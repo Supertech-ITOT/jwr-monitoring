@@ -87,11 +87,11 @@ public class SimulationService implements CommandLineRunner {
                         break;
 
                     case 2:
-                        value = rh;
+                        value = energy;
                         break;
 
                     case 3:
-                        value = energy;
+                        value = rh;
                         break;
 
                     default:
@@ -160,13 +160,14 @@ public class SimulationService implements CommandLineRunner {
 
     private double simulateRH(double currentRH, double temperature) {
 
-        double change = (random.nextDouble() - 0.5);
+        double change = (random.nextDouble() - 0.5); // -0.5 to +0.5
 
         double next = currentRH
                 + change
                 - ((temperature - 30) * 0.03);
 
-        next = Math.max(45.0, Math.min(75.0, next));
+        // Keep RH between 50% and 100%
+        next = Math.max(50.0, Math.min(100.0, next));
 
         return roundHalf(next);
     }
