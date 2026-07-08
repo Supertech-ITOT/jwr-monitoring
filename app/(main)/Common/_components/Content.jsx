@@ -30,7 +30,7 @@ export default function Content() {
     interval: 60,
   };
   const [draftFilter, setDraftFilter] = useState(initialFilter);
-  const [appliedFilter, setAppliedFilter] = useState(null);
+  const [appliedFilter, setAppliedFilter] = useState(initialFilter);
   const [page, setPage] = useState(0);
   const { data, isLoading, isError } = useGetCommonRoomLog(
     appliedFilter,

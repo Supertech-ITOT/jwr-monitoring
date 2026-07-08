@@ -8,41 +8,61 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
-import com.company.jwr_monitoring.dto.Dashboard.RoomHistoricalValueDto;
 import com.company.jwr_monitoring.entity.TagLog;
 
 public interface TagLogRepository extends JpaRepository<TagLog, Long> {
-
     @Query(value = """
-            SELECT new com.company.jwr_monitoring.dto.Dashboard.RoomHistoricalValueDto(
-                ROUND(MAX(CASE WHEN p.name = 'Temperature' THEN tl.value END),1),
-                ROUND(MAX(CASE WHEN p.name = 'RH' THEN tl.value END)),
-                ROUND(MAX(CASE WHEN p.name = 'Energy' THEN tl.value END),2),
-                tl.timestamp
+            WITH bucketed_data AS (
+                SELECT
+                    p.name AS parameter_name,
+                    tl.value,
+                    TIMESTAMP 'epoch'
+                        + floor(extract(epoch FROM tl.timestamp) / (:interval * 60))
+                        * (:interval * 60)
+                        * INTERVAL '1 second' AS bucket_time
+                FROM tag_logs tl
+                JOIN tag_master t ON tl.tag_id = t.id
+                JOIN rooms r ON t.room_id = r.id
+                JOIN categories c ON r.category_id = c.id
+                JOIN parameters p ON t.parameter_id = p.id
+                WHERE c.id = :categoryId
+                  AND r.id = :roomId
+                  AND tl.timestamp BETWEEN :fromDate AND :toDate
             )
-            FROM TagLog tl
-            JOIN tl.tag t
-            JOIN t.room r
-            JOIN r.category c
-            JOIN t.parameter p
-            WHERE c.id = :categoryId
-              AND r.id = :roomId
-              AND tl.timestamp BETWEEN :fromDate AND :toDate
-            GROUP BY tl.timestamp
+
+            SELECT
+                ROUND(MAX(CASE WHEN parameter_name = 'Temperature' THEN value END)::numeric, 1) AS temperature,
+                ROUND(MAX(CASE WHEN parameter_name = 'RH' THEN value END)::numeric) AS rh,
+                ROUND(MAX(CASE WHEN parameter_name = 'Energy' THEN value END)::numeric, 2) AS energy,
+                bucket_time AS timestamp
+            FROM bucketed_data
+            GROUP BY bucket_time
             """, countQuery = """
-            SELECT COUNT(DISTINCT tl.timestamp)
-            FROM TagLog tl
-            JOIN tl.tag t
-            JOIN t.room r
-            JOIN r.category c
-            WHERE c.id = :categoryId
-              AND r.id = :roomId
-              AND tl.timestamp BETWEEN :fromDate AND :toDate
-            """)
-    Page<RoomHistoricalValueDto> getHistoricalRoomMetrics(
+            WITH bucketed_data AS (
+                SELECT
+                    TIMESTAMP 'epoch'
+                        + floor(extract(epoch FROM tl.timestamp) / (:interval * 60))
+                        * (:interval * 60)
+                        * INTERVAL '1 second' AS bucket_time
+                FROM tag_logs tl
+                JOIN tag_master t ON tl.tag_id = t.id
+                JOIN rooms r ON t.room_id = r.id
+                JOIN categories c ON r.category_id = c.id
+                WHERE c.id = :categoryId
+                  AND r.id = :roomId
+                  AND tl.timestamp BETWEEN :fromDate AND :toDate
+            )
+            SELECT COUNT(*)
+            FROM (
+                SELECT bucket_time
+                FROM bucketed_data
+                GROUP BY bucket_time
+            )
+            """, nativeQuery = true)
+    Page<Object[]> getRoomHistoricalValues(
             @Param("categoryId") Long categoryId,
             @Param("roomId") Long roomId,
+            @Param("interval") Integer interval,
             @Param("fromDate") LocalDateTime fromDate,
             @Param("toDate") LocalDateTime toDate,
             Pageable pageable);

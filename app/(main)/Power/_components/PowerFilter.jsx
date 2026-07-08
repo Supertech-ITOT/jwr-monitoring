@@ -18,7 +18,7 @@ const sortOptions = [
   { id: "timestamp,asc", name: "Oldest First" },
 ];
 
-export default function CategoryFilter({
+export default function PowerFilter({
   categories,
   rooms,
   loading,
@@ -37,7 +37,7 @@ export default function CategoryFilter({
     onApply(filterData);
 
     router.push(
-      `/Category?categoryId=${filterData.categoryId}&roomId=${filterData.roomId}`,
+      `/Power?categoryId=${filterData.categoryId}&roomId=${filterData.roomId}`,
     );
 
     toast.success("Filters applied");

@@ -1,6 +1,4 @@
 "use client";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useGetHistoricalRoomMetrics } from "@/hooks/useDashboard";
 import { format } from "date-fns";
 import { Clock, Thermometer } from "lucide-react";
 import { useTheme } from "next-themes";
@@ -17,14 +15,7 @@ import {
   YAxis,
 } from "recharts";
 
-const Chart = ({ isExport, categoryId, roomId, date }) => {
-  const { data, isLoading } = useGetHistoricalRoomMetrics({
-    categoryId: categoryId,
-    roomId: roomId,
-    fromDate: date.fromDate,
-    toDate: date.toDate,
-    sort: "timestamp,desc",
-  });
+const Chart = ({ isExport, data }) => {
   const chartRows = useMemo(() => {
     const filteredRows = (data?.content ?? []).filter(
       (row) => row.energy != null,
@@ -168,7 +159,6 @@ const Chart = ({ isExport, categoryId, roomId, date }) => {
       />
 
       <YAxis
-        yAxisId="left"
         tickCount={6}
         tick={{ fontSize: fontSize, className: "fill-current" }}
         label={{
@@ -229,9 +219,6 @@ const Chart = ({ isExport, categoryId, roomId, date }) => {
       />
     </LineChart>
   );
-  if (isLoading) {
-    return <Skeleton className="w-full h-full" />;
-  }
 
   return (
     <div className="glass-card">

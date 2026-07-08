@@ -1,23 +1,23 @@
 "use client";
 
 import { useGetHistoricalRoomMetrics } from "@/hooks/useDashboard";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { columns } from "./datatable/columns";
 import { DataTable } from "./datatable/data-table";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const TableUI = ({ categoryId, roomId, date }) => {
+const TableUI = ({ filter }) => {
   const [page, setPage] = useState(0);
   const size = 13;
   const { data, isLoading, error } = useGetHistoricalRoomMetrics({
-    categoryId: categoryId,
-    roomId: roomId,
-    fromDate: date.fromDate,
-    toDate: date.toDate,
+    ...filter,
     page,
     size,
-    sort: "timestamp,desc",
   });
+
+  useEffect(() => {
+    setPage(0);
+  }, [filter.fromDate, filter.toDate]);
   const rows = useMemo(
     () =>
       (data?.content ?? [])
@@ -28,7 +28,7 @@ const TableUI = ({ categoryId, roomId, date }) => {
         })),
     [data?.content],
   );
-  const totalPages = data?.totalPages || 1;
+  const totalPages = data?.page?.totalPages ?? 1;
 
   if (isLoading) {
     return <Skeleton className="w-full h-full" />;

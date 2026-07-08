@@ -6,17 +6,13 @@ import { columns } from "./datatable/columns";
 import { DataTable } from "./datatable/data-table";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const TableUI = ({ categoryId, roomId, filter }) => {
+const TableUI = ({ filter }) => {
   const [page, setPage] = useState(0);
   const size = 13;
   const { data, isLoading, error } = useGetHistoricalRoomMetrics({
-    categoryId: categoryId,
-    roomId: roomId,
-    fromDate: filter?.fromDate,
-    toDate: filter?.toDate,
+    ...filter,
     page,
     size,
-    sort: filter?.sort,
   });
   const rows = data?.content ?? [];
   const totalPages = data?.page?.totalPages ?? 1;

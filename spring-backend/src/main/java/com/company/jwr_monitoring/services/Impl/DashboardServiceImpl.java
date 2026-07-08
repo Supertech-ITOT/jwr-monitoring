@@ -37,17 +37,28 @@ public class DashboardServiceImpl implements DashboardService {
         private final RoomRepository roomRepository;
 
         @Override
-        public Page<RoomHistoricalValueDto> getHistoricalRoomMetrics(RoomHistoricalValueRequest request,
+        public Page<RoomHistoricalValueDto> getHistoricalRoomMetrics(
+                        RoomHistoricalValueRequest request,
                         Pageable pageable) {
+
                 Pageable finalPageable = pageable.getPageSize() == 20
                                 && pageable.getPageNumber() == 0
                                                 ? Pageable.unpaged()
                                                 : pageable;
 
-                Page<RoomHistoricalValueDto> roomHistoricalValueDto = tagLogRepository.getHistoricalRoomMetrics(
+                Page<Object[]> page = tagLogRepository.getRoomHistoricalValues(
                                 request.categoryId(),
-                                request.roomId(), request.fromDate(), request.toDate(), finalPageable);
-                return roomHistoricalValueDto;
+                                request.roomId(),
+                                request.interval(),
+                                request.fromDate(),
+                                request.toDate(),
+                                finalPageable);
+
+                return page.map(row -> new RoomHistoricalValueDto(
+                                row[0] == null ? null : ((Number) row[0]).doubleValue(),
+                                row[1] == null ? null : ((Number) row[1]).doubleValue(),
+                                row[2] == null ? null : ((Number) row[2]).doubleValue(),
+                                ((java.sql.Timestamp) row[3]).toLocalDateTime()));
         }
 
         @Override
