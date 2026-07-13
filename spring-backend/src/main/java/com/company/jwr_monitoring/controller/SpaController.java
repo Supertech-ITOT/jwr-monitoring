@@ -16,6 +16,11 @@ public class SpaController {
         return "forward:/Category.html";
     }
 
+    @GetMapping("/Common")
+    public String common() {
+        return "forward:/Common.html";
+    }
+
     @GetMapping("/Power")
     public String power() {
         return "forward:/Power.html";
