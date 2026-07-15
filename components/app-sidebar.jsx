@@ -36,7 +36,7 @@ const item = [
     icon: <Radio className="size-5 " />,
   },
   {
-    title: "Multiple Room",
+    title: "Cold Room",
     url: "/Common",
     icon: <Warehouse className="size-5 " />,
   },

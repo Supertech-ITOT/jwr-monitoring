@@ -83,11 +83,11 @@ export default function CommonRoomTable({ rooms }) {
                 }`}
               >
                 <td
-                  className={`sticky left-0 z-30 whitespace-nowrap
+                  className="sticky left-0 z-30 whitespace-nowrap
                     border border-border
                     px-4 py-2
-                    font-medium
-                    ${even ? "bg-background" : "bg-muted/30"}`}
+                    font-medium bg-primary text-card
+                   "
                 >
                   {format(new Date(row.timeStamp), "dd MMM yyyy hh:mm a")}
                 </td>

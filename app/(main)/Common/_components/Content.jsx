@@ -5,7 +5,6 @@ import dayjs from "dayjs";
 import CommonFilter from "./CommonFilter";
 import Download from "./Download";
 import { useGetCommonRoomLog } from "@/hooks/useDashboard";
-
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -35,7 +34,7 @@ export default function Content() {
   const { data, isLoading, isError } = useGetCommonRoomLog(
     appliedFilter,
     page,
-    5,
+    10,
   );
   const rooms = data?.content ?? [];
 

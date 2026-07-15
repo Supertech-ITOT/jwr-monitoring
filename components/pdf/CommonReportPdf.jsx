@@ -5,8 +5,8 @@ import { format } from "date-fns";
 import { styles } from "./style";
 import { THEME } from "./theme";
 
-const ROOMS_PER_PAGE = 5;
-const ROWS_PER_PAGE = 20;
+const ROOMS_PER_PAGE = 10;
+const ROWS_PER_PAGE = 24;
 
 export default function CommonReportPDF({ data = [], filter, name }) {
   if (!data.length) return <Document />;
@@ -62,7 +62,7 @@ export default function CommonReportPDF({ data = [], filter, name }) {
 
             {/* ================= REPORT DETAILS ================= */}
 
-            <Text style={styles.title}>MULTIPLE ROOM REPORT</Text>
+            <Text style={styles.title}>Temperature and Rh REPORT</Text>
 
             <View style={styles.gridContainer}>
               <View style={styles.gridRow}>
@@ -127,11 +127,12 @@ export default function CommonReportPDF({ data = [], filter, name }) {
                   color: "#fff",
                   borderBottomWidth: 1,
                   borderColor: THEME.border,
+                  minHeight: 20,
                 }}
               >
                 <View
                   style={{
-                    width: 120,
+                    width: 100,
                     justifyContent: "center",
                     alignItems: "center",
                     borderRightWidth: 1,
@@ -182,11 +183,12 @@ export default function CommonReportPDF({ data = [], filter, name }) {
                   color: "#fff",
                   borderBottomWidth: 1,
                   borderColor: THEME.border,
+                  minHeight: 20,
                 }}
               >
                 <View
                   style={{
-                    width: 120,
+                    width: 100,
                     borderRightWidth: 1,
                     borderColor: "#fff",
                   }}
@@ -215,9 +217,10 @@ export default function CommonReportPDF({ data = [], filter, name }) {
                         style={{
                           fontSize: 8,
                           fontWeight: "bold",
+                          textAlign: "center",
                         }}
                       >
-                        Temp °C
+                        {`Temp\n°C`}
                       </Text>
                     </View>
 
@@ -232,9 +235,10 @@ export default function CommonReportPDF({ data = [], filter, name }) {
                         style={{
                           fontSize: 8,
                           fontWeight: "bold",
+                          textAlign: "center",
                         }}
                       >
-                        RH %
+                        {`RH\n%`}
                       </Text>
                     </View>
                   </View>
@@ -251,12 +255,12 @@ export default function CommonReportPDF({ data = [], filter, name }) {
                     backgroundColor: rowIndex % 2 ? THEME.card : "#fff",
                     borderBottomWidth: 1,
                     borderColor: THEME.border,
-                    minHeight: 24,
+                    minHeight: 20,
                   }}
                 >
                   <View
                     style={{
-                      width: 120,
+                      width: 100,
                       borderRightWidth: 1,
                       borderColor: THEME.border,
                       justifyContent: "center",
