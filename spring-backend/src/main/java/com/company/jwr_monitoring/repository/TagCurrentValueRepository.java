@@ -15,23 +15,31 @@ public interface TagCurrentValueRepository extends JpaRepository<TagCurrentValue
     Optional<TagCurrentValue> findByTagId(Long tagId);
 
     @Query("""
-                SELECT new com.company.jwr_monitoring.dto.Dashboard.RoomCurrentValueDto(
-                    r.id,
-                    r.name,
-                    ROUND(MAX(tcv.value), 1),
-                    MAX(tcv.lastUpdated)
-                )
-                FROM TagCurrentValue tcv
-                JOIN tcv.tag t
-                JOIN t.room r
-                JOIN r.category c
-                JOIN t.parameter p
-                WHERE c.id = :categoryId
-                  AND p.id = :parameterId
-                GROUP BY r.id, r.name
-                ORDER BY r.name ASC
+            SELECT new com.company.jwr_monitoring.dto.Dashboard.RoomCurrentValueDto(
+                r.id,
+                r.name,
+                COALESCE(MAX(CASE
+                    WHEN t.parameter.id = 1 THEN tcv.value
+                END), 0.0),
+
+                COALESCE(MAX(CASE
+                    WHEN t.parameter.id = 2 THEN tcv.value
+                END), 0.0),
+
+                COALESCE(MAX(CASE
+                    WHEN t.parameter.id = 3 THEN tcv.value
+                END), 0.0),
+
+                MAX(tcv.lastUpdated)
+            )
+            FROM TagCurrentValue tcv
+            JOIN tcv.tag t
+            JOIN t.room r
+            JOIN r.category c
+            WHERE c.id = :categoryId
+            GROUP BY r.id, r.name
+            ORDER BY r.name
             """)
-    List<RoomCurrentValueDto> getCurrentRoomMetricsByCategoryAndParameter(
-            @Param("categoryId") Long categoryId,
-            @Param("parameterId") Long parameterId);
+    List<RoomCurrentValueDto> getCurrentRoomMetricsByCategory(
+            @Param("categoryId") Long categoryId);
 }

@@ -8,10 +8,8 @@ export const getHistoricalRoomMetrics = async (params) => {
   return res.data;
 };
 
-export const getCurrentRoomMetrics = async (params) => {
-  const res = await api.get("/dashboard/current-metrics", {
-    params,
-  });
+export const getCurrentRoomMetrics = async (id) => {
+  const res = await api.get(`/dashboard/current-metrics/${id}`);
   return res.data;
 };
 

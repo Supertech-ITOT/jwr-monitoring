@@ -48,11 +48,11 @@ const Download = ({ filter }) => {
     setName("");
   };
   return (
-    <div className="size-8 ">
+    <div className="w-full ">
       <Dialog open={open} onOpenChange={setOpen}>
         <form>
           <DialogTrigger asChild>
-            <Button className=" rounded-md shadow  border border-border w-full h-full bg-primary">
+            <Button className=" rounded-md shadow  border border-border w-full! h-full bg-primary">
               {isLoading ? (
                 <Loader2 className="animate-spin size-4" />
               ) : (

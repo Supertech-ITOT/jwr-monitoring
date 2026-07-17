@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,11 +43,10 @@ public class DashboardController {
                 return ResponseEntity.ok(ApiResponse.success("Historical Room Metrics fetched successfully", response));
         }
 
-        @GetMapping("/current-metrics")
+        @GetMapping("/current-metrics/{categoryId}")
         public ResponseEntity<ApiResponse<List<RoomCurrentValueDto>>> getCurrentRoomMetrics(
-                        @RequestParam Long categoryId, Long parameterId) {
-                List<RoomCurrentValueDto> response = roomDashboardService.getCurrentRoomMetricsByCategory(categoryId,
-                                parameterId);
+                        @PathVariable Long categoryId) {
+                List<RoomCurrentValueDto> response = roomDashboardService.getCurrentRoomMetricsByCategory(categoryId);
                 return ResponseEntity.ok(
                                 ApiResponse.success("Current Room Metrics By Category fetched successfully", response));
         }

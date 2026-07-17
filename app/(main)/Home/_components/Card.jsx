@@ -2,9 +2,16 @@
 
 import React from "react";
 import { Building2, Sun, Snowflake, Truck, DoorOpen } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGetRoomStatCard } from "@/hooks/useDashboard";
+
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from "@/components/ui/carousel";
 
 const Card = () => {
   const { data, isLoading } = useGetRoomStatCard();
@@ -63,22 +70,18 @@ const Card = () => {
 
   if (isLoading) {
     return (
-      <div className="w-full min-w-0 overflow-x-auto no-scrollbar mt-6">
-        <div className="flex gap-4 w-max pb-2">
-          {Array.from({ length: 6 }).map((_, index) => (
-            <div
-              key={index}
-              className="w-[80vw] max-w-[300px] h-[100px] sm:h-[120px] shrink-0 rounded-xl border border-border bg-cardbackground p-4 flex items-center gap-4"
-            >
+      <div className="mt-6 flex gap-4 overflow-hidden">
+        {Array.from({ length: 3 }).map((_, index) => (
+          <div key={index} className="basis-[85%] md:basis-1/2 lg:basis-1/3">
+            <div className="h-[110px] rounded-xl border bg-cardbackground p-4 flex items-center gap-4">
               <Skeleton className="size-16 rounded-full" />
-
-              <div className="flex flex-col gap-2 flex-1">
+              <div className="flex-1 space-y-2">
                 <Skeleton className="h-6 w-16" />
                 <Skeleton className="h-4 w-28" />
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
     );
   }
@@ -92,33 +95,37 @@ const Card = () => {
   }
 
   return (
-    <div className="w-full touch-pan-x cursor-grab scrollbar-prop select-none active:cursor-grabbing overflow-x-auto mt-6 snap-x snap-mandatory">
-      <div className="flex gap-4 w-max pb-2">
+    <Carousel
+      opts={{
+        align: "start",
+      }}
+      className="w-full mt-4"
+    >
+      <CarouselContent>
         {stats.map((item) => (
-          <Button
-            key={item.id}
-            className="w-[80vw] snap-start select-none max-w-[300px] h-[100px] sm:h-[120px] shrink-0 shadow p-3 sm:p-4 rounded-xl border border-border bg-cardbackground hover:bg-cardhover flex items-center gap-3 sm:gap-4"
-          >
-            <div
-              style={{ backgroundColor: item.color }}
-              className="rounded-full size-16 flex justify-center items-center"
-            >
-              {item.icon}
-            </div>
+          <CarouselItem key={item.id} className="basis-auto pl-2!">
+            <Button className="w-25 h-fit lg:w-[300px] lg:flex-row flex-col justify-center lg:h-[100px]  shadow rounded-xl border border-border bg-cardbackground hover:bg-cardhover p-4 flex items-center gap-4">
+              <div
+                style={{ backgroundColor: item.color }}
+                className="lg:size-16 size-12 rounded-full flex items-center justify-center shrink-0"
+              >
+                {item.icon}
+              </div>
 
-            <div className="flex flex-col items-start">
-              <strong className="font-bold text-text text-sm sm:text-xl">
-                {item.totalRoom}
-              </strong>
+              <div className="flex flex-col lg:items-start items-center">
+                <strong className="text-text text-xl font-bold">
+                  {item.totalRoom}
+                </strong>
 
-              <span className="font-semibold text-textsecondary text-xs sm:text-lg">
-                {item.categoryName}
-              </span>
-            </div>
-          </Button>
+                <span className="text-textsecondary lg:text-sm text-[10px] font-semibold">
+                  {item.categoryName}
+                </span>
+              </div>
+            </Button>
+          </CarouselItem>
         ))}
-      </div>
-    </div>
+      </CarouselContent>
+    </Carousel>
   );
 };
 

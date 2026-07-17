@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 public record RoomCurrentValueDto(
                 Long roomId,
                 String roomName,
-                Double value,
+                Double avgTemp,
+                Double energy,
+                Double rh,
                 LocalDateTime timestamp) {
 }

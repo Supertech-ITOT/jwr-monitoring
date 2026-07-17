@@ -8,8 +8,8 @@ export const metadata = {
 
 export default function UsersTable() {
   return (
-    <div className="h-full w-full overflow-x-hidden bg-cardbackground rounded-xl shadow-xl p-6">
-      <h1 className="sm:text-6xl font-bold tracking-[2px] text-3xl text-primary">
+    <div className="h-full w-full overflow-x-hidden bg-cardbackground rounded-xl shadow-xl p-1.5 xl:p-6">
+      <h1 className="sm:text-4xl font-bold tracking-[2px] text-2xl text-primary">
         Overview
       </h1>
       <Card />

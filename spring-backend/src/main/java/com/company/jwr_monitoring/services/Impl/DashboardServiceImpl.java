@@ -1,6 +1,7 @@
 package com.company.jwr_monitoring.services.Impl;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,8 +63,17 @@ public class DashboardServiceImpl implements DashboardService {
         }
 
         @Override
-        public List<RoomCurrentValueDto> getCurrentRoomMetricsByCategory(Long categoryId, Long parameterId) {
-                return tagCurrentValueRepository.getCurrentRoomMetricsByCategoryAndParameter(categoryId, parameterId);
+        public List<RoomCurrentValueDto> getCurrentRoomMetricsByCategory(Long categoryId) {
+                return tagCurrentValueRepository.getCurrentRoomMetricsByCategory(categoryId)
+                                .stream()
+                                .sorted(
+                                                Comparator.comparingInt(dto -> {
+                                                        String room = dto.roomName();
+                                                        String number = room.replaceAll("\\D+", "");
+                                                        return number.isEmpty() ? Integer.MAX_VALUE
+                                                                        : Integer.parseInt(number);
+                                                }))
+                                .toList();
         }
 
         @Override

@@ -35,10 +35,10 @@ export default function Content({ categoryId, roomId }) {
   const roomName = rooms?.find((r) => r.id === roomId)?.name ?? "";
   return (
     <>
-      <h1 className="font-bold sm:text-3xl text-2xl text-textsecondary tracking-[2px] uppercase mt-2 animate-in slide-in-from-top-100 duration-1200">
+      <h1 className="font-bold sm:text-2xl text-lg text-textsecondary tracking-[2px] uppercase  animate-in slide-in-from-top-100 duration-1200">
         {categoryName} : {roomName}
       </h1>
-      <div className="flex justify-end gap-2 mt-4">
+      <div className="flex justify-end gap-2 my-2">
         <CategoryFilter
           filterData={draftFilter}
           categories={categories}
@@ -49,16 +49,18 @@ export default function Content({ categoryId, roomId }) {
             setAppliedFilter(filter);
           }}
         />
-        <Download
-          filter={appliedFilter}
-          categoryName={categoryName}
-          roomName={roomName}
-          data={data}
-          isLoading={loading}
-        />
+        <div className="w-15">
+          <Download
+            filter={appliedFilter}
+            categoryName={categoryName}
+            roomName={roomName}
+            data={data}
+            isLoading={loading}
+          />
+        </div>
       </div>
-      <div className="mt-6 flex flex-col xl:flex-row gap-6 w-full ">
-        <div className="flex-2 bg-cardbackground border border-border rounded-xl shadow w-full h-[600px] gap-2 overflow-hidden">
+      <div className=" flex flex-col xl:flex-row gap-6 w-full ">
+        <div className="flex-2 bg-cardbackground border border-border rounded-xl shadow w-full h-[780px] gap-2 overflow-hidden">
           <div className="flex-1 h-1/2! border">
             <TempChart data={data} />
             <div
@@ -80,7 +82,7 @@ export default function Content({ categoryId, roomId }) {
             </div>
           </div>
         </div>
-        <div className="flex-1 bg-cardbackground border border-border rounded-xl shadow-xl w-full xl:w-1/3 h-[600px] flex flex-col overflow-hidden">
+        <div className="flex-1 bg-cardbackground border border-border rounded-xl shadow-xl w-full xl:w-1/3 h-[780px] flex flex-col overflow-hidden">
           <TableUI
             categoryId={categoryId}
             filter={appliedFilter ?? []}

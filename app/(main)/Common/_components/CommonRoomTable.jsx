@@ -3,12 +3,27 @@
 import { Fragment } from "react";
 import { format } from "date-fns";
 
+const MAX_ROOMS = 12;
+
 export default function CommonRoomTable({ rooms }) {
   if (!rooms?.length) return null;
 
+  // Pad rooms so table always has 12 room columns
+  const paddedRooms = [
+    ...rooms,
+    ...Array.from(
+      { length: Math.max(0, MAX_ROOMS - rooms.length) },
+      (_, i) => ({
+        roomId: `empty-${i}`,
+        roomName: "",
+        logs: [],
+      }),
+    ),
+  ];
+
   const rows = rooms[0].logs.map((_, index) => ({
     timeStamp: rooms[0].logs[index].timeStamp,
-    values: rooms.map((room) => room.logs[index] ?? {}),
+    values: paddedRooms.map((room) => room.logs[index] ?? {}),
   }));
 
   return (
@@ -19,49 +34,49 @@ export default function CommonRoomTable({ rooms }) {
           <tr>
             <th
               rowSpan={2}
-              className="sticky top-0 left-0 z-50 min-w-[180px]
+              className="sticky top-0 left-0 z-50 w-[120px]
                 bg-primary text-primary-foreground
                 border border-border
-                px-4 py-3
+                p-3
                 text-center font-semibold"
             >
               DATETIME
             </th>
 
-            {rooms.map((room) => (
+            {paddedRooms.map((room) => (
               <th
                 key={room.roomId}
                 colSpan={2}
                 className="sticky top-0 z-40
                   bg-primary text-primary-foreground
                   border border-border
-                  px-4 py-3
+                  p-1.5
                   text-center font-semibold"
               >
-                {room.roomName}
+                {room.roomName || "\u00A0"}
               </th>
             ))}
           </tr>
 
           {/* Temp RH */}
           <tr>
-            {rooms.map((room) => (
+            {paddedRooms.map((room) => (
               <Fragment key={room.roomId}>
                 <th
-                  className="sticky top-12 z-40
+                  className="sticky top-8 z-40
                     bg-primary text-primary-foreground
                     border border-border
-                    px-3 py-2
+                    p-1.5
                     text-center text-sm font-medium"
                 >
                   Temp °C
                 </th>
 
                 <th
-                  className="sticky top-12 z-40
+                  className="sticky top-8 z-40
                     bg-primary text-primary-foreground
                     border border-border
-                    px-3 py-2
+                    p-1.5
                     text-center text-sm font-medium"
                 >
                   RH %
@@ -82,25 +97,21 @@ export default function CommonRoomTable({ rooms }) {
                   even ? "bg-background" : "bg-card"
                 }`}
               >
-                <td
-                  className="sticky left-0 z-30 whitespace-nowrap
-                    border border-border
-                    px-4 py-2
-                    font-medium bg-primary text-card
-                   "
-                >
-                  {format(new Date(row.timeStamp), "dd MMM yyyy hh:mm a")}
+                <td className="sticky left-0 z-30 whitespace-nowrap border border-border p-0.5 text-center font-medium bg-primary text-card leading-none">
+                  {format(new Date(row.timeStamp), "dd MMM yy")}
+                  <br />
+                  {format(new Date(row.timeStamp), "hh:mm a")}
                 </td>
 
                 {row.values.map((log, i) => (
                   <Fragment key={i}>
-                    <td className="border border-border px-3 py-2 text-center">
+                    <td className="border border-border p-0.5 text-center">
                       {log.avgTemp != null
                         ? Number(log.avgTemp).toFixed(1)
                         : "-"}
                     </td>
 
-                    <td className="border border-border px-3 py-2 text-center">
+                    <td className="border border-border p-0.5 text-center">
                       {log.rh != null ? Math.round(Number(log.rh)) : "-"}
                     </td>
                   </Fragment>

@@ -25,7 +25,7 @@ export function DataTable({ columns, data, page, setPage, totalPages }) {
   return (
     <div className="flex flex-col justify-between h-full">
       <div className=" h-full flex flex-col overflow-hidden">
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto scrollbar-prop">
           <Table>
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
@@ -62,7 +62,7 @@ export function DataTable({ columns, data, page, setPage, totalPages }) {
                     }
                   >
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id} className="text-center">
+                      <TableCell key={cell.id} className="text-center p-0!">
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext(),

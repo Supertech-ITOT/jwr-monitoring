@@ -62,7 +62,7 @@ export default function CommonReportPDF({ data = [], filter, name }) {
 
             {/* ================= REPORT DETAILS ================= */}
 
-            <Text style={styles.title}>Temperature and Rh REPORT</Text>
+            <Text style={styles.title}>Multiple Room</Text>
 
             <View style={styles.gridContainer}>
               <View style={styles.gridRow}>

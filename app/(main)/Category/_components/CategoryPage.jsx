@@ -22,8 +22,8 @@ export default function CategoryContent() {
   }
 
   return (
-    <div className="h-full w-full bg-cardbackground rounded-xl shadow-xl p-6">
-      <h1 className="font-bold sm:text-6xl text-3xl text-primary tracking-[2px] uppercase animate-in slide-in-from-top-100 duration-1200">
+    <div className="h-full w-full overflow-x-hidden bg-cardbackground rounded-xl shadow-xl p-1.5 xl:p-6">
+      <h1 className="sm:text-4xl font-bold tracking-[2px] text-2xl text-primary">
         Single Room
       </h1>
 

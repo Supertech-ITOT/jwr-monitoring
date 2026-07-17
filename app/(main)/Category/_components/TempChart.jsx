@@ -45,7 +45,7 @@ const TempChart = ({ isExport, data }) => {
   useEffect(() => {
     const update = () => {
       setIsMobile(window.innerWidth < 640);
-      setHeight(window.innerWidth < 768 ? 200 : 300);
+      setHeight(window.innerWidth < 768 ? 200 : 390);
     };
     update();
     window.addEventListener("resize", update);

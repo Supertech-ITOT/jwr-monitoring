@@ -17,11 +17,11 @@ export const useGetHistoricalRoomMetrics = (params) => {
   });
 };
 
-export const useGetCurrentRoomMetrics = (params) => {
+export const useGetCurrentRoomMetrics = (id) => {
   return useQuery({
-    queryKey: ["current-room-metrics", params],
+    queryKey: ["current-room-metrics", id ?? 1],
     queryFn: async () => {
-      const res = await getCurrentRoomMetrics(params);
+      const res = await getCurrentRoomMetrics(id ?? 1);
       return res.data;
     },
   });

@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 const TableUI = ({ filter }) => {
   const [page, setPage] = useState(0);
-  const size = 13;
+  const size = 24;
   const { data, isLoading, error } = useGetHistoricalRoomMetrics({
     ...filter,
     page,
@@ -29,7 +29,7 @@ const TableUI = ({ filter }) => {
 
   return (
     <div className="w-full flex flex-1  overflow-x-auto">
-      <div className="min-w-[400px] w-full h-full">
+      <div className="min-w-[200px] w-full h-full">
         <DataTable
           columns={columns}
           data={rows}

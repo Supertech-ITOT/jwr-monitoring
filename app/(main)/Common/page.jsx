@@ -4,15 +4,15 @@ import { Skeleton } from "@/components/ui/skeleton";
 import Content from "./_components/Content";
 
 export const metadata = {
-  title: "Temperature and Rh Report",
+  title: "Multiple Room",
 };
 
 export default function CommonPage() {
   return (
     <Suspense fallback={<Skeleton className="h-screen bg-background" />}>
-      <div className="h-full w-full bg-cardbackground rounded-xl shadow-xl p-6">
-        <h1 className="font-bold sm:text-6xl text-3xl text-primary tracking-[2px] uppercase animate-in slide-in-from-top-100 duration-1200">
-          Temperature and Rh Report
+      <div className="h-full w-full overflow-x-hidden bg-cardbackground rounded-xl shadow-xl p-1.5 xl:p-6">
+        <h1 className="sm:text-4xl font-bold tracking-[2px] text-2xl text-primary">
+          Multiple Room
         </h1>
         <Content />
       </div>

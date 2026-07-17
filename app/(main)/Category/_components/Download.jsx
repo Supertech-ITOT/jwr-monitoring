@@ -73,7 +73,7 @@ const Download = ({ filter, categoryName, roomName, data, isLoading }) => {
     setName("");
   };
   return (
-    <div className="size-8 ">
+    <div className="w-full">
       <Dialog open={open} onOpenChange={setOpen}>
         <form>
           <DialogTrigger asChild>
