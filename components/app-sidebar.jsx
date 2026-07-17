@@ -42,7 +42,7 @@ const items = [
     icon: Warehouse,
   },
   {
-    title: "Energy",
+    title: "Energy Room",
     url: "/Power?categoryId=1&roomId=1",
     icon: BatteryCharging,
   },

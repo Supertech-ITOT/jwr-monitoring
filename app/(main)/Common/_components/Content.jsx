@@ -56,14 +56,7 @@ export default function Content() {
       {/* Card */}
       <div className="p-0 flex flex-col h-[80vh] overflow-hidden shadow rounded-lg">
         {/* Loading */}
-        {isLoading && (
-          <div className="space-y-3 p-6">
-            <Skeleton className="h-10 w-full" />
-            {Array.from({ length: 10 }).map((_, index) => (
-              <Skeleton key={index} className="h-10 w-full" />
-            ))}
-          </div>
-        )}
+        {isLoading && <Skeleton className="h-full w-full" />}
 
         {/* Error */}
         {isError && (
