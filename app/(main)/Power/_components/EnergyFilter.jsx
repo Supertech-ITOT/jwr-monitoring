@@ -16,7 +16,7 @@ import { toast } from "sonner";
 import FilterInterval from "@/components/FilterInterval";
 import { useState } from "react";
 
-export default function CommonFilter({ filterData, onFilterChange, onApply }) {
+export default function EnergyFilter({ filterData, onFilterChange, onApply }) {
   const [open, setOpen] = useState(false);
   const { categoryId, categoryName, roomIds, fromDate, toDate, interval } =
     filterData;

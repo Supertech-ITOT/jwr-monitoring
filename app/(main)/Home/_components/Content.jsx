@@ -63,7 +63,7 @@ export default function Content() {
       </div>
 
       {layout === "grid" && (
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 2xl:grid-cols-6 gap-2 xl:gap-4">
+        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-4 xl:grid-cols-7 2xl:grid-cols-8 gap-1.5">
           {data?.map((room) => (
             <RoomCard
               key={room.roomId}
@@ -71,9 +71,8 @@ export default function Content() {
                 name: room.roomName,
                 temperature: room.avgTemp,
                 rh: room.rh,
-                energy: room.energy,
                 timestamp: format(room.timestamp, "dd MMM yy hh:mm a"),
-                status: "online",
+                status: room.status ? "on" : "off",
               }}
             />
           ))}
@@ -90,9 +89,8 @@ export default function Content() {
                 name: room.roomName,
                 temperature: room.avgTemp,
                 rh: room.rh,
-                energy: room.energy,
                 timestamp: format(room.timestamp, "dd MMM yyyy hh:mm a"),
-                status: "online",
+                status: room.status ? "on" : "off",
               }}
             />
           ))}

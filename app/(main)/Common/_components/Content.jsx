@@ -15,7 +15,7 @@ export default function Content() {
   const initialFilter = {
     categoryId: 1,
     categoryName: "Positive Room",
-    roomIds: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+    roomIds: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
     fromDate: now
       .subtract(1, "month")
       .startOf("month")
@@ -32,7 +32,7 @@ export default function Content() {
   const { data, isLoading, isError } = useGetCommonRoomLog(
     appliedFilter,
     page,
-    12,
+    10,
   );
   const rooms = data?.content ?? [];
 
@@ -89,7 +89,7 @@ export default function Content() {
               <CommonRoomTable rooms={rooms} />
             </div>
 
-            <div className="flex items-center justify-between border-t bg-white p-2">
+            <div className="flex items-center justify-between border-t ">
               <button
                 onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
                 disabled={page === 0}

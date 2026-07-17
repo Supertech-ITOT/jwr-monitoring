@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import FilterDuration from "@/components/FiltrationDuration";
 import FilterInterval from "@/components/FilterInterval";
 import { toast } from "sonner";
+import { useState } from "react";
 
 const sortOptions = [
   { id: "timestamp,desc", name: "Newest First" },
@@ -28,6 +29,7 @@ export default function CategoryFilter({
 }) {
   const router = useRouter();
   const { categoryId, roomId, fromDate, toDate, interval, sort } = filterData;
+  const [open, setOpen] = useState(false);
   const handleApply = () => {
     if (!categoryId || !roomId || !fromDate || !toDate || !interval || !sort) {
       toast.error("Please select all the inputs.");
@@ -41,10 +43,11 @@ export default function CategoryFilter({
     );
 
     toast.success("Filters applied");
+    setOpen(false); // Close popover
   };
   return (
     <div className="w-[200px] h-8">
-      <Popover>
+      <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
             variant="outline"

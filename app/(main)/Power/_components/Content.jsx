@@ -1,77 +1,118 @@
 "use client";
-import TableUI from "./TableUI";
 
-import { useGetCategory } from "@/hooks/useCategory";
-import { useGetRoomByCategoryId } from "@/hooks/useRoom";
 import { useState } from "react";
 import dayjs from "dayjs";
 import Download from "./Download";
-import { useGetHistoricalRoomMetrics } from "@/hooks/useDashboard";
-import PowerFilter from "./PowerFilter";
-import Chart from "./Chart";
+import { useGetEnergyRoomLog } from "@/hooks/useDashboard";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
+import EnergyFilter from "./EnergyFilter";
+import EnergyRoomTable from "./EnergyRoomTable";
 
-export default function Content({ categoryId, roomId }) {
+export default function Content() {
   const now = dayjs();
-  const { data: categories, isLoading: categoriesLoading } = useGetCategory();
-  const { data: rooms, isLoading: roomsLoading } =
-    useGetRoomByCategoryId(categoryId);
   const initialFilter = {
-    fromDate: now.subtract(1, "day").format("YYYY-MM-DDTHH:mm:ss"),
-    toDate: now.format("YYYY-MM-DDTHH:mm:ss"),
-    day: "Current",
-    sort: "timestamp,desc",
+    categoryId: 1,
+    categoryName: "Positive Room",
+    roomIds: [1, 2, 3, 4, 5],
+    fromDate: now
+      .subtract(1, "month")
+      .startOf("month")
+      .format("YYYY-MM-DDTHH:mm:ss"),
+    toDate: now
+      .subtract(1, "month")
+      .endOf("month")
+      .format("YYYY-MM-DDTHH:mm:ss"),
     interval: 60,
-    categoryId: categoryId,
-    roomId: roomId,
   };
   const [draftFilter, setDraftFilter] = useState(initialFilter);
   const [appliedFilter, setAppliedFilter] = useState(initialFilter);
-  const { data, isLoading } = useGetHistoricalRoomMetrics(appliedFilter);
-  const loading = categoriesLoading || roomsLoading || isLoading;
-  if (loading) {
-    return null;
-  }
-  const categoryName = categories?.find((c) => c.id === categoryId)?.name ?? "";
-  const roomName = rooms?.find((r) => r.id === roomId)?.name ?? "";
+  const [page, setPage] = useState(0);
+  const { data, isLoading, isError } = useGetEnergyRoomLog(
+    appliedFilter,
+    page,
+    3,
+  );
+  const rooms = data?.content ?? [];
+
   return (
-    <>
-      <h1 className="font-bold sm:text-3xl text-2xl text-textsecondary tracking-[2px] uppercase mt-2 animate-in slide-in-from-top-100 duration-1200">
-        {categoryName} : {roomName}
-      </h1>
-      <div className="flex justify-end gap-2 mt-4">
-        <PowerFilter
+    <div className="space-y-2 mt-2">
+      {/* Toolbar */}
+      <div className="flex justify-end gap-2 ">
+        <EnergyFilter
           filterData={draftFilter}
-          categories={categories}
-          rooms={rooms}
-          loading={loading}
           onFilterChange={setDraftFilter}
           onApply={(filter) => {
+            setPage(0);
             setAppliedFilter(filter);
           }}
         />
-        <Download
-          filter={appliedFilter}
-          categoryName={categoryName}
-          roomName={roomName}
-          data={data}
-          isLoading={loading}
-        />
+        <div className="w-15">
+          <Download filter={appliedFilter} />
+        </div>
       </div>
-      <div className="mt-6 flex flex-col xl:flex-row gap-6 w-full ">
-        <div className="flex-2 bg-cardbackground border border-border rounded-xl shadow-xl w-full h-[600px]">
-          <Chart data={data} />
-          <div
-            id="power-chart-visible"
-            className="hidden pointer-events-none"
-            style={{ width: "1920px" }}
-          >
-            <Chart isExport={true} data={data} />
+
+      {/* Card */}
+      <div className="p-0 flex flex-col h-[80vh] overflow-hidden shadow rounded-lg">
+        {/* Loading */}
+        {isLoading && (
+          <div className="space-y-3 p-6">
+            <Skeleton className="h-10 w-full" />
+            {Array.from({ length: 10 }).map((_, index) => (
+              <Skeleton key={index} className="h-10 w-full" />
+            ))}
           </div>
-        </div>
-        <div className="flex-1 bg-cardbackground border border-border rounded-xl shadow-xl w-full xl:w-1/3 h-[600px] flex flex-col overflow-hidden">
-          <TableUI filter={appliedFilter} />
-        </div>
+        )}
+
+        {/* Error */}
+        {isError && (
+          <div className="p-6">
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>Failed to load room logs.</AlertDescription>
+            </Alert>
+          </div>
+        )}
+
+        {/* Empty */}
+        {!isLoading && !isError && rooms?.length == 0 && (
+          <div className="h-full flex items-center justify-center text-muted-foreground">
+            No logs found.
+          </div>
+        )}
+
+        {/* Table */}
+        {!isLoading && !isError && rooms.length > 0 && (
+          <div className="flex flex-col flex-1 min-h-0">
+            <div className="flex-1 min-h-0">
+              <EnergyRoomTable rooms={rooms} />
+            </div>
+
+            <div className="flex items-center justify-between border-t ">
+              <button
+                onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
+                disabled={page === 0}
+                className="border rounded px-4 py-2 disabled:opacity-50"
+              >
+                Previous
+              </button>
+
+              <p>
+                Page {page + 1} of {data.page.totalPages}
+              </p>
+
+              <button
+                onClick={() => setPage((prev) => prev + 1)}
+                disabled={page + 1 >= data.page.totalPages}
+                className="border rounded px-4 py-2 disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
       </div>
-    </>
+    </div>
   );
 }

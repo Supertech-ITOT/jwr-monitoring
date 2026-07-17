@@ -24,7 +24,6 @@ import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import { useFilter } from "@/context/FilterContext";
 import BottomNavigation from "./BottomNavigation";
-import { useState } from "react";
 
 const items = [
   {
@@ -43,7 +42,7 @@ const items = [
     icon: Warehouse,
   },
   {
-    title: "Power",
+    title: "Energy",
     url: "/Power?categoryId=1&roomId=1",
     icon: BatteryCharging,
   },

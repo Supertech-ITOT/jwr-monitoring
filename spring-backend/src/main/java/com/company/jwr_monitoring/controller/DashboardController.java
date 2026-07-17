@@ -12,12 +12,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.company.jwr_monitoring.dto.Common.ApiResponse;
 import com.company.jwr_monitoring.dto.Dashboard.CommonRoomRequest;
 import com.company.jwr_monitoring.dto.Dashboard.CommonRoomResponse;
+import com.company.jwr_monitoring.dto.Dashboard.EnergyRoomRequest;
+import com.company.jwr_monitoring.dto.Dashboard.EnergyRoomResponse;
 import com.company.jwr_monitoring.dto.Dashboard.RoomCurrentValueDto;
 import com.company.jwr_monitoring.dto.Dashboard.RoomHistoricalValueDto;
 import com.company.jwr_monitoring.dto.Dashboard.RoomHistoricalValueRequest;
@@ -67,6 +68,17 @@ public class DashboardController {
                                 ApiResponse.success(
                                                 "Common Room Log fetched successfully",
                                                 roomDashboardService.getCommonRoomLog(request, pageable)));
+        }
+
+        @PostMapping("/energy-logs")
+        public ResponseEntity<ApiResponse<Page<EnergyRoomResponse>>> getEnergyRoomLog(
+                        @RequestBody EnergyRoomRequest request,
+                        Pageable pageable) {
+
+                return ResponseEntity.ok(
+                                ApiResponse.success(
+                                                "energy Room Log fetched successfully",
+                                                roomDashboardService.getEnergyRoomLog(request, pageable)));
         }
 
 }

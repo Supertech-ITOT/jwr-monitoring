@@ -6,7 +6,7 @@ INSERT INTO tag_master (
     room_id
 )
 SELECT
-    'opc.tcp://192.168.1.232:48010' AS ip_address,
+    'opc.tcp://127.0.0.1:48010' AS ip_address,
     'ns=2;s=Studio.Tags.Application.' || r.name || '_' || t.suffix AS node_id,
     r.name || '_' || t.suffix AS tag_name,
     t.parameter_id,
@@ -15,7 +15,12 @@ FROM rooms r
 CROSS JOIN (
     VALUES
         ('TE_AVG', 1),
-        ('RH', 3)
+        ('RH', 3),
+        ('KWH',2),
+        ('CURRENT',4),
+        ('VOLTAGE',5),
+        ('FREQUENCY',6),
+        ('START_MAIN',7)
 ) AS t(suffix, parameter_id)
 WHERE r.id BETWEEN 1 AND 30
 ORDER BY r.id;

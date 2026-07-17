@@ -17,4 +17,14 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
         List<Long> findIdsByCategory(Long categoryId);
 
         Page<Room> findByCategoryId(Long categoryId, Pageable pageable);
+
+        @Query("""
+                            SELECT COUNT(DISTINCT r.id)
+                            FROM Room r
+                            JOIN TagMaster tm ON tm.room = r
+                            JOIN TagCurrentValue tcv ON tcv.tag = tm
+                            WHERE tm.parameter.id = 7
+                              AND tcv.value = 1.0
+                        """)
+        Long countRunningRooms();
 }

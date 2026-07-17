@@ -1,6 +1,7 @@
 import {
   getCommonRoomLog,
   getCurrentRoomMetrics,
+  getEnergyRoomLog,
   getHistoricalRoomMetrics,
   getRoomStatCard,
 } from "@/services/DashboardService";
@@ -43,6 +44,16 @@ export const useGetCommonRoomLog = (filter, page, size) => {
     enabled: !!filter,
     queryFn: async () => {
       const res = await getCommonRoomLog(filter, page, size);
+      return res.data;
+    },
+  });
+};
+export const useGetEnergyRoomLog = (filter, page, size) => {
+  return useQuery({
+    queryKey: ["energy-room-log", filter, page, size],
+    enabled: !!filter,
+    queryFn: async () => {
+      const res = await getEnergyRoomLog(filter, page, size);
       return res.data;
     },
   });

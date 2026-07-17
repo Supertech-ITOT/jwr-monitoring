@@ -30,6 +30,12 @@ public interface TagCurrentValueRepository extends JpaRepository<TagCurrentValue
                     WHEN t.parameter.id = 3 THEN tcv.value
                 END), 0.0),
 
+                CASE
+                    WHEN COALESCE(MAX(CASE
+                        WHEN t.parameter.id = 7 THEN tcv.value
+                    END), 0.0) > 0 THEN true ELSE false
+                END,
+
                 MAX(tcv.lastUpdated)
             )
             FROM TagCurrentValue tcv

@@ -34,7 +34,6 @@ public class DataInitializer implements CommandLineRunner {
         if (categoryRepository.count() > 0) {
             return;
         }
-
         categoryRepository.saveAndFlush(Category.builder().name("Positive Room").build());
         categoryRepository.saveAndFlush(Category.builder().name("Negative Room").build());
         categoryRepository.saveAndFlush(Category.builder().name("Mezzanine Room").build());
@@ -86,9 +85,14 @@ public class DataInitializer implements CommandLineRunner {
         if (parameterRepository.count() > 0) {
             return;
         }
-        parameterRepository.save(Parameter.builder().name("Temperature").uom("°C").type(DataType.REAL).build());
-        parameterRepository.save(Parameter.builder().name("Energy").uom("Kw").type(DataType.REAL).build());
-        parameterRepository.save(Parameter.builder().name("RH").uom("%").type(DataType.REAL).build());
+        parameterRepository.save(Parameter.builder().id(1L).name("Temperature").uom("°C").type(DataType.REAL).build());
+        parameterRepository.save(Parameter.builder().id(2L).name("Energy").uom("kWh").type(DataType.REAL).build());
+        parameterRepository.save(Parameter.builder().id(3L).name("RH").uom("%").type(DataType.REAL).build());
+        parameterRepository.save(Parameter.builder().id(4L).name("Current").uom("A").type(DataType.REAL).build());
+        parameterRepository.save(Parameter.builder().id(5L).name("Voltage").uom("V").type(DataType.REAL).build());
+        parameterRepository.save(Parameter.builder().id(6L).name("Frequency").uom("Hz").type(DataType.REAL).build());
+        parameterRepository
+                .save(Parameter.builder().id(7L).name("Run Status").uom("Boolean").type(DataType.REAL).build());
 
     }
 

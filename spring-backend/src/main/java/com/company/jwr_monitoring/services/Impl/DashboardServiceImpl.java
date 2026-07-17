@@ -15,6 +15,10 @@ import com.company.jwr_monitoring.dto.Dashboard.CommonRoomLogFlatResponse;
 import com.company.jwr_monitoring.dto.Dashboard.CommonRoomLogResponse;
 import com.company.jwr_monitoring.dto.Dashboard.CommonRoomRequest;
 import com.company.jwr_monitoring.dto.Dashboard.CommonRoomResponse;
+import com.company.jwr_monitoring.dto.Dashboard.EnergyRoomLogFlatResponse;
+import com.company.jwr_monitoring.dto.Dashboard.EnergyRoomLogResponse;
+import com.company.jwr_monitoring.dto.Dashboard.EnergyRoomRequest;
+import com.company.jwr_monitoring.dto.Dashboard.EnergyRoomResponse;
 import com.company.jwr_monitoring.dto.Dashboard.RoomCurrentValueDto;
 import com.company.jwr_monitoring.dto.Dashboard.RoomHistoricalValueDto;
 import com.company.jwr_monitoring.dto.Dashboard.RoomHistoricalValueRequest;
@@ -58,8 +62,7 @@ public class DashboardServiceImpl implements DashboardService {
                 return page.map(row -> new RoomHistoricalValueDto(
                                 row[0] == null ? null : ((Number) row[0]).doubleValue(),
                                 row[1] == null ? null : ((Number) row[1]).doubleValue(),
-                                row[2] == null ? null : ((Number) row[2]).doubleValue(),
-                                ((java.sql.Timestamp) row[3]).toLocalDateTime()));
+                                ((java.sql.Timestamp) row[2]).toLocalDateTime()));
         }
 
         @Override
@@ -79,8 +82,8 @@ public class DashboardServiceImpl implements DashboardService {
         @Override
         public List<RoomStatCardDto> getRoomStatCard() {
                 List<RoomStatCardDto> response = new ArrayList<>();
-                response.add(new RoomStatCardDto(0L, "Total Rooms", roomRepository.count()));
                 response.addAll(categoryRepository.getRoomStatCard());
+
                 return response;
         }
 
@@ -195,4 +198,82 @@ public class DashboardServiceImpl implements DashboardService {
                                 pageable,
                                 roomPage.getTotalElements());
         }
+
+        @Override
+        public Page<EnergyRoomResponse> getEnergyRoomLog(EnergyRoomRequest request, Pageable pageable) {
+
+                Page<Room> roomPage;
+
+                if (request.roomIds() == null || request.roomIds().isEmpty()) {
+
+                        roomPage = roomRepository.findByCategoryId(
+                                        request.categoryId(),
+                                        pageable);
+
+                } else {
+
+                        List<Room> rooms = roomRepository.findAllById(request.roomIds());
+
+                        int start = (int) pageable.getOffset();
+                        int end = Math.min(start + pageable.getPageSize(), rooms.size());
+
+                        List<Room> pageRooms = rooms.subList(start, end);
+
+                        roomPage = new PageImpl<>(
+                                        pageRooms,
+                                        pageable,
+                                        rooms.size());
+                }
+
+                List<Long> roomIds = roomPage
+                                .stream()
+                                .map(Room::getId)
+                                .toList();
+
+                if (roomIds.isEmpty()) {
+                        return Page.empty(pageable);
+                }
+
+                List<Object[]> result = tagLogRepository.getEnergyRoomLogs(
+                                roomIds,
+                                request.interval(),
+                                request.fromDate(),
+                                request.toDate());
+
+                List<EnergyRoomLogFlatResponse> rows = result.stream()
+                                .map(r -> new EnergyRoomLogFlatResponse(
+                                                ((Number) r[0]).longValue(),
+                                                (String) r[1],
+                                                ((java.sql.Timestamp) r[2]).toLocalDateTime(),
+                                                r[3] == null ? null : ((Number) r[3]).doubleValue(),
+                                                r[4] == null ? null : ((Number) r[4]).doubleValue(),
+                                                r[5] == null ? null : ((Number) r[5]).doubleValue(),
+                                                r[6] == null ? null : ((Number) r[6]).doubleValue()))
+                                .toList();
+
+                Map<Long, EnergyRoomResponse> map = new LinkedHashMap<>();
+
+                for (EnergyRoomLogFlatResponse row : rows) {
+
+                        EnergyRoomResponse room = map.computeIfAbsent(
+                                        row.roomId(),
+                                        id -> new EnergyRoomResponse(
+                                                        row.roomId(),
+                                                        row.roomName(),
+                                                        new ArrayList<>()));
+
+                        room.logs().add(new EnergyRoomLogResponse(
+                                        row.timeStamp(),
+                                        row.energy(),
+                                        row.current(),
+                                        row.voltage(),
+                                        row.frequency()));
+                }
+
+                return new PageImpl<>(
+                                new ArrayList<>(map.values()),
+                                pageable,
+                                roomPage.getTotalElements());
+        }
+
 }

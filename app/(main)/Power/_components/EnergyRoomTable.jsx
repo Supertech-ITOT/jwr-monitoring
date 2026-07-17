@@ -3,9 +3,9 @@
 import { Fragment } from "react";
 import { format } from "date-fns";
 
-const MAX_ROOMS = 10;
+const MAX_ROOMS = 3;
 
-export default function CommonRoomTable({ rooms }) {
+export default function EnergyRoomTable({ rooms }) {
   if (!rooms?.length) return null;
 
   // Pad rooms so table always has 12 room columns
@@ -46,7 +46,7 @@ export default function CommonRoomTable({ rooms }) {
             {paddedRooms.map((room) => (
               <th
                 key={room.roomId}
-                colSpan={2}
+                colSpan={4}
                 className="sticky top-0 z-40
                   bg-primary text-primary-foreground
                   border border-border
@@ -69,7 +69,7 @@ export default function CommonRoomTable({ rooms }) {
                     p-0.5
                     text-center text-sm font-medium sm:text-sm text-[10px]"
                 >
-                  Temp °C
+                  Energy kWh
                 </th>
 
                 <th
@@ -79,7 +79,25 @@ export default function CommonRoomTable({ rooms }) {
                     p-0.5
                     text-center text-sm font-medium sm:text-sm text-[10px]"
                 >
-                  RH %
+                  Current A
+                </th>
+                <th
+                  className="sticky top-5 z-40
+                    bg-primary text-primary-foreground
+                    border border-border
+                    p-0.5
+                    text-center text-sm font-medium sm:text-sm text-[10px]"
+                >
+                  Voltage V
+                </th>
+                <th
+                  className="sticky top-5 z-40
+                    bg-primary text-primary-foreground
+                    border border-border
+                    p-0.5
+                    text-center text-sm font-medium sm:text-sm text-[10px]"
+                >
+                  Frequency Hz
                 </th>
               </Fragment>
             ))}
@@ -106,13 +124,23 @@ export default function CommonRoomTable({ rooms }) {
                 {row.values.map((log, i) => (
                   <Fragment key={i}>
                     <td className="border border-border p-0.2 text-center sm:text-sm text-[10px]">
-                      {log.avgTemp != null
-                        ? Number(log.avgTemp).toFixed(1)
-                        : "-"}
+                      {log.energy != null ? Number(log.energy).toFixed(1) : "-"}
                     </td>
 
                     <td className="border border-border p-0.2 text-center sm:text-sm text-[10px]">
-                      {log.rh != null ? Math.round(Number(log.rh)) : "-"}
+                      {log.current != null
+                        ? Math.round(Number(log.current))
+                        : "-"}
+                    </td>
+                    <td className="border border-border p-0.2 text-center sm:text-sm text-[10px]">
+                      {log.voltage != null
+                        ? Math.round(Number(log.voltage))
+                        : "-"}
+                    </td>
+                    <td className="border border-border p-0.2 text-center sm:text-sm text-[10px]">
+                      {log.frequency != null
+                        ? Math.round(Number(log.frequency))
+                        : "-"}
                     </td>
                   </Fragment>
                 ))}

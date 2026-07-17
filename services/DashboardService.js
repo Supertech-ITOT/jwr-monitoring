@@ -28,3 +28,13 @@ export const getCommonRoomLog = async (filter, page = 0, size = 1) => {
 
   return res.data;
 };
+export const getEnergyRoomLog = async (filter, page = 0, size = 1) => {
+  const res = await api.post("/dashboard/energy-logs", filter, {
+    params: {
+      page,
+      size,
+    },
+  });
+
+  return res.data;
+};

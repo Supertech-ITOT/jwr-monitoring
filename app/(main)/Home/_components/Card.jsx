@@ -18,12 +18,6 @@ const Card = () => {
 
   const getCardConfig = (categoryName) => {
     switch (categoryName) {
-      case "Total Rooms":
-        return {
-          icon: <Building2 className="size-6" style={{ color: "#166534" }} />,
-          color: "#E9FBEF",
-        };
-
       case "Positive Room":
         return {
           icon: <Sun className="size-6" style={{ color: "#C2410C" }} />,
@@ -104,16 +98,17 @@ const Card = () => {
       <CarouselContent>
         {stats.map((item) => (
           <CarouselItem key={item.id} className="basis-auto pl-2!">
-            <Button className="w-25 h-fit lg:w-[300px] lg:flex-row flex-col justify-center lg:h-[100px]  shadow rounded-xl border border-border bg-cardbackground hover:bg-cardhover p-4 flex items-center gap-4">
+            <Button className="w-25 h-fit lg:w-60 lg:flex-row flex-col justify-center lg:h-20  shadow rounded-xl border border-border bg-cardbackground hover:bg-cardhover p-2 flex items-center gap-1.5">
               <div
                 style={{ backgroundColor: item.color }}
-                className="lg:size-16 size-12 rounded-full flex items-center justify-center shrink-0"
+                className="lg:size-16 size-10 rounded-full flex items-center justify-center shrink-0"
               >
                 {item.icon}
               </div>
 
               <div className="flex flex-col lg:items-start items-center">
-                <strong className="text-text text-xl font-bold">
+                <strong className="text-text lg:text-xl text-sm font-bold">
+                  <span className="text-primary">{item.runningRoom}</span>/
                   {item.totalRoom}
                 </strong>
 

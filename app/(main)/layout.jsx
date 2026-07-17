@@ -1,7 +1,6 @@
 import AppSidebar from "@/components/app-sidebar";
 import DateProvider from "@/components/DateProvider";
 import SidebarStateBridge from "@/components/SidebarStateBridge";
-import { SidebarTrigger } from "@/components/ui/sidebar";
 import { FilterProvider } from "@/context/FilterContext";
 
 const DashboardLayout = ({ children }) => {
