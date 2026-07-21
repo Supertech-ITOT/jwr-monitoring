@@ -62,7 +62,7 @@ export default function EnergyReportPDF({ data = [], filter, name }) {
 
             {/* ================= REPORT DETAILS ================= */}
 
-            <Text style={styles.title}>Multiple Room</Text>
+            <Text style={styles.title}>Energy Room</Text>
 
             <View style={styles.gridContainer}>
               <View style={styles.gridRow}>

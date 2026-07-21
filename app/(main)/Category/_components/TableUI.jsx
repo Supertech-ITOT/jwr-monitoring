@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 const TableUI = ({ filter }) => {
   const [page, setPage] = useState(0);
-  const size = 24;
+  const size = 27;
   const { data, isLoading, error } = useGetHistoricalRoomMetrics({
     ...filter,
     page,
