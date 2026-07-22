@@ -67,7 +67,7 @@ export default function RoomCard({
           <div className="flex flex-col items-center">
             <Droplets className="xl:size-5 size-4 text-blue-500" />
             <span className="mt-1 font-semibold text-xs xl:text-sm">
-              {room.rh}%
+              {room.rh.toFixed(0)}%
             </span>
             <small className="text-muted-foreground text-xs xl:text-sm">
               RH

@@ -23,10 +23,6 @@ public interface TagCurrentValueRepository extends JpaRepository<TagCurrentValue
                 END), 0.0),
 
                 COALESCE(MAX(CASE
-                    WHEN t.parameter.id = 2 THEN tcv.value
-                END), 0.0),
-
-                COALESCE(MAX(CASE
                     WHEN t.parameter.id = 3 THEN tcv.value
                 END), 0.0),
 
