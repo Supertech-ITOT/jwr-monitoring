@@ -79,7 +79,9 @@ export default function RoomTable({
         {/* RH */}
         <div className="flex items-center justify-center gap-1">
           <Droplets className="size-4 text-blue-500 shrink-0" />
-          <span className="text-xs sm:text-sm font-medium">{room.rh}%</span>
+          <span className="text-xs sm:text-sm font-medium">
+            {room.rh.toFixed(0)}%
+          </span>
         </div>
 
         {/* Status */}

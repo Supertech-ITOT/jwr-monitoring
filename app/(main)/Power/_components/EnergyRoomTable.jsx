@@ -129,7 +129,7 @@ export default function EnergyRoomTable({ rooms }) {
 
                     <td className="border border-border p-0.2 text-center sm:text-sm text-[10px]">
                       {log.current != null
-                        ? Math.round(Number(log.current))
+                        ? Number(log.current).toFixed(2)
                         : "-"}
                     </td>
                     <td className="border border-border p-0.2 text-center sm:text-sm text-[10px]">
@@ -139,7 +139,7 @@ export default function EnergyRoomTable({ rooms }) {
                     </td>
                     <td className="border border-border p-0.2 text-center sm:text-sm text-[10px]">
                       {log.frequency != null
-                        ? Math.round(Number(log.frequency))
+                        ? Number(log.frequency).toFixed(1)
                         : "-"}
                     </td>
                   </Fragment>
