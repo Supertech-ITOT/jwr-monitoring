@@ -16,26 +16,17 @@ export default function Content() {
     categoryId: 1,
     categoryName: "Positive Room",
     roomIds: [1, 2, 3, 4, 5],
-     day: "Current",
-     sort: "timestamp,desc",
-    fromDate: now
-      .subtract(1, "month")
-      .startOf("month")
-      .format("YYYY-MM-DDTHH:mm:ss"),
-    toDate: now
-      .subtract(1, "month")
-      .endOf("month")
-      .format("YYYY-MM-DDTHH:mm:ss"),
+    fromDate: now.subtract(1, "day").format("YYYY-MM-DDTHH:mm:ss"),
+    toDate: now.format("YYYY-MM-DDTHH:mm:ss"),
+    day: "Current",
+    sort: "timestamp,desc",
     interval: 60,
   };
   const [draftFilter, setDraftFilter] = useState(initialFilter);
   const [appliedFilter, setAppliedFilter] = useState(initialFilter);
   const [page, setPage] = useState(0);
-  const { data, isLoading, isError } = useGetEnergyRoomLog(
-    appliedFilter,
-    page,
-    3,
-  );
+  const size = 3;
+  const { data, isLoading, isError } = useGetEnergyRoomLog({...appliedFilter, page, size});
   const rooms = data?.content ?? [];
 
   return (

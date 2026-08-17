@@ -48,12 +48,12 @@ export const useGetCommonRoomLog = (filter, page, size) => {
     },
   });
 };
-export const useGetEnergyRoomLog = (filter, page, size) => {
+export const useGetEnergyRoomLog = (params) => {
   return useQuery({
-    queryKey: ["energy-room-log", filter, page, size],
-    enabled: !!filter,
+    queryKey: ["energy-room-log", params],
+    refetchInterval: 60000,
     queryFn: async () => {
-      const res = await getEnergyRoomLog(filter, page, size);
+      const res = await getEnergyRoomLog(params);
       return res.data;
     },
   });

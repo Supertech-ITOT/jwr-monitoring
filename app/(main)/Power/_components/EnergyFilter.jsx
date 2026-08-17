@@ -22,8 +22,7 @@ const sortOptions = [
 ];
 export default function EnergyFilter({ filterData, onFilterChange, onApply }) {
   const [open, setOpen] = useState(false);
-  const { categoryId, categoryName, roomIds, fromDate, toDate, interval, sort } =
-    filterData;
+  const { categoryId, categoryName, roomIds, fromDate, toDate, interval, sort } = filterData;
   const { data: categories, isLoading: categoriesLoading } = useGetCategory();
   const { data: rooms, isLoading: roomsLoading } =
     useGetRoomByCategoryId(categoryId);
@@ -40,7 +39,7 @@ export default function EnergyFilter({ filterData, onFilterChange, onApply }) {
       toast.error("Please select all the inputs.");
       return;
     }
-    onApply({ categoryId, categoryName, roomIds, fromDate, toDate, interval });
+    onApply(filterData);
     toast.success("Filters applied");
     setOpen(false); // Close popover
   };
@@ -91,18 +90,17 @@ export default function EnergyFilter({ filterData, onFilterChange, onApply }) {
 
           <FilterDuration
             initial={filterData}
-            onChange={({ fromDate, toDate, day }) =>
+            onChange={({ fromDate, toDate, day }) => {
               onFilterChange((prev) => ({
                 ...prev,
-                fromDate: fromDate?.format("YYYY-MM-DDTHH:mm:ss") ?? null,
-                toDate: toDate?.format("YYYY-MM-DDTHH:mm:ss") ?? null,
+                fromDate: fromDate?.format("YYYY-MM-DDTHH:mm:ss"),
+                toDate: toDate?.format("YYYY-MM-DDTHH:mm:ss"),
                 day,
-              }))
-            }
-        
+              }));
+            }}
           />
 
-            <FilterSelect
+          <FilterSelect
             label="Sort"
             icon={ArrowUpDown}
             loading={false}

@@ -1,6 +1,7 @@
 package com.company.jwr_monitoring.services.Impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -8,7 +9,9 @@ import java.util.Map;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.company.jwr_monitoring.dto.Dashboard.CommonRoomLogFlatResponse;
@@ -200,7 +203,13 @@ public class DashboardServiceImpl implements DashboardService {
         }
 
         @Override
-        public Page<EnergyRoomResponse> getEnergyRoomLog(EnergyRoomRequest request, Pageable pageable) {
+        public Page<EnergyRoomResponse> getEnergyRoomLog(
+                        EnergyRoomRequest request,
+                        Pageable pageable) {
+
+                Pageable roomPageable = PageRequest.of(
+                                pageable.getPageNumber(),
+                                pageable.getPageSize());
 
                 Page<Room> roomPage;
 
@@ -208,16 +217,20 @@ public class DashboardServiceImpl implements DashboardService {
 
                         roomPage = roomRepository.findByCategoryId(
                                         request.categoryId(),
-                                        pageable);
+                                        roomPageable);
 
                 } else {
 
                         List<Room> rooms = roomRepository.findAllById(request.roomIds());
 
                         int start = (int) pageable.getOffset();
-                        int end = Math.min(start + pageable.getPageSize(), rooms.size());
+                        int end = Math.min(
+                                        start + pageable.getPageSize(),
+                                        rooms.size());
 
-                        List<Room> pageRooms = rooms.subList(start, end);
+                        List<Room> pageRooms = start >= rooms.size()
+                                        ? Collections.emptyList()
+                                        : rooms.subList(start, end);
 
                         roomPage = new PageImpl<>(
                                         pageRooms,
@@ -225,13 +238,15 @@ public class DashboardServiceImpl implements DashboardService {
                                         rooms.size());
                 }
 
-                List<Long> roomIds = roomPage
-                                .stream()
+                List<Long> roomIds = roomPage.stream()
                                 .map(Room::getId)
                                 .toList();
 
                 if (roomIds.isEmpty()) {
-                        return Page.empty(pageable);
+                        return new PageImpl<>(
+                                        Collections.emptyList(),
+                                        pageable,
+                                        roomPage.getTotalElements());
                 }
 
                 List<Object[]> result = tagLogRepository.getEnergyRoomLogs(
@@ -251,6 +266,22 @@ public class DashboardServiceImpl implements DashboardService {
                                                 r[6] == null ? null : ((Number) r[6]).doubleValue()))
                                 .toList();
 
+                Sort.Order timestampOrder = pageable.getSort().getOrderFor("timestamp");
+
+                if (timestampOrder != null) {
+
+                        Comparator<EnergyRoomLogFlatResponse> comparator = Comparator.comparing(
+                                        EnergyRoomLogFlatResponse::timeStamp);
+
+                        if (timestampOrder.isDescending()) {
+                                comparator = comparator.reversed();
+                        }
+
+                        rows = rows.stream()
+                                        .sorted(comparator)
+                                        .toList();
+                }
+
                 Map<Long, EnergyRoomResponse> map = new LinkedHashMap<>();
 
                 for (EnergyRoomLogFlatResponse row : rows) {
@@ -262,12 +293,13 @@ public class DashboardServiceImpl implements DashboardService {
                                                         row.roomName(),
                                                         new ArrayList<>()));
 
-                        room.logs().add(new EnergyRoomLogResponse(
-                                        row.timeStamp(),
-                                        row.energy(),
-                                        row.current(),
-                                        row.voltage(),
-                                        row.frequency()));
+                        room.logs().add(
+                                        new EnergyRoomLogResponse(
+                                                        row.timeStamp(),
+                                                        row.energy(),
+                                                        row.current(),
+                                                        row.voltage(),
+                                                        row.frequency()));
                 }
 
                 return new PageImpl<>(
