@@ -9,16 +9,20 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Factory, Funnel, DoorOpen } from "lucide-react";
+import { Factory, Funnel, DoorOpen, ArrowUpDown } from "lucide-react";
 import { useGetCategory } from "@/hooks/useCategory";
 import { useGetRoomByCategoryId } from "@/hooks/useRoom";
 import { toast } from "sonner";
 import FilterInterval from "@/components/FilterInterval";
 import { useState } from "react";
 
+const sortOptions = [
+  { id: "timestamp,desc", name: "Newest First" },
+  { id: "timestamp,asc", name: "Oldest First" },
+];
 export default function EnergyFilter({ filterData, onFilterChange, onApply }) {
   const [open, setOpen] = useState(false);
-  const { categoryId, categoryName, roomIds, fromDate, toDate, interval } =
+  const { categoryId, categoryName, roomIds, fromDate, toDate, interval, sort } =
     filterData;
   const { data: categories, isLoading: categoriesLoading } = useGetCategory();
   const { data: rooms, isLoading: roomsLoading } =
@@ -31,7 +35,7 @@ export default function EnergyFilter({ filterData, onFilterChange, onApply }) {
       roomIds.length === 0 ||
       !fromDate ||
       !toDate ||
-      !interval
+      !interval|| !sort
     ) {
       toast.error("Please select all the inputs.");
       return;
@@ -87,14 +91,29 @@ export default function EnergyFilter({ filterData, onFilterChange, onApply }) {
 
           <FilterDuration
             initial={filterData}
-            onChange={({ fromDate, toDate }) =>
+            onChange={({ fromDate, toDate, day }) =>
               onFilterChange((prev) => ({
                 ...prev,
                 fromDate: fromDate?.format("YYYY-MM-DDTHH:mm:ss") ?? null,
                 toDate: toDate?.format("YYYY-MM-DDTHH:mm:ss") ?? null,
+                day,
               }))
             }
         
+          />
+
+            <FilterSelect
+            label="Sort"
+            icon={ArrowUpDown}
+            loading={false}
+            options={sortOptions}
+            value={sort}
+            onSelect={(sort) =>
+              onFilterChange((prev) => ({
+                ...prev,
+                sort,
+              }))
+            }
           />
 
           <FilterInterval

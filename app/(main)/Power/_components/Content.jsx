@@ -16,6 +16,8 @@ export default function Content() {
     categoryId: 1,
     categoryName: "Positive Room",
     roomIds: [1, 2, 3, 4, 5],
+     day: "Current",
+     sort: "timestamp,desc",
     fromDate: now
       .subtract(1, "month")
       .startOf("month")
