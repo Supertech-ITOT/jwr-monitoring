@@ -94,7 +94,7 @@ export default function EnergyFilter({ filterData, onFilterChange, onApply }) {
                 toDate: toDate?.format("YYYY-MM-DDTHH:mm:ss") ?? null,
               }))
             }
-            dayInput={false}
+        
           />
 
           <FilterInterval
