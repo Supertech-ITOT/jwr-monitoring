@@ -8,6 +8,18 @@ import { THEME } from "./theme";
 const ROOMS_PER_PAGE = 3;
 const ROWS_PER_PAGE = 24;
 
+const formatStat = (value, type) => {
+  if (value == null) return "-";
+  const n = Number(value);
+
+  if (type === "energy") return n.toFixed(1);
+  if (type === "current") return n.toFixed(2);
+  if (type === "voltage") return Math.round(n);
+  if (type === "frequency") return n.toFixed(1);
+
+  return n;
+};
+
 export default function EnergyReportPDF({ data = [], filter, name }) {
   if (!data.length) return <Document />;
 
@@ -284,6 +296,71 @@ export default function EnergyReportPDF({ data = [], filter, name }) {
               </View>
 
               {/* BODY */}
+              {[
+                ["AVG", "avg"],
+                ["MIN", "min"],
+                ["MAX", "max"],
+              ].map(([label, type]) => (
+                <View
+                  key={label}
+                  style={{
+                    flexDirection: "row",
+                    backgroundColor: THEME.main,
+                    color: "#fff",
+                    borderBottomWidth: 1,
+                    borderColor: THEME.border,
+                    minHeight: 20,
+                  }}
+                >
+                  <View
+                    style={{
+                      width: 100,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      borderRightWidth: 1,
+                      borderColor: "#fff",
+                    }}
+                  >
+                    <Text style={{ fontSize: 8, fontWeight: "bold" }}>
+                      {label}
+                    </Text>
+                  </View>
+
+                  {rooms.map((room) => (
+                    <View
+                      key={room.roomId}
+                      style={{
+                        flex: 2,
+                        flexDirection: "row",
+                        borderRightWidth: 1,
+                        borderColor: "#fff",
+                      }}
+                    >
+                      {[
+                        [`${type}Energy`, "energy"],
+                        [`${type}Current`, "current"],
+                        [`${type}Voltage`, "voltage"],
+                        [`${type}Frequency`, "frequency"],
+                      ].map(([key, unit], index) => (
+                        <View
+                          key={key}
+                          style={{
+                            flex: 1,
+                            alignItems: "center",
+                            justifyContent: "center",
+                            borderRightWidth: index < 3 ? 1 : 0,
+                            borderColor: "#fff",
+                          }}
+                        >
+                          <Text style={{ fontSize: 8, fontWeight: "bold" }}>
+                            {formatStat(room[key], unit)}
+                          </Text>
+                        </View>
+                      ))}
+                    </View>
+                  ))}
+                </View>
+              ))}
 
               {pageRows.map((row, rowIndex) => (
                 <View
@@ -331,7 +408,7 @@ export default function EnergyReportPDF({ data = [], filter, name }) {
                       >
                         <Text style={{ fontSize: 8 }}>
                           {log.energy != null
-                            ? Number(log.energy).toFixed(2)
+                            ? Number(log.energy).toFixed(1)
                             : "-"}
                         </Text>
                       </View>
@@ -362,7 +439,7 @@ export default function EnergyReportPDF({ data = [], filter, name }) {
                       >
                         <Text style={{ fontSize: 8 }}>
                           {log.voltage != null
-                            ? Number(log.voltage).toFixed(2)
+                            ? Math.round(Number(log.voltage))
                             : "-"}
                         </Text>
                       </View>
@@ -375,7 +452,7 @@ export default function EnergyReportPDF({ data = [], filter, name }) {
                       >
                         <Text style={{ fontSize: 8 }}>
                           {log.frequency != null
-                            ? Number(log.frequency).toFixed(2)
+                            ? Number(log.frequency).toFixed(1)
                             : "-"}
                         </Text>
                       </View>

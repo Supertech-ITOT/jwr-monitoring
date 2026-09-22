@@ -257,13 +257,36 @@ public class DashboardServiceImpl implements DashboardService {
 
                 List<EnergyRoomLogFlatResponse> rows = result.stream()
                                 .map(r -> new EnergyRoomLogFlatResponse(
+
                                                 ((Number) r[0]).longValue(),
                                                 (String) r[1],
                                                 ((java.sql.Timestamp) r[2]).toLocalDateTime(),
+
+                                                // Interval values
                                                 r[3] == null ? null : ((Number) r[3]).doubleValue(),
                                                 r[4] == null ? null : ((Number) r[4]).doubleValue(),
                                                 r[5] == null ? null : ((Number) r[5]).doubleValue(),
-                                                r[6] == null ? null : ((Number) r[6]).doubleValue()))
+                                                r[6] == null ? null : ((Number) r[6]).doubleValue(),
+
+                                                // Energy
+                                                r[7] == null ? null : ((Number) r[7]).doubleValue(),
+                                                r[8] == null ? null : ((Number) r[8]).doubleValue(),
+                                                r[9] == null ? null : ((Number) r[9]).doubleValue(),
+
+                                                // Current
+                                                r[10] == null ? null : ((Number) r[10]).doubleValue(),
+                                                r[11] == null ? null : ((Number) r[11]).doubleValue(),
+                                                r[12] == null ? null : ((Number) r[12]).doubleValue(),
+
+                                                // Voltage
+                                                r[13] == null ? null : ((Number) r[13]).doubleValue(),
+                                                r[14] == null ? null : ((Number) r[14]).doubleValue(),
+                                                r[15] == null ? null : ((Number) r[15]).doubleValue(),
+
+                                                // Frequency
+                                                r[16] == null ? null : ((Number) r[16]).doubleValue(),
+                                                r[17] == null ? null : ((Number) r[17]).doubleValue(),
+                                                r[18] == null ? null : ((Number) r[18]).doubleValue()))
                                 .toList();
 
                 Sort.Order timestampOrder = pageable.getSort().getOrderFor("timestamp");
@@ -291,7 +314,23 @@ public class DashboardServiceImpl implements DashboardService {
                                         id -> new EnergyRoomResponse(
                                                         row.roomId(),
                                                         row.roomName(),
-                                                        new ArrayList<>()));
+                                                        new ArrayList<>(),
+
+                                                        row.avgEnergy(),
+                                                        row.minEnergy(),
+                                                        row.maxEnergy(),
+
+                                                        row.avgCurrent(),
+                                                        row.minCurrent(),
+                                                        row.maxCurrent(),
+
+                                                        row.avgVoltage(),
+                                                        row.minVoltage(),
+                                                        row.maxVoltage(),
+
+                                                        row.avgFrequency(),
+                                                        row.minFrequency(),
+                                                        row.maxFrequency()));
 
                         room.logs().add(
                                         new EnergyRoomLogResponse(

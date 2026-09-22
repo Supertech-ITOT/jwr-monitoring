@@ -109,41 +109,106 @@ public interface TagLogRepository extends JpaRepository<TagLog, Long> {
             @Param("toDate") LocalDateTime toDate);
 
     @Query(value = """
+            WITH raw_data AS (
+                SELECT
+                    tm.room_id,
+                    r.name AS room_name,
+                    tl.timestamp,
+                    tm.parameter_id,
+                    tl.value
+                FROM tag_logs tl
+                JOIN tag_master tm ON tl.tag_id = tm.id
+                JOIN rooms r ON tm.room_id = r.id
+                WHERE tm.room_id IN (:roomIds)
+                  AND tl.timestamp BETWEEN :fromDate AND :toDate
+            ),
+
+            bucketed_data AS (
+                SELECT
+                    room_id,
+                    room_name,
+                    TIMESTAMP 'epoch'
+                        + floor(
+                            extract(epoch FROM timestamp)
+                            / (:interval * 60)
+                        )
+                        * (:interval * 60)
+                        * INTERVAL '1 second' AS bucket_time,
+                    parameter_id,
+                    value
+                FROM raw_data
+            ),
+
+            interval_data AS (
+                SELECT
+                    room_id,
+                    room_name,
+                    bucket_time,
+
+                    AVG(CASE WHEN parameter_id = 2 THEN value END) AS energy,
+                    AVG(CASE WHEN parameter_id = 4 THEN value END) AS current,
+                    AVG(CASE WHEN parameter_id = 5 THEN value END) AS voltage,
+                    AVG(CASE WHEN parameter_id = 6 THEN value END) AS frequency
+
+                FROM bucketed_data
+                GROUP BY room_id, room_name, bucket_time
+            ),
+
+            room_stats AS (
+                SELECT
+                    room_id,
+
+                    ROUND(AVG(energy)::numeric, 2) AS avg_energy,
+                    ROUND(MIN(energy)::numeric, 2) AS min_energy,
+                    ROUND(MAX(energy)::numeric, 2) AS max_energy,
+
+                    ROUND(AVG(current)::numeric, 2) AS avg_current,
+                    ROUND(MIN(current)::numeric, 2) AS min_current,
+                    ROUND(MAX(current)::numeric, 2) AS max_current,
+
+                    ROUND(AVG(voltage)::numeric, 2) AS avg_voltage,
+                    ROUND(MIN(voltage)::numeric, 2) AS min_voltage,
+                    ROUND(MAX(voltage)::numeric, 2) AS max_voltage,
+
+                    ROUND(AVG(frequency)::numeric, 2) AS avg_frequency,
+                    ROUND(MIN(frequency)::numeric, 2) AS min_frequency,
+                    ROUND(MAX(frequency)::numeric, 2) AS max_frequency
+
+                FROM interval_data
+                GROUP BY room_id
+            )
+
             SELECT
-                tm.room_id,
+                id.room_id,
+                id.room_name,
+                id.bucket_time,
 
-                r.name,
+                ROUND(id.energy::numeric, 2),
+                ROUND(id.current::numeric, 2),
+                ROUND(id.voltage::numeric, 2),
+                ROUND(id.frequency::numeric, 2),
 
-                TIMESTAMP 'epoch'
-                    + floor(extract(epoch FROM tl.timestamp) / (:interval * 60))
-                    * (:interval * 60)
-                    * INTERVAL '1 second',
+                rs.avg_energy,
+                rs.min_energy,
+                rs.max_energy,
 
-                ROUND(AVG(CASE WHEN tm.parameter_id = 2 THEN tl.value END)::numeric,2),
-                ROUND(AVG(CASE WHEN tm.parameter_id = 4 THEN tl.value END)::numeric,2),
-                ROUND(AVG(CASE WHEN tm.parameter_id = 5 THEN tl.value END)::numeric,2),
-                ROUND(AVG(CASE WHEN tm.parameter_id = 6 THEN tl.value END)::numeric,2)
+                rs.avg_current,
+                rs.min_current,
+                rs.max_current,
 
-            FROM tag_logs tl
+                rs.avg_voltage,
+                rs.min_voltage,
+                rs.max_voltage,
 
-            JOIN tag_master tm
-                ON tl.tag_id = tm.id
+                rs.avg_frequency,
+                rs.min_frequency,
+                rs.max_frequency
 
-            JOIN rooms r
-                ON tm.room_id = r.id
+            FROM interval_data id
+            JOIN room_stats rs
+                ON id.room_id = rs.room_id
 
-            WHERE
-                tm.room_id IN (:roomIds)
-                AND tl.timestamp BETWEEN :fromDate AND :toDate
-
-            GROUP BY
-                tm.room_id,
-                r.name,
-                3
-
-            ORDER BY
-                tm.room_id,
-                3
+            ORDER BY id.room_id, id.bucket_time
             """, nativeQuery = true)
     List<Object[]> getEnergyRoomLogs(
             @Param("roomIds") List<Long> roomIds,
