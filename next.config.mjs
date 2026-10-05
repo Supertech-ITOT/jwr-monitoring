@@ -1,14 +1,22 @@
 /** @type {import('next').NextConfig} */
+
 const BACKEND_IP = process.env.NEXT_PUBLIC_BACKEND_IP;
 const BACKEND_PORT = process.env.BACKEND_PORT;
+
 const nextConfig = {
-  allowedDevOrigins: [BACKEND_IP],
   reactCompiler: false,
+
   devIndicators: false,
-  output: "export",
+
+  allowedDevOrigins: [
+    "127.0.0.1",
+    "localhost",
+  ],
+
   images: {
     unoptimized: true,
   },
+
   async rewrites() {
     return [
       {

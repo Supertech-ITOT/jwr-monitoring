@@ -67,40 +67,103 @@ public interface TagLogRepository extends JpaRepository<TagLog, Long> {
             Pageable pageable);
 
     @Query(value = """
+            WITH raw_data AS (
+                SELECT
+                    tm.room_id,
+                    r.name AS room_name,
+                    tl.timestamp,
+                    tm.parameter_id,
+                    tl.value
+
+                FROM tag_logs tl
+
+                JOIN tag_master tm
+                    ON tl.tag_id = tm.id
+
+                JOIN rooms r
+                    ON tm.room_id = r.id
+
+                WHERE tm.room_id IN (:roomIds)
+                  AND tl.timestamp BETWEEN :fromDate AND :toDate
+            ),
+
+            bucketed_data AS (
+                SELECT
+                    room_id,
+                    room_name,
+
+                    TIMESTAMP 'epoch'
+                        + floor(
+                            extract(epoch FROM timestamp)
+                            / (:interval * 60)
+                        )
+                        * (:interval * 60)
+                        * INTERVAL '1 second' AS bucket_time,
+
+                    parameter_id,
+                    value
+
+                FROM raw_data
+            ),
+
+            interval_data AS (
+                SELECT
+                    room_id,
+                    room_name,
+                    bucket_time,
+
+                    ROUND(AVG(CASE WHEN parameter_id = 1 THEN value END)::numeric,1) AS temperature,
+                    ROUND(AVG(CASE WHEN parameter_id = 3 THEN value END)::numeric) AS rh
+
+                FROM bucketed_data
+
+                GROUP BY
+                    room_id,
+                    room_name,
+                    bucket_time
+            ),
+
+            room_stats AS (
+                SELECT
+                    room_id,
+
+                    ROUND(AVG(temperature)::numeric,1) AS avg_temperature,
+                    ROUND(MIN(temperature)::numeric,1) AS min_temperature,
+                    ROUND(MAX(temperature)::numeric,1) AS max_temperature,
+
+                    ROUND(AVG(rh)::numeric) AS avg_rh,
+                    ROUND(MIN(rh)::numeric) AS min_rh,
+                    ROUND(MAX(rh)::numeric) AS max_rh
+
+                FROM interval_data
+                GROUP BY room_id
+            )
+
             SELECT
-                tm.room_id,
 
-                r.name,
+                id.room_id,
+                id.room_name,
+                id.bucket_time,
 
-                TIMESTAMP 'epoch'
-                    + floor(extract(epoch FROM tl.timestamp) / (:interval * 60))
-                    * (:interval * 60)
-                    * INTERVAL '1 second',
+                id.temperature,
+                id.rh,
 
-                ROUND(AVG(CASE WHEN tm.parameter_id = 1 THEN tl.value END)::numeric,1),
+                rs.avg_temperature,
+                rs.min_temperature,
+                rs.max_temperature,
 
-                ROUND(AVG(CASE WHEN tm.parameter_id = 3 THEN tl.value END)::numeric)
+                rs.avg_rh,
+                rs.min_rh,
+                rs.max_rh
 
-            FROM tag_logs tl
+            FROM interval_data id
 
-            JOIN tag_master tm
-                ON tl.tag_id = tm.id
-
-            JOIN rooms r
-                ON tm.room_id = r.id
-
-            WHERE
-                tm.room_id IN (:roomIds)
-                AND tl.timestamp BETWEEN :fromDate AND :toDate
-
-            GROUP BY
-                tm.room_id,
-                r.name,
-                3
+            JOIN room_stats rs
+                ON id.room_id = rs.room_id
 
             ORDER BY
-                tm.room_id,
-                3
+                id.room_id,
+                id.bucket_time
             """, nativeQuery = true)
     List<Object[]> getCommonRoomLogs(
             @Param("roomIds") List<Long> roomIds,

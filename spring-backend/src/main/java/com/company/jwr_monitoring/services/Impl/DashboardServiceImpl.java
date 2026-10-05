@@ -108,7 +108,13 @@ public class DashboardServiceImpl implements DashboardService {
                                                 (String) r[1],
                                                 ((java.sql.Timestamp) r[2]).toLocalDateTime(),
                                                 r[3] == null ? null : ((Number) r[3]).doubleValue(),
-                                                r[4] == null ? null : ((Number) r[4]).doubleValue()))
+                                                r[4] == null ? null : ((Number) r[4]).doubleValue(),
+                                                r[5] == null ? null : ((Number) r[5]).doubleValue(),
+                                                r[6] == null ? null : ((Number) r[6]).doubleValue(),
+                                                r[7] == null ? null : ((Number) r[7]).doubleValue(),
+                                                r[8] == null ? null : ((Number) r[8]).doubleValue(),
+                                                r[9] == null ? null : ((Number) r[9]).doubleValue(),
+                                                r[10] == null ? null : ((Number) r[10]).doubleValue()))
                                 .toList();
 
                 Map<Long, CommonRoomResponse> map = new LinkedHashMap<>();
@@ -118,7 +124,13 @@ public class DashboardServiceImpl implements DashboardService {
                                         id -> new CommonRoomResponse(
                                                         row.roomId(),
                                                         row.roomName(),
-                                                        new ArrayList<>()));
+                                                        new ArrayList<>(),
+                                                        row.avgTemperature(),
+                                                        row.minTemperature(),
+                                                        row.maxTemperature(),
+                                                        row.avgRh(),
+                                                        row.minRh(),
+                                                        row.maxRh()));
                         room.logs().add(new CommonRoomLogResponse(
                                         row.timeStamp(),
                                         row.avgTemp(),
@@ -175,8 +187,20 @@ public class DashboardServiceImpl implements DashboardService {
                                                 ((Number) r[0]).longValue(),
                                                 (String) r[1],
                                                 ((java.sql.Timestamp) r[2]).toLocalDateTime(),
+
                                                 r[3] == null ? null : ((Number) r[3]).doubleValue(),
-                                                r[4] == null ? null : ((Number) r[4]).doubleValue()))
+                                                r[4] == null ? null : ((Number) r[4]).doubleValue(),
+
+                                                // Temperature AVG / MIN / MAX
+                                                r[5] == null ? null : ((Number) r[5]).doubleValue(),
+                                                r[6] == null ? null : ((Number) r[6]).doubleValue(),
+                                                r[7] == null ? null : ((Number) r[7]).doubleValue(),
+
+                                                // RH AVG / MIN / MAX
+                                                r[8] == null ? null : ((Number) r[8]).doubleValue(),
+                                                r[9] == null ? null : ((Number) r[9]).doubleValue(),
+                                                r[10] == null ? null : ((Number) r[10]).doubleValue()))
+
                                 .toList();
 
                 Map<Long, CommonRoomResponse> map = new LinkedHashMap<>();
@@ -188,7 +212,15 @@ public class DashboardServiceImpl implements DashboardService {
                                         id -> new CommonRoomResponse(
                                                         row.roomId(),
                                                         row.roomName(),
-                                                        new ArrayList<>()));
+                                                        new ArrayList<>(),
+
+                                                        row.avgTemperature(),
+                                                        row.minTemperature(),
+                                                        row.maxTemperature(),
+
+                                                        row.avgRh(),
+                                                        row.minRh(),
+                                                        row.maxRh()));
 
                         room.logs().add(new CommonRoomLogResponse(
                                         row.timeStamp(),

@@ -45,11 +45,7 @@ export default function EnergyReportPDF({ data = [], filter, name }) {
         }
 
         return pages.map((pageRows, pageIndex) => (
-          <Page
-            key={`${groupIndex}-${pageIndex}`}
-            size="A4"
-            style={styles.page}
-          >
+          <Page key={`${groupIndex}-${pageIndex}`} size="A4" style={styles.page}>
             {/* ================= HEADER ================= */}
 
             <View style={styles.header}>
@@ -66,8 +62,7 @@ export default function EnergyReportPDF({ data = [], filter, name }) {
                   COLD STORAGE, JNPT, NAVI MUMBAI
                 </Text>
                 <Text style={{ fontSize: 9 }}>
-                  {format(new Date(), "dd MMM yyyy")} -{" "}
-                  {format(new Date(), "hh:mm:ss a")}
+                  {format(new Date(), "dd MMM yyyy")} - {format(new Date(), "hh:mm:ss a")}
                 </Text>
               </View>
             </View>
@@ -94,8 +89,7 @@ export default function EnergyReportPDF({ data = [], filter, name }) {
               <View style={styles.gridRow}>
                 <Text style={styles.label}>Duration :</Text>
                 <Text>
-                  {format(new Date(filter.fromDate), "dd MMM yyyy hh:mm a")} -{" "}
-                  {format(new Date(filter.toDate), "dd MMM yyyy hh:mm a")}
+                  {format(new Date(filter.fromDate), "dd MMM yyyy hh:mm a")} - {format(new Date(filter.toDate), "dd MMM yyyy hh:mm a")}
                 </Text>
               </View>
 
@@ -321,9 +315,7 @@ export default function EnergyReportPDF({ data = [], filter, name }) {
                       borderColor: "#fff",
                     }}
                   >
-                    <Text style={{ fontSize: 8, fontWeight: "bold" }}>
-                      {label}
-                    </Text>
+                    <Text style={{ fontSize: 8, fontWeight: "bold" }}>{label}</Text>
                   </View>
 
                   {rooms.map((room) => (
@@ -352,9 +344,7 @@ export default function EnergyReportPDF({ data = [], filter, name }) {
                             borderColor: "#fff",
                           }}
                         >
-                          <Text style={{ fontSize: 8, fontWeight: "bold" }}>
-                            {formatStat(room[key], unit)}
-                          </Text>
+                          <Text style={{ fontSize: 8, fontWeight: "bold" }}>{formatStat(room[key], unit)}</Text>
                         </View>
                       ))}
                     </View>
@@ -382,9 +372,7 @@ export default function EnergyReportPDF({ data = [], filter, name }) {
                       paddingHorizontal: 5,
                     }}
                   >
-                    <Text style={{ fontSize: 8 }}>
-                      {format(new Date(row.timeStamp), "dd MMM yyyy hh:mm a")}
-                    </Text>
+                    <Text style={{ fontSize: 8 }}>{format(new Date(row.timeStamp), "dd MMM yyyy hh:mm a")}</Text>
                   </View>
 
                   {row.values.map((log, i) => (
@@ -406,11 +394,7 @@ export default function EnergyReportPDF({ data = [], filter, name }) {
                           borderColor: THEME.border,
                         }}
                       >
-                        <Text style={{ fontSize: 8 }}>
-                          {log.energy != null
-                            ? Number(log.energy).toFixed(1)
-                            : "-"}
-                        </Text>
+                        <Text style={{ fontSize: 8 }}>{log.energy != null ? Number(log.energy).toFixed(1) : "-"}</Text>
                       </View>
 
                       <View
@@ -422,11 +406,7 @@ export default function EnergyReportPDF({ data = [], filter, name }) {
                           borderColor: THEME.border,
                         }}
                       >
-                        <Text style={{ fontSize: 8 }}>
-                          {log.current != null
-                            ? Number(log.current).toFixed(2)
-                            : "-"}
-                        </Text>
+                        <Text style={{ fontSize: 8 }}>{log.current != null ? Number(log.current).toFixed(2) : "-"}</Text>
                       </View>
                       <View
                         style={{
@@ -437,11 +417,7 @@ export default function EnergyReportPDF({ data = [], filter, name }) {
                           borderColor: THEME.border,
                         }}
                       >
-                        <Text style={{ fontSize: 8 }}>
-                          {log.voltage != null
-                            ? Math.round(Number(log.voltage))
-                            : "-"}
-                        </Text>
+                        <Text style={{ fontSize: 8 }}>{log.voltage != null ? Math.round(Number(log.voltage)) : "-"}</Text>
                       </View>
                       <View
                         style={{
@@ -450,11 +426,7 @@ export default function EnergyReportPDF({ data = [], filter, name }) {
                           justifyContent: "center",
                         }}
                       >
-                        <Text style={{ fontSize: 8 }}>
-                          {log.frequency != null
-                            ? Number(log.frequency).toFixed(1)
-                            : "-"}
-                        </Text>
+                        <Text style={{ fontSize: 8 }}>{log.frequency != null ? Number(log.frequency).toFixed(1) : "-"}</Text>
                       </View>
                     </View>
                   ))}
@@ -479,11 +451,7 @@ export default function EnergyReportPDF({ data = [], filter, name }) {
                 color: "#666",
               }}
             >
-              <Text
-                render={({ pageNumber, totalPages }) =>
-                  `Page ${pageNumber} of ${totalPages}`
-                }
-              />
+              <Text render={({ pageNumber, totalPages }) => `Page ${pageNumber} of ${totalPages}`} />
             </View>
           </Page>
         ));
