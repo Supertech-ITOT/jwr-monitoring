@@ -4,11 +4,7 @@ import FilterSelect from "@/components/FilterSelect";
 import FilterDuration from "@/components/FiltrationDuration";
 import FilterMultiSelect from "@/components/FilterMultiSelect";
 import { Button } from "@/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Factory, Funnel, DoorOpen, ArrowUpDown } from "lucide-react";
 import { useGetCategory } from "@/hooks/useCategory";
 import { useGetRoomByCategoryId } from "@/hooks/useRoom";
@@ -24,18 +20,10 @@ export default function EnergyFilter({ filterData, onFilterChange, onApply }) {
   const [open, setOpen] = useState(false);
   const { categoryId, categoryName, roomIds, fromDate, toDate, interval, sort } = filterData;
   const { data: categories, isLoading: categoriesLoading } = useGetCategory();
-  const { data: rooms, isLoading: roomsLoading } =
-    useGetRoomByCategoryId(categoryId);
+  const { data: rooms, isLoading: roomsLoading } = useGetRoomByCategoryId(categoryId);
 
   const handleApply = () => {
-    if (
-      !categoryId ||
-      !categoryName ||
-      roomIds.length === 0 ||
-      !fromDate ||
-      !toDate ||
-      !interval|| !sort
-    ) {
+    if (!categoryId || !categoryName || roomIds.length === 0 || !fromDate || !toDate || !interval || !sort) {
       toast.error("Please select all the inputs.");
       return;
     }
@@ -48,10 +36,7 @@ export default function EnergyFilter({ filterData, onFilterChange, onApply }) {
     <div className="w-[200px] h-8">
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            className="w-full h-full bg-cardbackground text-primary"
-          >
+          <Button variant="outline" className="w-full h-full bg-cardbackground text-primary">
             <Funnel />
             Filter
           </Button>
@@ -68,7 +53,7 @@ export default function EnergyFilter({ filterData, onFilterChange, onApply }) {
               onFilterChange((prev) => ({
                 ...prev,
                 categoryId: id,
-                categoryName: categories.find((f) => f.id === id).name,
+                categoryName: categories.find((f) => f.id === id)?.name ?? "-",
                 roomIds: [],
               }))
             }
