@@ -130,7 +130,6 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
-
 @utility scrollbar-prop{
     @apply  scrollbar-thin scrollbar-thumb-primary scrollbar-track-background;
 }
