@@ -65,7 +65,7 @@ export default function EnergyFilter({ filterData, onFilterChange, onApply }: En
               onFilterChange((prev) => ({
                 ...prev,
                 categoryId: selectedId ?? 1,
-                roomId: null,
+                roomIds: [],
               }));
             }}
             placeholder="Select Category"

@@ -120,6 +120,7 @@ public interface TagLogRepository extends JpaRepository<TagLog, Long> {
                 GROUP BY
                     room_id,
                     room_name,
+                    category_id,
                     bucket_time
             ),
 
@@ -176,6 +177,7 @@ public interface TagLogRepository extends JpaRepository<TagLog, Long> {
                 SELECT
                     tm.room_id,
                     r.name AS room_name,
+                    r.category_id AS category_id,
                     tl.timestamp,
                     tm.parameter_id,
                     tl.value
@@ -190,6 +192,7 @@ public interface TagLogRepository extends JpaRepository<TagLog, Long> {
                 SELECT
                     room_id,
                     room_name,
+                    category_id,
                     TIMESTAMP 'epoch'
                         + floor(
                             extract(epoch FROM timestamp)
@@ -206,6 +209,7 @@ public interface TagLogRepository extends JpaRepository<TagLog, Long> {
                 SELECT
                     room_id,
                     room_name,
+                    category_id,
                     bucket_time,
 
                     AVG(CASE WHEN parameter_id = 2 THEN value END) AS energy,
@@ -244,6 +248,7 @@ public interface TagLogRepository extends JpaRepository<TagLog, Long> {
             SELECT
                 id.room_id,
                 id.room_name,
+                id.category_id,
                 id.bucket_time,
 
                 ROUND(id.energy::numeric, 2),

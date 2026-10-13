@@ -6,17 +6,14 @@ import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-
 import com.company.jwr_monitoring.entity.TagCurrentValue;
 import com.company.jwr_monitoring.entity.TagMaster;
 import com.company.jwr_monitoring.repository.TagCurrentValueRepository;
 import com.company.jwr_monitoring.repository.TagLogRepository;
 import com.company.jwr_monitoring.repository.TagMasterRepository;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -39,7 +36,7 @@ public class SimulationService implements CommandLineRunner {
 
         log.info("Simulation Service Started...");
 
-        generateMonthLogs(2026, 6);
+        generateMonthLogs(2026, 10);
     }
 
     public void generateMonthLogs(int year, int month) {

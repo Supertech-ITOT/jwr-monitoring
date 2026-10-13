@@ -71,10 +71,12 @@ export default function Content(): React.JSX.Element {
             label="Room"
             icon={Factory}
             options={
-              categories?.map((category) => ({
-                value: category.id,
-                label: category.name,
-              })) ?? []
+              categories
+                ?.filter((f) => f.id === 1 || f.id === 2 || f.id === 3 || f.id === 4 || f.id === 5)
+                .map((category) => ({
+                  value: category.id,
+                  label: category.name,
+                })) ?? []
             }
             value={categoryId}
             onChange={(id) => setCategoryId(Number(id))}

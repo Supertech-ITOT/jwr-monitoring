@@ -5,6 +5,7 @@ import { format, isValid, parseISO } from "date-fns";
 import { EnergyRoomLogResponse, EnergyRoomResponse } from "@/types/dashboard.types";
 
 const MAX_ROOMS = 3;
+const ROOMS_WITHOUT_FREQUENCY = new Set([63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78]);
 
 type EnergyRoomTableProps = {
   rooms: EnergyRoomResponse[];
@@ -53,6 +54,10 @@ const summaryRows: SummaryRow[] = [
   },
 ];
 
+function hideFrequencyForRoom(roomId: number | string): boolean {
+  return ROOMS_WITHOUT_FREQUENCY.has(Number(roomId));
+}
+
 function formatStat(value: number | string | null | undefined, type: "energy" | "current" | "voltage" | "frequency"): string {
   if (value == null || value === "") return "-";
 
@@ -79,7 +84,7 @@ function formatTimestamp(value: string | number | Date | undefined, pattern: str
 export default function EnergyRoomTable({ rooms }: EnergyRoomTableProps) {
   if (!rooms?.length) return null;
 
-  // Pad rooms so the table always has at least MAX_ROOMS room columns.
+  // Ensure at least three room columns.
   const paddedRooms: PaddedRoom[] = [
     ...rooms,
     ...Array.from(
@@ -105,11 +110,16 @@ export default function EnergyRoomTable({ rooms }: EnergyRoomTableProps) {
     return "top-[85px]";
   };
 
+  const cellClass = "border border-border p-0.5 text-center text-[10px] sm:text-sm";
+
+  const summaryCellClass = (index: number) =>
+    `sticky z-40 border border-border bg-primary p-0.5 text-center text-[10px] font-medium text-white sm:text-sm ${getStickyTopClass(index)}`;
+
   return (
     <div className="scrollbar-prop h-full overflow-auto rounded-lg border bg-background shadow-sm">
       <table className="min-w-max w-full border-separate border-spacing-0">
         <thead>
-          {/* Room Names */}
+          {/* Room names */}
           <tr>
             <th
               rowSpan={2}
@@ -118,34 +128,44 @@ export default function EnergyRoomTable({ rooms }: EnergyRoomTableProps) {
               DATETIME
             </th>
 
-            {paddedRooms.map((room) => (
-              <th
-                key={room.roomId}
-                colSpan={4}
-                className="sticky top-0 z-40 border border-border bg-primary p-0.5 text-center text-[10px] font-semibold text-white sm:text-sm"
-              >
-                {room.roomName || "\u00A0"}
-              </th>
-            ))}
+            {paddedRooms.map((room) => {
+              const hideFrequency = hideFrequencyForRoom(room.roomId);
+
+              return (
+                <th
+                  key={room.roomId}
+                  colSpan={hideFrequency ? 3 : 4}
+                  className="sticky top-0 z-40 border border-border bg-primary p-0.5 text-center text-[10px] font-semibold text-white sm:text-sm"
+                >
+                  {room.roomName || "\u00A0"}
+                </th>
+              );
+            })}
           </tr>
 
-          {/* Parameters */}
+          {/* Parameter headers */}
           <tr>
-            {paddedRooms.map((room) => (
-              <Fragment key={room.roomId}>
-                {["Energy kWh", "Current A", "Voltage V", "Frequency Hz"].map((label) => (
-                  <th
-                    key={label}
-                    className="sticky top-5 z-40 border border-border bg-primary p-0.5 text-center text-[10px] font-medium text-white sm:text-sm"
-                  >
-                    {label}
-                  </th>
-                ))}
-              </Fragment>
-            ))}
+            {paddedRooms.map((room) => {
+              const headers = ["Energy kWh", "Current A", "Voltage V", "Frequency Hz"];
+
+              const visibleHeaders = hideFrequencyForRoom(room.roomId) ? headers.slice(0, 3) : headers;
+
+              return (
+                <Fragment key={room.roomId}>
+                  {visibleHeaders.map((label) => (
+                    <th
+                      key={label}
+                      className="sticky top-5 z-40 border border-border bg-primary p-0.5 text-center text-[10px] font-medium text-white sm:text-sm"
+                    >
+                      {label}
+                    </th>
+                  ))}
+                </Fragment>
+              );
+            })}
           </tr>
 
-          {/* AVG / MIN / MAX */}
+          {/* AVG / MIN / MAX summary rows */}
           {summaryRows.map((stat, index) => (
             <tr key={stat.label}>
               <th
@@ -154,33 +174,42 @@ export default function EnergyRoomTable({ rooms }: EnergyRoomTableProps) {
                 {stat.label}
               </th>
 
-              {paddedRooms.map((room) => (
-                <Fragment key={room.roomId}>
-                  <th
-                    className={`sticky z-40 border border-border bg-primary p-0.5 text-center text-[10px] font-medium text-white sm:text-sm ${getStickyTopClass(index)}`}
-                  >
-                    {formatStat(room[stat.energy], "energy")}
-                  </th>
+              {paddedRooms.map((room) => {
+                const hideFrequency = hideFrequencyForRoom(room.roomId);
 
-                  <th
-                    className={`sticky z-40 border border-border bg-primary p-0.5 text-center text-[10px] font-medium text-white sm:text-sm ${getStickyTopClass(index)}`}
-                  >
-                    {formatStat(room[stat.current], "current")}
-                  </th>
+                const summaryCells = [
+                  {
+                    key: stat.energy,
+                    type: "energy" as const,
+                  },
+                  {
+                    key: stat.current,
+                    type: "current" as const,
+                  },
+                  {
+                    key: stat.voltage,
+                    type: "voltage" as const,
+                  },
+                  ...(!hideFrequency
+                    ? [
+                        {
+                          key: stat.frequency,
+                          type: "frequency" as const,
+                        },
+                      ]
+                    : []),
+                ];
 
-                  <th
-                    className={`sticky z-40 border border-border bg-primary p-0.5 text-center text-[10px] font-medium text-white sm:text-sm ${getStickyTopClass(index)}`}
-                  >
-                    {formatStat(room[stat.voltage], "voltage")}
-                  </th>
-
-                  <th
-                    className={`sticky z-40 border border-border bg-primary p-0.5 text-center text-[10px] font-medium text-white sm:text-sm ${getStickyTopClass(index)}`}
-                  >
-                    {formatStat(room[stat.frequency], "frequency")}
-                  </th>
-                </Fragment>
-              ))}
+                return (
+                  <Fragment key={room.roomId}>
+                    {summaryCells.map(({ key, type }) => (
+                      <th key={key} className={summaryCellClass(index)}>
+                        {formatStat(room[key], type)}
+                      </th>
+                    ))}
+                  </Fragment>
+                );
+              })}
             </tr>
           ))}
         </thead>
@@ -200,17 +229,22 @@ export default function EnergyRoomTable({ rooms }: EnergyRoomTableProps) {
                   {formatTimestamp(row.timeStamp, "hh:mm a")}
                 </td>
 
-                {row.values.map((log, roomIndex) => (
-                  <Fragment key={roomIndex}>
-                    <td className="border border-border p-0.5 text-center text-[10px] sm:text-sm">{formatStat(log.energy, "energy")}</td>
+                {row.values.map((log, roomIndex) => {
+                  const room = paddedRooms[roomIndex];
+                  const hideFrequency = room ? hideFrequencyForRoom(room.roomId) : false;
 
-                    <td className="border border-border p-0.5 text-center text-[10px] sm:text-sm">{formatStat(log.current, "current")}</td>
+                  return (
+                    <Fragment key={roomIndex}>
+                      <td className={cellClass}>{formatStat(log.energy, "energy")}</td>
 
-                    <td className="border border-border p-0.5 text-center text-[10px] sm:text-sm">{formatStat(log.voltage, "voltage")}</td>
+                      <td className={cellClass}>{formatStat(log.current, "current")}</td>
 
-                    <td className="border border-border p-0.5 text-center text-[10px] sm:text-sm">{formatStat(log.frequency, "frequency")}</td>
-                  </Fragment>
-                ))}
+                      <td className={cellClass}>{formatStat(log.voltage, "voltage")}</td>
+
+                      {!hideFrequency && <td className={cellClass}>{formatStat(log.frequency, "frequency")}</td>}
+                    </Fragment>
+                  );
+                })}
               </tr>
             );
           })}
