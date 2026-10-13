@@ -3,19 +3,22 @@ import { Document, Image, Page, Text, View } from "@react-pdf/renderer";
 import { format } from "date-fns";
 import { styles } from "./style";
 import { THEME } from "./theme";
+import { RoomHistoricalValueDto } from "@/app/common/api.types";
 
 const ITEM_PER_PAGE = 24;
 const columns = ["DATETIME", "TEMP °C", "RH%"];
 const columnWidths = [1, 1, 1];
-const SensorReportPDF = ({
-  data,
-  roomName,
-  tchartImg,
-  rchartImg,
-  categoryName,
-  date,
-  name,
-}) => {
+type prop = {
+  data: RoomHistoricalValueDto[];
+  roomName: string;
+  tchartImg: string;
+  rchartImg: string;
+  categoryName: string;
+  fromDate: string;
+  toDate: string;
+  name: string;
+};
+const SensorReportPDF = ({ data, roomName, tchartImg, rchartImg, categoryName, fromDate, toDate, name }: prop) => {
   const pages = [];
   for (let start = 0; start < data.length; start += ITEM_PER_PAGE) {
     pages.push(data.slice(start, start + ITEM_PER_PAGE));
@@ -39,16 +42,13 @@ const SensorReportPDF = ({
                 COLD STORAGE, JNPT, NAVI MUMBAI
               </Text>
               <Text style={{ fontSize: 9 }}>
-                {format(new Date(), "dd MMM yyyy")} -{" "}
-                {format(new Date(), "hh:mm:ss a")}
+                {format(new Date(), "dd MMM yyyy")} - {format(new Date(), "hh:mm:ss a")}
               </Text>
             </View>
           </View>
 
           <View style={{ marginBottom: 6 }}>
-            <Text style={styles.title}>
-              {String(categoryName).toUpperCase()} REPORT
-            </Text>
+            <Text style={styles.title}>{String(categoryName).toUpperCase()} REPORT</Text>
             {/* Batch Info */}
             <View style={styles.gridContainer}>
               <View style={styles.gridRow}>
@@ -62,8 +62,7 @@ const SensorReportPDF = ({
               <View style={styles.gridRow}>
                 <Text style={styles.label}>Duration:</Text>
                 <Text>
-                  {format(date.fromDate, "dd-MMM-yyyy hh:mm a")} -{" "}
-                  {format(date.toDate, "dd-MMM-yyyy hh:mm a")}
+                  {format(fromDate, "dd-MMM-yyyy hh:mm a")} - {format(toDate, "dd-MMM-yyyy hh:mm a")}
                 </Text>
               </View>
             </View>
@@ -74,35 +73,21 @@ const SensorReportPDF = ({
             {/* Header */}
             <View style={styles.tableHeader}>
               {columns.map((col, i) => (
-                <Text
-                  key={i}
-                  style={[styles.tableHeaderText, { flex: columnWidths[i] }]}
-                >
+                <Text key={i} style={[styles.tableHeaderText, { flex: columnWidths[i] }]}>
                   {col}
                 </Text>
               ))}
             </View>
 
             {/* Rows */}
+
             {pageRows?.map((item, i) => (
-              <View
-                key={i}
-                style={[
-                  styles.tableRow,
-                  i % 2 === 0 && { backgroundColor: THEME.card },
-                ]}
-              >
-                <Text style={[styles.tableCell, { flex: columnWidths[0] }]}>
-                  {format(item.timestamp, "dd MMM yyyy hh:mm a")}
-                </Text>
+              <View key={i} style={[styles.tableRow, ...(i % 2 === 0 ? [{ backgroundColor: THEME.card }] : [])]}>
+                <Text style={[styles.tableCell, { flex: columnWidths[0] }]}>{format(item.timestamp, "dd MMM yyyy hh:mm a")}</Text>
 
-                <Text style={[styles.tableCell, { flex: columnWidths[1] }]}>
-                  {Number(item.avgTemperature).toFixed(1)}
-                </Text>
+                <Text style={[styles.tableCell, { flex: columnWidths[1] }]}>{Number(item.avgTemperature).toFixed(1)}</Text>
 
-                <Text style={[styles.tableCell, { flex: columnWidths[2] }]}>
-                  {Math.round(Number(item.rh))}
-                </Text>
+                <Text style={[styles.tableCell, { flex: columnWidths[2] }]}>{Math.round(Number(item.rh))}</Text>
               </View>
             ))}
           </View>
@@ -124,8 +109,7 @@ const SensorReportPDF = ({
               COLD STORAGE, JNPT, NAVI MUMBAI
             </Text>
             <Text style={{ fontSize: 9 }}>
-              {format(new Date(), "dd MMM yyyy")} -{" "}
-              {format(new Date(), "hh:mm:ss a")}
+              {format(new Date(), "dd MMM yyyy")} - {format(new Date(), "hh:mm:ss a")}
             </Text>
           </View>
         </View>

@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { getRoomsByCategoryId } from "@/services/RoomService";
+import { getRoomById, getRoomsByCategoryId } from "@/services/RoomService";
 
-export const useGetRoomByCategoryId = (categoryId: number | string | undefined, enabled = true) => {
+export const useGetRoomByCategoryId = (categoryId: number, enabled = true) => {
   return useQuery({
     queryKey: ["rooms", categoryId],
     queryFn: async () => {
@@ -9,5 +9,16 @@ export const useGetRoomByCategoryId = (categoryId: number | string | undefined, 
       return res.data;
     },
     enabled: enabled && !!categoryId,
+  });
+};
+
+export const useGetRoomById = (id?: number) => {
+  return useQuery({
+    queryKey: ["rooms-by-id", id],
+    queryFn: async () => {
+      const res = await getRoomById(id!);
+      return res.data;
+    },
+    enabled: !!id,
   });
 };

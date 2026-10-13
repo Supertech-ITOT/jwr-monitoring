@@ -25,13 +25,13 @@ export const getRoomStatCard = async (): Promise<ApiResponse<RoomStatCard[]>> =>
   return res.data;
 };
 
-export const getCommonRoomLog = async (filter: CommonRoomRequest, page = 0, size = 1): Promise<ApiResponse<CommonRoomResponse[]>> => {
-  const res = await api.post<ApiResponse<CommonRoomResponse[]>>("/dashboard/common-logs", filter, { params: { page, size } });
+export const getCommonRoomLog = async (filter: CommonRoomRequest, page = 0, size = 1) => {
+  const res = await api.post<ApiResponse<PageResponse<CommonRoomResponse>>>("/dashboard/common-logs", filter, { params: { page, size } });
   return res.data;
 };
 
 export const getEnergyRoomLog = async (params: EnergyRoomLogParams) => {
   const { page, size, sort, ...request } = params;
-  const res = await api.post<ApiResponse<PageResponse<EnergyRoomResponse[]>>>("/dashboard/energy-logs", request, { params: { page, size, sort } });
+  const res = await api.post<ApiResponse<PageResponse<EnergyRoomResponse>>>("/dashboard/energy-logs", request, { params: { page, size, sort } });
   return res.data;
 };

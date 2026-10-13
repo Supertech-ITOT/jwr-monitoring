@@ -6,15 +6,19 @@ export interface ApiResponse<T> {
   data: T;
 }
 
-export interface PageResponse<T> {
-  content: T[];
-  totalElements: number;
-  totalPages: number;
+export interface PageMetadata {
   size: number;
   number: number;
+  totalElements: number;
+  totalPages: number;
   first: boolean;
   last: boolean;
   empty: boolean;
+}
+
+export interface PageResponse<T> {
+  content: T[];
+  page: PageMetadata;
 }
 
 export interface RoomHistoricalValueDto {

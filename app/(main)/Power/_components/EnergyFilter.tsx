@@ -1,29 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { toast } from "sonner";
 import { Factory, Funnel, DoorOpen, ArrowUpDown } from "lucide-react";
-
-import FilterSelect from "@/components/FilterSelect";
 import FilterDuration from "@/components/FiltrationDuration";
-import FilterMultiSelect from "@/components/FilterMultiSelect";
 import FilterInterval from "@/components/FilterInterval";
-
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-
+import SearchableSelect from "@/components/FilterSelect";
 import { useGetCategory } from "@/hooks/useCategory";
 import { useGetRoomByCategoryId } from "@/hooks/useRoom";
-import type { EnergyFilterData } from "./Download";
-
-type CategoryOption = {
-  id: number;
-  name: string;
-};
+import { EnergyFilterData } from "./Content";
 
 type EnergyFilterProps = {
   filterData: EnergyFilterData;
-  onFilterChange: React.Dispatch<React.SetStateAction<EnergyFilterData>>;
+  onFilterChange: Dispatch<SetStateAction<EnergyFilterData>>;
   onApply: (filter: EnergyFilterData) => void;
 };
 
@@ -32,16 +23,11 @@ const sortOptions = [
   { id: "timestamp,asc", name: "Oldest First" },
 ];
 
-export default function EnergyFilter({ filterData, onFilterChange, onApply }: EnergyFilterProps): React.JSX.Element {
+export default function EnergyFilter({ filterData, onFilterChange, onApply }: EnergyFilterProps) {
   const [open, setOpen] = useState<boolean>(false);
-
   const { categoryId, categoryName, roomIds, fromDate, toDate, interval, sort } = filterData;
-
-  const { data: categories, isLoading: categoriesLoading } = useGetCategory();
-
-  const { data: rooms, isLoading: roomsLoading } = useGetRoomByCategoryId(categoryId);
-
-  const categoryOptions: CategoryOption[] = categories ?? [];
+  const { data: categories } = useGetCategory();
+  const { data: rooms } = useGetRoomByCategoryId(filterData.categoryId ?? 1);
 
   const handleApply = (): void => {
     if (categoryId === null || !categoryName || roomIds.length === 0 || !fromDate || !toDate || !interval || !sort) {
@@ -65,60 +51,77 @@ export default function EnergyFilter({ filterData, onFilterChange, onApply }: En
         </PopoverTrigger>
 
         <PopoverContent className="flex w-[280px] flex-col gap-3 p-2">
-          <FilterSelect
+          <SearchableSelect
             label="Category"
             icon={Factory}
-            loading={categoriesLoading}
-            options={categoryOptions}
-            value={categoryId}
-            onSelect={(id: number) =>
-              onFilterChange((previousFilter) => ({
-                ...previousFilter,
-                categoryId: id,
-                categoryName: categoryOptions.find((category) => category.id === id)?.name ?? "-",
-                roomIds: [],
-              }))
+            options={
+              categories?.map((category) => ({
+                value: category.id,
+                label: category.name,
+              })) ?? []
             }
+            value={categoryId ?? undefined}
+            onChange={(selectedId) => {
+              onFilterChange((prev) => ({
+                ...prev,
+                categoryId: selectedId ?? 1,
+                roomId: null,
+              }));
+            }}
+            placeholder="Select Category"
+            searchPlaceholder="Search category..."
+            emptyText="No category found."
           />
 
-          <FilterMultiSelect
+          <SearchableSelect
             label="Room"
             icon={DoorOpen}
-            loading={roomsLoading || !rooms}
-            options={rooms ?? []}
+            multiSelect={true}
+            options={
+              rooms?.map((room) => ({
+                value: room.id,
+                label: room.name,
+              })) ?? []
+            }
             value={roomIds}
-            onChange={(ids: number[]) =>
-              onFilterChange((previousFilter) => ({
-                ...previousFilter,
-                roomIds: ids,
+            onChange={(selectedIds) =>
+              onFilterChange((prev) => ({
+                ...prev,
+                roomIds: selectedIds,
               }))
             }
+            placeholder="Select Rooms"
+            searchPlaceholder="Search rooms..."
+            emptyText="No rooms found."
           />
 
           <FilterDuration
             initial={filterData}
             onChange={({ fromDate, toDate, day }) => {
-              onFilterChange((previousFilter) => ({
-                ...previousFilter,
-                fromDate: fromDate?.format("YYYY-MM-DDTHH:mm:ss") ?? "",
-                toDate: toDate?.format("YYYY-MM-DDTHH:mm:ss") ?? "",
-                day,
+              onFilterChange((prev) => ({
+                ...prev,
+                fromDate: fromDate ? fromDate.format("YYYY-MM-DDTHH:mm:ss") : "",
+                toDate: toDate ? toDate.format("YYYY-MM-DDTHH:mm:ss") : "",
+                day: day ?? "",
               }));
             }}
           />
 
-          <FilterSelect
+          <SearchableSelect
             label="Sort"
             icon={ArrowUpDown}
-            loading={false}
-            options={sortOptions}
-            value={sort}
-            onSelect={(selectedSort: string) =>
-              onFilterChange((previousFilter) => ({
-                ...previousFilter,
-                sort: selectedSort,
-              }))
-            }
+            options={sortOptions.map((option) => ({
+              value: option.id,
+              label: option.name,
+            }))}
+            value={sort ?? undefined}
+            onChange={(selectedSort) => {
+              onFilterChange((prev) => ({
+                ...prev,
+                sort: selectedSort ?? "",
+              }));
+            }}
+            placeholder="Select Sort"
           />
 
           <FilterInterval

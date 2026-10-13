@@ -3,17 +3,15 @@
 import { useState } from "react";
 import dayjs from "dayjs";
 import { AlertCircle } from "lucide-react";
-
 import Download from "./Download";
 import EnergyFilter from "./EnergyFilter";
 import EnergyRoomTable from "./EnergyRoomTable";
-
 import { useGetEnergyRoomLog } from "@/hooks/useDashboard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
-type EnergyFilterData = {
-  categoryId: number;
+export type EnergyFilterData = {
+  categoryId: number | null;
   categoryName: string;
   roomIds: number[];
   fromDate: string;
@@ -21,19 +19,6 @@ type EnergyFilterData = {
   day: string;
   sort: string;
   interval: number;
-};
-
-type ContentPage = {
-  totalPages: number;
-};
-
-type EnergyRoomLogResponse = {
-  content: EnergyRoom[];
-  page: ContentPage;
-};
-
-type EnergyRoom = {
-  [key: string]: unknown;
 };
 
 export default function Content() {
@@ -51,21 +36,22 @@ export default function Content() {
   };
 
   const [draftFilter, setDraftFilter] = useState<EnergyFilterData>(initialFilter);
-
   const [appliedFilter, setAppliedFilter] = useState<EnergyFilterData>(initialFilter);
-
   const [page, setPage] = useState<number>(0);
   const size = 3;
-
   const { data, isLoading, isError } = useGetEnergyRoomLog({
-    ...appliedFilter,
-    page,
+    categoryId: appliedFilter.categoryId ?? 1,
+    fromDate: appliedFilter.fromDate,
+    interval: appliedFilter.interval,
+    roomIds: appliedFilter.roomIds,
+    toDate: appliedFilter.toDate,
+    sort: appliedFilter.sort,
+    page: page,
     size,
   });
 
-  const rooms: EnergyRoom[] = data?.content ?? [];
-  const totalPages: number = data?.page?.totalPages ?? 0;
-
+  const rooms = data?.content ?? [];
+  const totalPages = data?.page?.totalPages ?? 0;
   return (
     <div className="mt-2 space-y-2">
       {/* Toolbar */}

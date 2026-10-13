@@ -24,4 +24,11 @@ public class CategoryController {
         List<CategoryDto> categories = categoryService.getAllCategories();
         return ResponseEntity.ok(ApiResponse.success("Categories fetched successfully", categories));
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<CategoryDto>> getCategoryById(@PathVariable Long id) {
+        CategoryDto categories = categoryService.getCategoryById(id);
+        return ResponseEntity.ok(ApiResponse.success("Categories fetched by id successfully", categories));
+    }
+
 }

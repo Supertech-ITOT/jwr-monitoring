@@ -5,7 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import Content from "./_components/Content";
 
 export const metadata: Metadata = {
-  title: "Energy Room",
+  title: "Energy Report",
 };
 
 export default function EnergyPage(): React.JSX.Element {

@@ -26,7 +26,6 @@ type CommonRoom = {
   avgRh?: NumericValue;
   minRh?: NumericValue;
   maxRh?: NumericValue;
-  [key: string]: unknown;
 };
 
 type CommonReportFilter = {

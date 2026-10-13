@@ -1,37 +1,59 @@
 "use client";
 
+import { PageResponse, RoomHistoricalValueDto } from "@/app/common/api.types";
 import { format } from "date-fns";
 import { Clock, Thermometer } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useEffect, useMemo, useState, memo } from "react";
-
+import { useEffect, useMemo, useState, memo, SVGProps } from "react";
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
-import type { TooltipProps, LegendProps } from "recharts";
+interface CustomXAxisTickProps extends SVGProps<SVGGElement> {
+  x?: number;
+  y?: number;
+  payload?: {
+    value: string | number;
+  };
+  fontSize?: number;
+}
 
-interface TemperatureRow {
+const CustomXAxisTick = ({ x = 0, y = 0, payload, fontSize = 12 }: CustomXAxisTickProps) => {
+  if (!payload) return null;
+
+  return (
+    <g transform={`translate(${x},${y})`}>
+      <text transform="rotate(-45)" x={-8} y={8} textAnchor="end" fontSize={fontSize} fill="currentColor">
+        {format(new Date(payload.value), "dd | hh:mm a")}
+      </text>
+    </g>
+  );
+};
+
+interface CustomTooltipData {
   timestamp: string | number | Date;
   avgTemperature: number | string | null;
 }
 
-interface TemperatureChartData {
-  content?: TemperatureRow[];
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: Array<{
+    payload: CustomTooltipData;
+  }>;
 }
-
-interface TempChartProps {
+interface Props {
   isExport?: boolean;
-  data?: TemperatureChartData | null;
+  data?: PageResponse<RoomHistoricalValueDto>;
 }
 
-interface CustomLegendEntry {
-  color?: string;
-  value?: string | number;
+interface CustomLegendProps {
+  payload?: Array<{
+    color?: string;
+    value?: string | number;
+  }>;
 }
 
-const CustomTooltip = memo(({ active, payload }: TooltipProps<number, string>) => {
+const CustomTooltip = memo(({ active, payload }: CustomTooltipProps) => {
   if (!active || !payload?.length) return null;
-
-  const row = payload[0].payload as TemperatureRow;
+  const row = payload[0].payload;
 
   return (
     <div style={{ width: 250 }} className="p-3 rounded-xl shadow-xl border border-border bg-card/60 backdrop-blur-xl text-[9px] sm:text-xs">
@@ -50,8 +72,8 @@ const CustomTooltip = memo(({ active, payload }: TooltipProps<number, string>) =
 
 CustomTooltip.displayName = "CustomTooltip";
 
-const CustomLegend = memo(({ payload = [] }: LegendProps) => {
-  const entries = payload as CustomLegendEntry[];
+const CustomLegend = memo(({ payload = [] }: CustomLegendProps) => {
+  const entries = payload;
 
   return (
     <div className="flex gap-4 justify-center items-center mt-4">
@@ -74,7 +96,7 @@ const CustomLegend = memo(({ payload = [] }: LegendProps) => {
 
 CustomLegend.displayName = "CustomLegend";
 
-export default function TempChart({ isExport = false, data }: TempChartProps) {
+export default function TempChart({ isExport = false, data }: Props) {
   const chartRows = useMemo(() => {
     const filteredRows = (data?.content ?? []).filter((row) => row.avgTemperature != null);
 
@@ -128,12 +150,7 @@ export default function TempChart({ isExport = false, data }: TempChartProps) {
       <XAxis
         dataKey="timestamp"
         tickCount={10}
-        tick={{
-          fontSize,
-          className: "text-text fill-current",
-          angle: -45,
-          textAnchor: "end",
-        }}
+        tick={(props) => <CustomXAxisTick {...props} fontSize={fontSize} />}
         height={isExport ? 140 : 80}
         tickFormatter={(value) => format(new Date(value), "dd | hh:mm a")}
         label={{

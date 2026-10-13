@@ -6,15 +6,10 @@ import { useGetHistoricalRoomMetrics } from "@/hooks/useDashboard";
 import { columns } from "./datatable/columns";
 import { DataTable } from "./datatable/data-table";
 import { Skeleton } from "@/components/ui/skeleton";
-
-interface TableFilter {
-  fromDate: string;
-  toDate: string;
-  [key: string]: unknown;
-}
+import { FilterData } from "./Content";
 
 interface TableUIProps {
-  filter: TableFilter;
+  filter: FilterData;
 }
 
 export default function TableUI({ filter }: TableUIProps) {
@@ -22,9 +17,14 @@ export default function TableUI({ filter }: TableUIProps) {
   const size = 27;
 
   const { data, isLoading, error } = useGetHistoricalRoomMetrics({
-    ...filter,
-    page,
-    size,
+    page: page,
+    categoryId: filter.categoryId ?? 1,
+    fromDate: filter.fromDate,
+    interval: filter.interval,
+    roomId: filter.roomId ?? 1,
+    toDate: filter.toDate,
+    size: size,
+    sort: filter.sort,
   });
 
   const rows = data?.content ?? [];

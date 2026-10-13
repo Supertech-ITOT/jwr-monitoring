@@ -10,3 +10,8 @@ export const getCategories = async () => {
   const res = await api.get<ApiResponse<Category[]>>("/categories");
   return res.data;
 };
+
+export const getCategoryById = async (id: number) => {
+  const res = await api.get<ApiResponse<Category>>(`categories/${id}`);
+  return res.data;
+};

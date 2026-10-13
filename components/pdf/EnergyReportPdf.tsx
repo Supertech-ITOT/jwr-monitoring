@@ -91,7 +91,7 @@ function formatDate(value: string | number | Date, pattern: string): string {
   return format(date, pattern);
 }
 
-export default function EnergyReportPDF({ data = [], filter, name }: EnergyReportPDFProps): React.JSX.Element {
+export default function EnergyReportPDF({ data = [], filter, name }: EnergyReportPDFProps) {
   if (!data.length) {
     return <Document />;
   }
@@ -186,8 +186,8 @@ export default function EnergyReportPDF({ data = [], filter, name }: EnergyRepor
             {/* DETAIL LOG */}
             <Text
               style={{
-                marginTop: 12,
-                marginBottom: 6,
+                marginTop: 0,
+                marginBottom: 0,
                 fontSize: 12,
                 fontWeight: "bold",
                 color: THEME.main,

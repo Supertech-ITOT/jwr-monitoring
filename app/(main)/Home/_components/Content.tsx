@@ -2,16 +2,15 @@
 
 import { useState } from "react";
 import { format } from "date-fns";
-
 import RoomCard from "@/app/(main)/Home/_components/RoomCard";
 import { useGetCategory } from "@/hooks/useCategory";
 import { useGetCurrentRoomMetrics } from "@/hooks/useDashboard";
-
-import FilterSelect from "@/components/FilterSelect";
+import SearchableSelect from "@/components/FilterSelect";
 import { Factory, Grid2X2, Table2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import RoomTable from "./RoomTable";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Value } from "@radix-ui/react-select";
 
 type LayoutType = "grid" | "table";
 
@@ -26,9 +25,9 @@ type RoomMetric = {
 
 export default function Content(): React.JSX.Element {
   const [layout, setLayout] = useState<LayoutType>("grid");
-  const [categoryId, setCategoryId] = useState<number | string>(1);
+  const [categoryId, setCategoryId] = useState<number>(1);
 
-  const { data, isLoading } = useGetCurrentRoomMetrics(Number(categoryId) || 1);
+  const { data, isLoading } = useGetCurrentRoomMetrics(categoryId || 1);
 
   const { data: categories, isLoading: categoriesIsLoading } = useGetCategory();
 
@@ -68,13 +67,17 @@ export default function Content(): React.JSX.Element {
 
         {/* Category Filter */}
         <div className="w-full sm:w-72 md:w-80">
-          <FilterSelect
+          <SearchableSelect
             label="Room"
-            loading={loading}
             icon={Factory}
-            options={categories ?? []}
+            options={
+              categories?.map((category) => ({
+                value: category.id,
+                label: category.name,
+              })) ?? []
+            }
             value={categoryId}
-            onSelect={(id: number | string) => setCategoryId(Number(id))}
+            onChange={(id) => setCategoryId(Number(id))}
           />
         </div>
       </div>

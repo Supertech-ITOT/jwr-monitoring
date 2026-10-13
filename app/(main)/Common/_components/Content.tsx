@@ -2,18 +2,16 @@
 
 import { useState } from "react";
 import dayjs from "dayjs";
-
 import CommonFilter from "./CommonFilter";
 import Download from "./Download";
 import CommonRoomTable from "./CommonRoomTable";
-
 import { useGetCommonRoomLog } from "@/hooks/useDashboard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 
-type FilterData = {
-  categoryId: number;
+export type FilterData = {
+  categoryId: number | null;
   categoryName: string;
   roomIds: number[];
   fromDate: string;
@@ -21,7 +19,7 @@ type FilterData = {
   interval: number;
 };
 
-export default function Content(): React.JSX.Element {
+export default function Content() {
   const now = dayjs();
 
   const initialFilter: FilterData = {
@@ -34,15 +32,21 @@ export default function Content(): React.JSX.Element {
   };
 
   const [draftFilter, setDraftFilter] = useState<FilterData>(initialFilter);
-
   const [appliedFilter, setAppliedFilter] = useState<FilterData>(initialFilter);
-
   const [page, setPage] = useState<number>(0);
-
-  const { data, isLoading, isError } = useGetCommonRoomLog(appliedFilter, page, 10);
-
+  const { data, isLoading, isError } = useGetCommonRoomLog(
+    {
+      categoryId: appliedFilter.categoryId ?? 1,
+      fromDate: appliedFilter.fromDate,
+      interval: appliedFilter.interval,
+      roomIds: appliedFilter.roomIds,
+      toDate: appliedFilter.toDate,
+    },
+    page,
+    10,
+  );
   const rooms = data?.content ?? [];
-  const totalPages = data?.page?.totalPages ?? 0;
+  const totalPages = data?.page.totalPages ?? 0;
 
   return (
     <div className="mt-2 space-y-2">

@@ -1,5 +1,6 @@
 "use client";
 
+import { PageResponse, RoomHistoricalValueDto } from "@/app/common/api.types";
 import SensorReportPDF from "@/components/pdf/sensorReportpdf";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -14,24 +15,16 @@ import { DownloadIcon, Loader2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
-interface ReportFilter {
+interface DownloadProps {
   fromDate: string;
   toDate: string;
-  [key: string]: unknown;
-}
-
-interface DownloadProps {
-  filter: ReportFilter;
   categoryName: string;
   roomName: string;
-  data?: {
-    content?: Record<string, unknown>[];
-    [key: string]: unknown;
-  } | null;
+  data?: PageResponse<RoomHistoricalValueDto>;
   isLoading: boolean;
 }
 
-export default function Download({ filter, categoryName, roomName, data, isLoading }: DownloadProps) {
+export default function Download({ fromDate, toDate, categoryName, roomName, data, isLoading }: DownloadProps) {
   const rows = useMemo(() => data?.content ?? [], [data?.content]);
 
   const [name, setName] = useState<string>("");
@@ -88,7 +81,8 @@ export default function Download({ filter, categoryName, roomName, data, isLoadi
           tchartImg={tdataUrl}
           rchartImg={rdataUrl}
           categoryName={categoryName}
-          date={filter}
+          fromDate={fromDate}
+          toDate={toDate}
           name={name}
         />,
       ).toBlob();
@@ -97,7 +91,7 @@ export default function Download({ filter, categoryName, roomName, data, isLoadi
       const link = document.createElement("a");
 
       link.href = url;
-      link.download = `${categoryName}-[${format(new Date(filter.fromDate), "dd-MMM-yyyy")}-${format(new Date(filter.toDate), "dd-MMM-yyyy")}].pdf`;
+      link.download = `${categoryName}-[${format(new Date(fromDate), "dd-MMM-yyyy")}-${format(new Date(toDate), "dd-MMM-yyyy")}].pdf`;
 
       document.body.appendChild(link);
       link.click();

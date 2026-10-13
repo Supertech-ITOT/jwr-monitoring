@@ -12,10 +12,10 @@ export interface HistoricalRoomMetricsParams {
 export interface RoomCurrentValueDto {
   roomId: number;
   roomName: string;
-  avgTemp: number | null;
-  rh: number | null;
-  status: boolean | null;
-  timestamp: string | null;
+  avgTemp: number;
+  rh: number;
+  status: boolean;
+  timestamp: string;
 }
 
 export interface RoomStatCard {
@@ -35,20 +35,20 @@ export interface CommonRoomRequest {
 
 export interface CommonRoomLogResponse {
   timeStamp: string;
-  avgTemp: number | null;
-  rh: number | null;
+  avgTemp: number;
+  rh: number;
 }
 
 export interface CommonRoomResponse {
   roomId: number;
   roomName: string;
   logs: CommonRoomLogResponse[];
-  avgTemperature: number | null;
-  minTemperature: number | null;
-  maxTemperature: number | null;
-  avgRh: number | null;
-  minRh: number | null;
-  maxRh: number | null;
+  avgTemperature: number;
+  minTemperature: number;
+  maxTemperature: number;
+  avgRh: number;
+  minRh: number;
+  maxRh: number;
 }
 
 export interface EnergyRoomLogParams {
@@ -59,31 +59,31 @@ export interface EnergyRoomLogParams {
   toDate: string;
   page?: number;
   size?: number;
-  sort?: string | string[];
+  sort?: string;
 }
 
 export interface EnergyRoomLogResponse {
   timeStamp: string;
-  energy: number | null;
-  current: number | null;
-  voltage: number | null;
-  frequency: number | null;
+  energy: number;
+  current: number;
+  voltage: number;
+  frequency: number;
 }
 
 export interface EnergyRoomResponse {
   roomId: number;
   roomName: string;
   logs: EnergyRoomLogResponse[];
-  avgEnergy: number | null;
-  minEnergy: number | null;
-  maxEnergy: number | null;
-  avgCurrent: number | null;
-  minCurrent: number | null;
-  maxCurrent: number | null;
-  avgVoltage: number | null;
-  minVoltage: number | null;
-  maxVoltage: number | null;
-  avgFrequency: number | null;
-  minFrequency: number | null;
-  maxFrequency: number | null;
+  avgEnergy: number;
+  minEnergy: number;
+  maxEnergy: number;
+  avgCurrent: number;
+  minCurrent: number;
+  maxCurrent: number;
+  avgVoltage: number;
+  minVoltage: number;
+  maxVoltage: number;
+  avgFrequency: number;
+  minFrequency: number;
+  maxFrequency: number;
 }

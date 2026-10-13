@@ -15,6 +15,7 @@ import { format } from "date-fns";
 import { DownloadIcon, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { FilterData } from "./Content";
 
 type DownloadProps = {
   filter: FilterData;
@@ -24,7 +25,17 @@ export default function Download({ filter }: DownloadProps) {
   const [name, setName] = useState<string>("");
   const [open, setOpen] = useState<boolean>(false);
 
-  const { data, isLoading, isError } = useGetCommonRoomLog(filter, 0, 999999);
+  const { data, isLoading, isError } = useGetCommonRoomLog(
+    {
+      categoryId: filter.categoryId ?? 1,
+      fromDate: filter.fromDate,
+      interval: filter.interval,
+      roomIds: filter.roomIds,
+      toDate: filter.toDate,
+    },
+    0,
+    999999,
+  );
 
   const rooms = data?.content ?? [];
 

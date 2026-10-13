@@ -1,6 +1,7 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 
 import { getCommonRoomLog, getCurrentRoomMetrics, getEnergyRoomLog, getHistoricalRoomMetrics, getRoomStatCard } from "@/services/DashboardService";
+import { CommonRoomRequest, EnergyRoomLogParams, HistoricalRoomMetricsParams } from "@/types/dashboard.types";
 
 export const queryKeys = {
   historicalMetrics: (params: HistoricalRoomMetricsParams) => ["historical-metric", params] as const,
@@ -9,22 +10,10 @@ export const queryKeys = {
 
   roomStatCard: () => ["room-stat"] as const,
 
-  commonRoomLog: (filter: CommonRoomLogFilter, page: number, size: number) => ["common-room-log", filter, page, size] as const,
+  commonRoomLog: (filter: CommonRoomRequest, page: number, size: number) => ["common-room-log", filter, page, size] as const,
 
   energyRoomLog: (params: EnergyRoomLogParams) => ["energy-room-log", params] as const,
 };
-
-export interface HistoricalRoomMetricsParams {
-  [key: string]: string | number | boolean | undefined | null;
-}
-
-export interface CommonRoomLogFilter {
-  [key: string]: string | number | boolean | undefined | null;
-}
-
-export interface EnergyRoomLogParams {
-  [key: string]: string | number | boolean | undefined | null;
-}
 
 export const useGetHistoricalRoomMetrics = (params: HistoricalRoomMetricsParams, enabled = true) => {
   return useQuery({
@@ -60,7 +49,7 @@ export const useGetRoomStatCard = (enabled = true) => {
   });
 };
 
-export const useGetCommonRoomLog = (filter: CommonRoomLogFilter, page: number, size: number, enabled = true) => {
+export const useGetCommonRoomLog = (filter: CommonRoomRequest, page: number, size: number, enabled = true) => {
   return useQuery({
     queryKey: queryKeys.commonRoomLog(filter, page, size),
     queryFn: async () => {
@@ -71,7 +60,7 @@ export const useGetCommonRoomLog = (filter: CommonRoomLogFilter, page: number, s
   });
 };
 
-export const useGetEnergyRoomLog = (params: EnergyRoomLogParams, enabled: boolean = true) => {
+export const useGetEnergyRoomLog = (params: EnergyRoomLogParams, enabled = true) => {
   return useQuery({
     queryKey: queryKeys.energyRoomLog(params),
     queryFn: async () => {

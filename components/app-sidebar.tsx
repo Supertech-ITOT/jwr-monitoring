@@ -36,7 +36,7 @@ const items: NavigationItem[] = [
   },
   {
     title: "Single Room",
-    url: "/Category?categoryId=1&roomId=1",
+    url: "/Category",
     icon: Radio,
   },
   {
@@ -45,8 +45,8 @@ const items: NavigationItem[] = [
     icon: Warehouse,
   },
   {
-    title: "Energy Room",
-    url: "/Power?categoryId=1&roomId=1",
+    title: "Energy Report",
+    url: "/Power",
     icon: BatteryCharging,
   },
 ];
@@ -70,11 +70,7 @@ export default function AppSidebar(): React.JSX.Element {
           <SidebarHeader>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton
-                  size="100"
-                  onClick={toggleSidebar}
-                  className="group-data-[collapsible=icon]:p-0! rounded-xl border border-border p-4"
-                >
+                <SidebarMenuButton onClick={toggleSidebar} className="group-data-[collapsible=icon]:p-0! rounded-xl border border-border p-4">
                   <div className="flex h-full w-full items-center justify-start gap-4">
                     <div className="flex size-10 items-center justify-center overflow-hidden rounded-full border border-border bg-cardbackground">
                       <Image src="/logo.jpg" width={50} height={50} alt="JWR company logo" className="object-contain" />

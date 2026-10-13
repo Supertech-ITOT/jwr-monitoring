@@ -6,4 +6,7 @@ import java.util.List;
 
 public interface RoomService {
     List<RoomDto> getRoomsByCategoryId(Long categoryId);
+
+    RoomDto getRoomById(Long id);
+
 }

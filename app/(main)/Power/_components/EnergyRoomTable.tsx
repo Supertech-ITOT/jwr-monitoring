@@ -2,37 +2,12 @@
 
 import { Fragment } from "react";
 import { format, isValid, parseISO } from "date-fns";
+import { EnergyRoomLogResponse, EnergyRoomResponse } from "@/types/dashboard.types";
 
 const MAX_ROOMS = 3;
 
-type EnergyLog = {
-  timeStamp?: string | number | Date;
-  energy?: number | string | null;
-  current?: number | string | null;
-  voltage?: number | string | null;
-  frequency?: number | string | null;
-};
-
-type EnergyRoom = {
-  roomId: number | string;
-  roomName: string;
-  logs: EnergyLog[];
-  avgEnergy?: number | string | null;
-  minEnergy?: number | string | null;
-  maxEnergy?: number | string | null;
-  avgCurrent?: number | string | null;
-  minCurrent?: number | string | null;
-  maxCurrent?: number | string | null;
-  avgVoltage?: number | string | null;
-  minVoltage?: number | string | null;
-  maxVoltage?: number | string | null;
-  avgFrequency?: number | string | null;
-  minFrequency?: number | string | null;
-  maxFrequency?: number | string | null;
-};
-
 type EnergyRoomTableProps = {
-  rooms: EnergyRoom[];
+  rooms: EnergyRoomResponse[];
 };
 
 type SummaryRow = {
@@ -43,11 +18,15 @@ type SummaryRow = {
   frequency: "avgFrequency" | "minFrequency" | "maxFrequency";
 };
 
-type PaddedRoom = EnergyRoom;
+type PaddedRoom = Partial<Omit<EnergyRoomResponse, "roomId" | "roomName" | "logs">> & {
+  roomId: number | string;
+  roomName: string;
+  logs: EnergyRoomLogResponse[];
+};
 
 type TableRow = {
   timeStamp?: string | number | Date;
-  values: EnergyLog[];
+  values: EnergyRoomLogResponse[];
 };
 
 const summaryRows: SummaryRow[] = [

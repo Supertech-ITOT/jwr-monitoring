@@ -4,10 +4,8 @@ import com.company.jwr_monitoring.dto.Common.ApiResponse;
 import com.company.jwr_monitoring.dto.Room.RoomDto;
 import com.company.jwr_monitoring.services.RoomService;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -24,4 +22,12 @@ public class RoomController {
         List<RoomDto> rooms = roomService.getRoomsByCategoryId(categoryId);
         return ResponseEntity.ok(ApiResponse.success("Rooms fetched successfully", rooms));
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<RoomDto>> getRoomById(
+            @PathVariable Long id) {
+        RoomDto rooms = roomService.getRoomById(id);
+        return ResponseEntity.ok(ApiResponse.success("Rooms fetched successfully", rooms));
+    }
+
 }

@@ -13,27 +13,26 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { useGetEnergyRoomLog } from "@/hooks/useDashboard";
-
-export type EnergyFilterData = {
-  categoryId: number;
-  categoryName: string;
-  roomIds: number[];
-  fromDate: string;
-  toDate: string;
-  day: string;
-  sort: string;
-  interval: number;
-};
+import { EnergyFilterData } from "./Content";
 
 type DownloadProps = {
   filter: EnergyFilterData;
 };
 
-export default function Download({ filter }: DownloadProps): React.JSX.Element {
+export default function Download({ filter }: DownloadProps) {
   const [name, setName] = useState<string>("");
   const [open, setOpen] = useState<boolean>(false);
 
-  const { data, isLoading, isError } = useGetEnergyRoomLog(filter, 0, 999999);
+  const { data, isLoading, isError } = useGetEnergyRoomLog({
+    categoryId: filter.categoryId ?? 1,
+    fromDate: filter.fromDate,
+    interval: filter.interval,
+    roomIds: filter.roomIds,
+    toDate: filter.toDate,
+    sort: filter.sort,
+    page: 0,
+    size: 999999,
+  });
 
   const rooms = data?.content ?? [];
 
