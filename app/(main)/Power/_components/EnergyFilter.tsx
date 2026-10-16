@@ -65,6 +65,7 @@ export default function EnergyFilter({ filterData, onFilterChange, onApply }: En
               onFilterChange((prev) => ({
                 ...prev,
                 categoryId: selectedId ?? 1,
+                categoryName: categories?.find((f) => f.id === selectedId)?.name ?? "",
                 roomIds: [],
               }));
             }}

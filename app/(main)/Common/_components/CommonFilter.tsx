@@ -67,6 +67,7 @@ export default function CommonFilter({ filterData, onFilterChange, onApply }: Co
               onFilterChange((prev) => ({
                 ...prev,
                 categoryId: selectedId ?? null,
+                categoryName: categories?.find((f) => f.id === selectedId)?.name ?? "",
                 roomId: null,
               }));
             }}

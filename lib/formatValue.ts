@@ -1,4 +1,4 @@
-export const formatValue = (value, parameterId) => {
+export const formatValue = (value: number | string | null | undefined, parameterId: number): string | number => {
   if (value == null) return "-";
 
   switch (parameterId) {

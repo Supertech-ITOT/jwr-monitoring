@@ -26,6 +26,8 @@ import com.company.jwr_monitoring.dto.Dashboard.RoomCurrentValueDto;
 import com.company.jwr_monitoring.dto.Dashboard.RoomHistoricalValueDto;
 import com.company.jwr_monitoring.dto.Dashboard.RoomHistoricalValueRequest;
 import com.company.jwr_monitoring.dto.Dashboard.RoomStatCardDto;
+import com.company.jwr_monitoring.dto.Energy.EnergyConsumptionRequestDto;
+import com.company.jwr_monitoring.dto.Energy.EnergyConsumptionResponseDto;
 import com.company.jwr_monitoring.entity.Room;
 import com.company.jwr_monitoring.repository.CategoryRepository;
 import com.company.jwr_monitoring.repository.RoomRepository;
@@ -296,30 +298,30 @@ public class DashboardServiceImpl implements DashboardService {
                                                 ((java.sql.Timestamp) r[3]).toLocalDateTime(),
 
                                                 // Interval values
-                                                r[3] == null ? null : ((Number) r[4]).doubleValue(),
-                                                r[4] == null ? null : ((Number) r[5]).doubleValue(),
-                                                r[5] == null ? null : ((Number) r[6]).doubleValue(),
-                                                r[6] == null ? null : ((Number) r[7]).doubleValue(),
+                                                r[4] == null ? null : ((Number) r[4]).doubleValue(),
+                                                r[5] == null ? null : ((Number) r[5]).doubleValue(),
+                                                r[6] == null ? null : ((Number) r[6]).doubleValue(),
+                                                r[7] == null ? null : ((Number) r[7]).doubleValue(),
 
                                                 // Energy
-                                                r[7] == null ? null : ((Number) r[8]).doubleValue(),
-                                                r[8] == null ? null : ((Number) r[9]).doubleValue(),
-                                                r[9] == null ? null : ((Number) r[10]).doubleValue(),
+                                                r[8] == null ? null : ((Number) r[8]).doubleValue(),
+                                                r[9] == null ? null : ((Number) r[9]).doubleValue(),
+                                                r[10] == null ? null : ((Number) r[10]).doubleValue(),
 
                                                 // Current
-                                                r[10] == null ? null : ((Number) r[11]).doubleValue(),
-                                                r[11] == null ? null : ((Number) r[12]).doubleValue(),
-                                                r[12] == null ? null : ((Number) r[13]).doubleValue(),
+                                                r[11] == null ? null : ((Number) r[11]).doubleValue(),
+                                                r[12] == null ? null : ((Number) r[12]).doubleValue(),
+                                                r[13] == null ? null : ((Number) r[13]).doubleValue(),
 
                                                 // Voltage
-                                                r[13] == null ? null : ((Number) r[14]).doubleValue(),
-                                                r[14] == null ? null : ((Number) r[15]).doubleValue(),
-                                                r[15] == null ? null : ((Number) r[16]).doubleValue(),
+                                                r[14] == null ? null : ((Number) r[14]).doubleValue(),
+                                                r[15] == null ? null : ((Number) r[15]).doubleValue(),
+                                                r[16] == null ? null : ((Number) r[16]).doubleValue(),
 
                                                 // Frequency
-                                                r[16] == null ? null : ((Number) r[17]).doubleValue(),
-                                                r[17] == null ? null : ((Number) r[18]).doubleValue(),
-                                                r[18] == null ? null : ((Number) r[19]).doubleValue()))
+                                                r[17] == null ? null : ((Number) r[17]).doubleValue(),
+                                                r[18] == null ? null : ((Number) r[18]).doubleValue(),
+                                                r[19] == null ? null : ((Number) r[19]).doubleValue()))
                                 .toList();
 
                 Sort.Order timestampOrder = pageable.getSort().getOrderFor("timestamp");
@@ -379,6 +381,11 @@ public class DashboardServiceImpl implements DashboardService {
                                 new ArrayList<>(map.values()),
                                 pageable,
                                 roomPage.getTotalElements());
+        }
+
+        @Override
+        public EnergyConsumptionResponseDto getEnergyConsumptionData(EnergyConsumptionRequestDto request) {
+                return null;
         }
 
 }

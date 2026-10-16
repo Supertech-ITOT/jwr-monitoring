@@ -44,4 +44,5 @@ public interface TagCurrentValueRepository extends JpaRepository<TagCurrentValue
             """)
     List<RoomCurrentValueDto> getCurrentRoomMetricsByCategory(
             @Param("categoryId") Long categoryId);
+
 }

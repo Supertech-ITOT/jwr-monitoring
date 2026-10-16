@@ -2,7 +2,6 @@ package com.company.jwr_monitoring.repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,7 +16,9 @@ public interface TagLogRepository extends JpaRepository<TagLog, Long> {
                     p.name AS parameter_name,
                     tl.value,
                     TIMESTAMP 'epoch'
-                        + floor(extract(epoch FROM tl.timestamp) / (:interval * 60))
+                        + floor(
+                            extract(epoch FROM tl.timestamp) / (:interval * 60)
+                        )
                         * (:interval * 60)
                         * INTERVAL '1 second' AS bucket_time
                 FROM tag_logs tl
@@ -29,18 +30,25 @@ public interface TagLogRepository extends JpaRepository<TagLog, Long> {
                   AND r.id = :roomId
                   AND tl.timestamp BETWEEN :fromDate AND :toDate
             )
-
             SELECT
-                ROUND(MAX(CASE WHEN parameter_name = 'Temperature' THEN value END)::numeric, 1) AS temperature,
-                ROUND(MAX(CASE WHEN parameter_name = 'RH' THEN value END)::numeric) AS rh,
+                ROUND(
+                    MAX(CASE WHEN parameter_name = 'Temperature' THEN value END)::numeric,
+                    1
+                ) AS temperature,
+                ROUND(
+                    MAX(CASE WHEN parameter_name = 'RH' THEN value END)::numeric
+                ) AS rh,
                 bucket_time AS timestamp
             FROM bucketed_data
             GROUP BY bucket_time
+            ORDER BY bucket_time DESC
             """, countQuery = """
             WITH bucketed_data AS (
                 SELECT
                     TIMESTAMP 'epoch'
-                        + floor(extract(epoch FROM tl.timestamp) / (:interval * 60))
+                        + floor(
+                            extract(epoch FROM tl.timestamp) / (:interval * 60)
+                        )
                         * (:interval * 60)
                         * INTERVAL '1 second' AS bucket_time
                 FROM tag_logs tl
@@ -56,7 +64,7 @@ public interface TagLogRepository extends JpaRepository<TagLog, Long> {
                 SELECT bucket_time
                 FROM bucketed_data
                 GROUP BY bucket_time
-            )
+            ) AS grouped_buckets
             """, nativeQuery = true)
     Page<Object[]> getRoomHistoricalValues(
             @Param("categoryId") Long categoryId,
@@ -120,7 +128,6 @@ public interface TagLogRepository extends JpaRepository<TagLog, Long> {
                 GROUP BY
                     room_id,
                     room_name,
-                    category_id,
                     bucket_time
             ),
 
@@ -218,7 +225,7 @@ public interface TagLogRepository extends JpaRepository<TagLog, Long> {
                     AVG(CASE WHEN parameter_id = 6 THEN value END) AS frequency
 
                 FROM bucketed_data
-                GROUP BY room_id, room_name, bucket_time
+                GROUP BY room_id, room_name,category_id, bucket_time
             ),
 
             room_stats AS (
@@ -283,4 +290,55 @@ public interface TagLogRepository extends JpaRepository<TagLog, Long> {
             @Param("interval") Integer interval,
             @Param("fromDate") LocalDateTime fromDate,
             @Param("toDate") LocalDateTime toDate);
+
+    @Query("""
+            SELECT
+                t.id,
+                (
+                    SELECT MAX(e.value)
+                    FROM TagLog e
+                    WHERE e.tag.id = t.id
+                      AND e.timestamp = (
+                          SELECT MAX(et.timestamp)
+                          FROM TagLog et
+                          WHERE et.tag.id = t.id
+                            AND et.timestamp <= :toDate
+                      )
+                )
+                -
+                (
+                    SELECT MAX(s.value)
+                    FROM TagLog s
+                    WHERE s.tag.id = t.id
+                      AND s.timestamp = (
+                          SELECT MAX(st.timestamp)
+                          FROM TagLog st
+                          WHERE st.tag.id = t.id
+                            AND st.timestamp < :fromDate
+                      )
+                )
+            FROM TagMaster t
+            WHERE t.id IN :tagIds
+            """)
+    List<Object[]> getEnergyConsumptionByTagIds(
+            @Param("tagIds") List<Long> tagIds,
+            @Param("fromDate") LocalDateTime fromDate,
+            @Param("toDate") LocalDateTime toDate);
+
+    @Query("""
+            SELECT COUNT(DISTINCT t.tag.id)
+            FROM TagLog t
+            WHERE t.tag.id IN :tagIds
+              AND t.timestamp = (
+                  SELECT MAX(l.timestamp)
+                  FROM TagLog l
+                  WHERE l.tag.id = t.tag.id
+                    AND l.timestamp <= :toDate
+              )
+              AND t.value = 1
+            """)
+    Long countActiveTagsAtDate(
+            @Param("tagIds") List<Long> tagIds,
+            @Param("toDate") LocalDateTime toDate);
+
 }

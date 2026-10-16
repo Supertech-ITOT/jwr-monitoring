@@ -5,7 +5,7 @@ import { format, isValid, parseISO } from "date-fns";
 import { EnergyRoomLogResponse, EnergyRoomResponse } from "@/types/dashboard.types";
 
 const MAX_ROOMS = 3;
-const ROOMS_WITHOUT_FREQUENCY = new Set([63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78]);
+const CATEGORY_WITHOUT_FREQUENCY = new Set([6, 7, 8, 9, 10, 11, 12]);
 
 type EnergyRoomTableProps = {
   rooms: EnergyRoomResponse[];
@@ -54,8 +54,8 @@ const summaryRows: SummaryRow[] = [
   },
 ];
 
-function hideFrequencyForRoom(roomId: number | string): boolean {
-  return ROOMS_WITHOUT_FREQUENCY.has(Number(roomId));
+function hideFrequency(categoryId: number): boolean {
+  return CATEGORY_WITHOUT_FREQUENCY.has(categoryId);
 }
 
 function formatStat(value: number | string | null | undefined, type: "energy" | "current" | "voltage" | "frequency"): string {
@@ -92,6 +92,7 @@ export default function EnergyRoomTable({ rooms }: EnergyRoomTableProps) {
       (_, index): PaddedRoom => ({
         roomId: `empty-${index}`,
         roomName: "",
+        categoryId: rooms[0]?.categoryId ?? null,
         logs: [],
       }),
     ),
@@ -129,12 +130,12 @@ export default function EnergyRoomTable({ rooms }: EnergyRoomTableProps) {
             </th>
 
             {paddedRooms.map((room) => {
-              const hideFrequency = hideFrequencyForRoom(room.roomId);
+              const hide = hideFrequency(room.categoryId ?? 1);
 
               return (
                 <th
                   key={room.roomId}
-                  colSpan={hideFrequency ? 3 : 4}
+                  colSpan={hide ? 3 : 4}
                   className="sticky top-0 z-40 border border-border bg-primary p-0.5 text-center text-[10px] font-semibold text-white sm:text-sm"
                 >
                   {room.roomName || "\u00A0"}
@@ -147,8 +148,8 @@ export default function EnergyRoomTable({ rooms }: EnergyRoomTableProps) {
           <tr>
             {paddedRooms.map((room) => {
               const headers = ["Energy kWh", "Current A", "Voltage V", "Frequency Hz"];
-
-              const visibleHeaders = hideFrequencyForRoom(room.roomId) ? headers.slice(0, 3) : headers;
+              const hide = hideFrequency(room.categoryId ?? 1);
+              const visibleHeaders = hide ? headers.slice(0, 3) : headers;
 
               return (
                 <Fragment key={room.roomId}>
@@ -175,7 +176,7 @@ export default function EnergyRoomTable({ rooms }: EnergyRoomTableProps) {
               </th>
 
               {paddedRooms.map((room) => {
-                const hideFrequency = hideFrequencyForRoom(room.roomId);
+                const hide = hideFrequency(room.categoryId ?? 1);
 
                 const summaryCells = [
                   {
@@ -190,7 +191,7 @@ export default function EnergyRoomTable({ rooms }: EnergyRoomTableProps) {
                     key: stat.voltage,
                     type: "voltage" as const,
                   },
-                  ...(!hideFrequency
+                  ...(!hide
                     ? [
                         {
                           key: stat.frequency,
@@ -231,7 +232,7 @@ export default function EnergyRoomTable({ rooms }: EnergyRoomTableProps) {
 
                 {row.values.map((log, roomIndex) => {
                   const room = paddedRooms[roomIndex];
-                  const hideFrequency = room ? hideFrequencyForRoom(room.roomId) : false;
+                  const hide = room ? hideFrequency(room.categoryId ?? 1) : false;
 
                   return (
                     <Fragment key={roomIndex}>
@@ -241,7 +242,7 @@ export default function EnergyRoomTable({ rooms }: EnergyRoomTableProps) {
 
                       <td className={cellClass}>{formatStat(log.voltage, "voltage")}</td>
 
-                      {!hideFrequency && <td className={cellClass}>{formatStat(log.frequency, "frequency")}</td>}
+                      {!hide && <td className={cellClass}>{formatStat(log.frequency, "frequency")}</td>}
                     </Fragment>
                   );
                 })}

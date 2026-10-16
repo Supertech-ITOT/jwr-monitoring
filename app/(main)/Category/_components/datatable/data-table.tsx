@@ -1,27 +1,12 @@
-
 "use client";
 
-import {
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
+import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 
-import type {
-  ColumnDef,
-  RowData,
-} from "@tanstack/react-table";
+import type { ColumnDef, RowData } from "@tanstack/react-table";
 
 import type { Dispatch, SetStateAction } from "react";
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 interface DataTableProps<TData extends RowData> {
   columns: ColumnDef<TData, any>[];
@@ -31,13 +16,7 @@ interface DataTableProps<TData extends RowData> {
   totalPages: number;
 }
 
-export function DataTable<TData extends RowData>({
-  columns,
-  data,
-  page,
-  setPage,
-  totalPages,
-}: DataTableProps<TData>) {
+export function DataTable<TData extends RowData>({ columns, data, page, setPage, totalPages }: DataTableProps<TData>) {
   const table = useReactTable({
     data,
     columns,
@@ -51,21 +30,10 @@ export function DataTable<TData extends RowData>({
           <Table>
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow
-                  key={headerGroup.id}
-                  className="bg-primary text-white hover:bg-primary"
-                >
+                <TableRow key={headerGroup.id} className="bg-primary text-white hover:bg-primary">
                   {headerGroup.headers.map((header) => (
-                    <TableHead
-                      key={header.id}
-                      className="text-center text-white"
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                    <TableHead key={header.id} className="text-center text-white">
+                      {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                     </TableHead>
                   ))}
                 </TableRow>
@@ -75,33 +43,17 @@ export function DataTable<TData extends RowData>({
             <TableBody>
               {table.getRowModel().rows.length > 0 ? (
                 table.getRowModel().rows.map((row, index) => (
-                  <TableRow
-                    key={row.id}
-                    className={
-                      index % 2 === 0
-                        ? "bg-muted/50 hover:bg-muted/50"
-                        : "bg-background hover:bg-background"
-                    }
-                  >
+                  <TableRow key={row.id} className={index % 2 === 0 ? "bg-muted/50 hover:bg-muted/50" : "bg-background hover:bg-background"}>
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell
-                        key={cell.id}
-                        className="text-center p-0!"
-                      >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
+                      <TableCell key={cell.id} className="text-center p-0!">
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </TableCell>
                     ))}
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
+                  <TableCell colSpan={columns.length} className="h-24 text-center">
                     No results.
                   </TableCell>
                 </TableRow>
@@ -114,9 +66,7 @@ export function DataTable<TData extends RowData>({
       {/* Pagination */}
       <div className="flex items-center justify-between p-2">
         <button
-          onClick={() =>
-            setPage((prev) => Math.max(prev - 1, 0))
-          }
+          onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
           disabled={page === 0}
           className="border rounded px-4 py-2 disabled:opacity-50"
         >
@@ -128,9 +78,7 @@ export function DataTable<TData extends RowData>({
         </p>
 
         <button
-          onClick={() =>
-            setPage((prev) => Math.min(prev + 1, totalPages - 1))
-          }
+          onClick={() => setPage((prev) => Math.min(prev + 1, totalPages - 1))}
           disabled={page >= totalPages - 1 || totalPages === 0}
           className="border rounded px-4 py-2 disabled:opacity-50"
         >

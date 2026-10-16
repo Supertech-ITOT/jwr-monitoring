@@ -73,6 +73,7 @@ export interface EnergyRoomLogResponse {
 export interface EnergyRoomResponse {
   roomId: number;
   roomName: string;
+  categoryId: number;
   logs: EnergyRoomLogResponse[];
   avgEnergy: number;
   minEnergy: number;

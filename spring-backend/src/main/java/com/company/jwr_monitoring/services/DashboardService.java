@@ -13,6 +13,8 @@ import com.company.jwr_monitoring.dto.Dashboard.RoomCurrentValueDto;
 import com.company.jwr_monitoring.dto.Dashboard.RoomHistoricalValueDto;
 import com.company.jwr_monitoring.dto.Dashboard.RoomHistoricalValueRequest;
 import com.company.jwr_monitoring.dto.Dashboard.RoomStatCardDto;
+import com.company.jwr_monitoring.dto.Energy.EnergyConsumptionRequestDto;
+import com.company.jwr_monitoring.dto.Energy.EnergyConsumptionResponseDto;
 
 public interface DashboardService {
     Page<RoomHistoricalValueDto> getHistoricalRoomMetrics(RoomHistoricalValueRequest request, Pageable pageable);
@@ -26,5 +28,7 @@ public interface DashboardService {
     Page<CommonRoomResponse> getCommonRoomLog(CommonRoomRequest request, Pageable pageable);
 
     Page<EnergyRoomResponse> getEnergyRoomLog(EnergyRoomRequest request, Pageable pageable);
+
+    EnergyConsumptionResponseDto getEnergyConsumptionData(EnergyConsumptionRequestDto request);
 
 }

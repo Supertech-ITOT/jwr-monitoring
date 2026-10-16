@@ -9,7 +9,10 @@ import { THEME } from "./theme";
 const ROOMS_PER_PAGE = 3;
 const ROWS_PER_PAGE = 24;
 
+const CATEGORY_WITHOUT_FREQUENCY = new Set([6, 7, 8, 9, 10, 11, 12]);
+
 type NumericValue = number | string | null | undefined;
+type ParameterType = "energy" | "current" | "voltage" | "frequency";
 
 type EnergyLog = {
   timeStamp?: string | number | Date;
@@ -22,6 +25,7 @@ type EnergyLog = {
 type EnergyRoom = {
   roomId: number | string;
   roomName: string;
+  categoryId?: number | null;
   logs: EnergyLog[];
   avgEnergy?: NumericValue;
   minEnergy?: NumericValue;
@@ -62,13 +66,29 @@ type ReportRow = {
   values: EnergyLog[];
 };
 
+type Parameter = {
+  label: string;
+  key: ParameterType;
+};
+
+const PARAMETERS: Parameter[] = [
+  { label: "Energy\nkWh", key: "energy" },
+  { label: "Current\nA", key: "current" },
+  { label: "Voltage\nV", key: "voltage" },
+  { label: "Freq\nHz", key: "frequency" },
+];
+
 const summaryRows: SummaryRow[] = [
   { label: "AVG", type: "avg" },
   { label: "MIN", type: "min" },
   { label: "MAX", type: "max" },
 ];
 
-function formatStat(value: NumericValue, type: "energy" | "current" | "voltage" | "frequency"): string {
+function hideFrequency(categoryId?: number | null): boolean {
+  return categoryId != null && CATEGORY_WITHOUT_FREQUENCY.has(Number(categoryId));
+}
+
+function formatStat(value: NumericValue, type: ParameterType): string {
   if (value == null || value === "") return "-";
 
   const number = Number(value);
@@ -89,6 +109,12 @@ function formatDate(value: string | number | Date, pattern: string): string {
   if (Number.isNaN(date.getTime())) return "-";
 
   return format(date, pattern);
+}
+
+function getSummaryValue(room: EnergyRoom, type: SummaryType, parameter: ParameterType): NumericValue {
+  const key = `${type}${parameter.charAt(0).toUpperCase()}${parameter.slice(1)}` as keyof EnergyRoom;
+
+  return room[key] as NumericValue;
 }
 
 export default function EnergyReportPDF({ data = [], filter, name }: EnergyReportPDFProps) {
@@ -147,7 +173,7 @@ export default function EnergyReportPDF({ data = [], filter, name }: EnergyRepor
             </View>
 
             {/* REPORT DETAILS */}
-            <Text style={styles.title}>Energy Room</Text>
+            <Text style={styles.title}>Energy Report</Text>
 
             <View style={styles.gridContainer}>
               <View style={styles.gridRow}>
@@ -208,7 +234,6 @@ export default function EnergyReportPDF({ data = [], filter, name }: EnergyRepor
                 style={{
                   flexDirection: "row",
                   backgroundColor: THEME.main,
-                  color: "#fff",
                   borderBottomWidth: 1,
                   borderColor: THEME.border,
                   minHeight: 20,
@@ -224,24 +249,37 @@ export default function EnergyReportPDF({ data = [], filter, name }: EnergyRepor
                     paddingVertical: 8,
                   }}
                 >
-                  <Text style={{ fontSize: 9, fontWeight: "bold" }}>DATETIME</Text>
+                  <Text style={{ fontSize: 9, fontWeight: "bold", color: "#fff" }}>DATETIME</Text>
                 </View>
 
-                {rooms.map((room) => (
-                  <View
-                    key={room.roomId}
-                    style={{
-                      flex: 2,
-                      justifyContent: "center",
-                      alignItems: "center",
-                      borderRightWidth: 1,
-                      borderColor: "#fff",
-                      paddingVertical: 8,
-                    }}
-                  >
-                    <Text style={{ fontSize: 9, fontWeight: "bold" }}>{room.roomName}</Text>
-                  </View>
-                ))}
+                {rooms.map((room) => {
+                  const hide = hideFrequency(room.categoryId);
+                  const visibleCount = hide ? 3 : 4;
+
+                  return (
+                    <View
+                      key={room.roomId}
+                      style={{
+                        flex: visibleCount,
+                        justifyContent: "center",
+                        alignItems: "center",
+                        borderRightWidth: 1,
+                        borderColor: "#fff",
+                        paddingVertical: 8,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          fontSize: 9,
+                          fontWeight: "bold",
+                          color: "#fff",
+                        }}
+                      >
+                        {room.roomName}
+                      </Text>
+                    </View>
+                  );
+                })}
               </View>
 
               {/* HEADER ROW 2: PARAMETERS */}
@@ -249,7 +287,6 @@ export default function EnergyReportPDF({ data = [], filter, name }: EnergyRepor
                 style={{
                   flexDirection: "row",
                   backgroundColor: THEME.main,
-                  color: "#fff",
                   borderBottomWidth: 1,
                   borderColor: THEME.border,
                   minHeight: 20,
@@ -263,45 +300,48 @@ export default function EnergyReportPDF({ data = [], filter, name }: EnergyRepor
                   }}
                 />
 
-                {rooms.map((room) => (
-                  <View
-                    key={room.roomId}
-                    style={{
-                      flex: 2,
-                      flexDirection: "row",
-                      borderRightWidth: 1,
-                      borderColor: "#fff",
-                    }}
-                  >
-                    {[
-                      { label: "Energy\nkWh", key: "energy" },
-                      { label: "Current\nA", key: "current" },
-                      { label: "Voltage\nV", key: "voltage" },
-                      { label: "Freq\nHz", key: "frequency" },
-                    ].map((parameter, index) => (
-                      <View
-                        key={parameter.key}
-                        style={{
-                          flex: 1,
-                          alignItems: "center",
-                          borderRightWidth: index < 3 ? 1 : 0,
-                          borderColor: "#fff",
-                          paddingVertical: 5,
-                        }}
-                      >
-                        <Text
+                {rooms.map((room) => {
+                  const visibleParameters = hideFrequency(room.categoryId)
+                    ? PARAMETERS.filter((parameter) => parameter.key !== "frequency")
+                    : PARAMETERS;
+
+                  return (
+                    <View
+                      key={room.roomId}
+                      style={{
+                        flex: visibleParameters.length,
+                        flexDirection: "row",
+                        borderRightWidth: 1,
+                        borderColor: "#fff",
+                      }}
+                    >
+                      {visibleParameters.map((parameter, index) => (
+                        <View
+                          key={parameter.key}
                           style={{
-                            fontSize: 8,
-                            fontWeight: "bold",
-                            textAlign: "center",
+                            flex: 1,
+                            alignItems: "center",
+                            justifyContent: "center",
+                            borderRightWidth: index < visibleParameters.length - 1 ? 1 : 0,
+                            borderColor: "#fff",
+                            paddingVertical: 5,
                           }}
                         >
-                          {parameter.label}
-                        </Text>
-                      </View>
-                    ))}
-                  </View>
-                ))}
+                          <Text
+                            style={{
+                              fontSize: 8,
+                              fontWeight: "bold",
+                              textAlign: "center",
+                              color: "#fff",
+                            }}
+                          >
+                            {parameter.label}
+                          </Text>
+                        </View>
+                      ))}
+                    </View>
+                  );
+                })}
               </View>
 
               {/* AVG / MIN / MAX */}
@@ -311,7 +351,6 @@ export default function EnergyReportPDF({ data = [], filter, name }: EnergyRepor
                   style={{
                     flexDirection: "row",
                     backgroundColor: THEME.main,
-                    color: "#fff",
                     borderBottomWidth: 1,
                     borderColor: THEME.border,
                     minHeight: 20,
@@ -326,42 +365,57 @@ export default function EnergyReportPDF({ data = [], filter, name }: EnergyRepor
                       borderColor: "#fff",
                     }}
                   >
-                    <Text style={{ fontSize: 8, fontWeight: "bold" }}>{label}</Text>
-                  </View>
-
-                  {rooms.map((room) => (
-                    <View
-                      key={room.roomId}
+                    <Text
                       style={{
-                        flex: 2,
-                        flexDirection: "row",
-                        borderRightWidth: 1,
-                        borderColor: "#fff",
+                        fontSize: 8,
+                        fontWeight: "bold",
+                        color: "#fff",
                       }}
                     >
-                      {(
-                        [
-                          [`${type}Energy`, "energy"],
-                          [`${type}Current`, "current"],
-                          [`${type}Voltage`, "voltage"],
-                          [`${type}Frequency`, "frequency"],
-                        ] as const
-                      ).map(([key, unit], index) => (
-                        <View
-                          key={key}
-                          style={{
-                            flex: 1,
-                            alignItems: "center",
-                            justifyContent: "center",
-                            borderRightWidth: index < 3 ? 1 : 0,
-                            borderColor: "#fff",
-                          }}
-                        >
-                          <Text style={{ fontSize: 8, fontWeight: "bold" }}>{formatStat(room[key as keyof EnergyRoom] as NumericValue, unit)}</Text>
-                        </View>
-                      ))}
-                    </View>
-                  ))}
+                      {label}
+                    </Text>
+                  </View>
+
+                  {rooms.map((room) => {
+                    const visibleParameters = hideFrequency(room.categoryId)
+                      ? PARAMETERS.filter((parameter) => parameter.key !== "frequency")
+                      : PARAMETERS;
+
+                    return (
+                      <View
+                        key={room.roomId}
+                        style={{
+                          flex: visibleParameters.length,
+                          flexDirection: "row",
+                          borderRightWidth: 1,
+                          borderColor: "#fff",
+                        }}
+                      >
+                        {visibleParameters.map((parameter, index) => (
+                          <View
+                            key={parameter.key}
+                            style={{
+                              flex: 1,
+                              alignItems: "center",
+                              justifyContent: "center",
+                              borderRightWidth: index < visibleParameters.length - 1 ? 1 : 0,
+                              borderColor: "#fff",
+                            }}
+                          >
+                            <Text
+                              style={{
+                                fontSize: 8,
+                                fontWeight: "bold",
+                                color: "#fff",
+                              }}
+                            >
+                              {formatStat(getSummaryValue(room, type, parameter.key), parameter.key)}
+                            </Text>
+                          </View>
+                        ))}
+                      </View>
+                    );
+                  })}
                 </View>
               ))}
 
@@ -389,63 +443,40 @@ export default function EnergyReportPDF({ data = [], filter, name }: EnergyRepor
                     <Text style={{ fontSize: 8 }}>{row.timeStamp != null ? formatDate(row.timeStamp, "dd MMM yyyy hh:mm a") : "-"}</Text>
                   </View>
 
-                  {row.values.map((log, index) => (
-                    <View
-                      key={index}
-                      style={{
-                        flex: 2,
-                        flexDirection: "row",
-                        borderRightWidth: 1,
-                        borderColor: THEME.border,
-                      }}
-                    >
+                  {row.values.map((log, index) => {
+                    const room = rooms[index];
+
+                    const visibleParameters = hideFrequency(room?.categoryId)
+                      ? PARAMETERS.filter((parameter) => parameter.key !== "frequency")
+                      : PARAMETERS;
+
+                    return (
                       <View
+                        key={room?.roomId ?? index}
                         style={{
-                          flex: 1,
-                          alignItems: "center",
-                          justifyContent: "center",
+                          flex: visibleParameters.length,
+                          flexDirection: "row",
                           borderRightWidth: 1,
                           borderColor: THEME.border,
                         }}
                       >
-                        <Text style={{ fontSize: 8 }}>{formatStat(log.energy, "energy")}</Text>
+                        {visibleParameters.map((parameter, cellIndex) => (
+                          <View
+                            key={parameter.key}
+                            style={{
+                              flex: 1,
+                              alignItems: "center",
+                              justifyContent: "center",
+                              borderRightWidth: cellIndex < visibleParameters.length - 1 ? 1 : 0,
+                              borderColor: THEME.border,
+                            }}
+                          >
+                            <Text style={{ fontSize: 8 }}>{formatStat(log[parameter.key], parameter.key)}</Text>
+                          </View>
+                        ))}
                       </View>
-
-                      <View
-                        style={{
-                          flex: 1,
-                          alignItems: "center",
-                          justifyContent: "center",
-                          borderRightWidth: 1,
-                          borderColor: THEME.border,
-                        }}
-                      >
-                        <Text style={{ fontSize: 8 }}>{formatStat(log.current, "current")}</Text>
-                      </View>
-
-                      <View
-                        style={{
-                          flex: 1,
-                          alignItems: "center",
-                          justifyContent: "center",
-                          borderRightWidth: 1,
-                          borderColor: THEME.border,
-                        }}
-                      >
-                        <Text style={{ fontSize: 8 }}>{formatStat(log.voltage, "voltage")}</Text>
-                      </View>
-
-                      <View
-                        style={{
-                          flex: 1,
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <Text style={{ fontSize: 8 }}>{formatStat(log.frequency, "frequency")}</Text>
-                      </View>
-                    </View>
-                  ))}
+                    );
+                  })}
                 </View>
               ))}
             </View>

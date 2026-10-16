@@ -2,17 +2,13 @@ package com.company.jwr_monitoring.config;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-
 import com.company.jwr_monitoring.entity.Category;
 import com.company.jwr_monitoring.entity.DataType;
-
 import com.company.jwr_monitoring.entity.Parameter;
 import com.company.jwr_monitoring.entity.Room;
 import com.company.jwr_monitoring.repository.CategoryRepository;
-
 import com.company.jwr_monitoring.repository.ParameterRepository;
 import com.company.jwr_monitoring.repository.RoomRepository;
-
 import lombok.RequiredArgsConstructor;
 
 @Component
