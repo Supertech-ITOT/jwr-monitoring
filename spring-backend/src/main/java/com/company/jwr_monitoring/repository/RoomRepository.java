@@ -27,4 +27,5 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
                               AND tcv.value = 1.0
                         """)
         Long countRunningRooms();
+
 }

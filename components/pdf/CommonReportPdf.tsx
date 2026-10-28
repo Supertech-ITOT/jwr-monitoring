@@ -4,29 +4,18 @@ import { Document, Image, Page, Text, View } from "@react-pdf/renderer";
 import { format } from "date-fns";
 import { styles } from "./style";
 import { THEME } from "./theme";
+import { CommonRoomLogResponse, CommonRoomResponse } from "@/types/dashboard.types";
 
 const ROOMS_PER_PAGE = 10;
 const ROWS_PER_PAGE = 24;
 
 type NumericValue = number | string | null | undefined;
 
-type CommonRoomLog = {
-  timeStamp?: string | number | Date;
-  avgTemp?: NumericValue;
-  rh?: NumericValue;
-};
+const CATEGORY_WITHOUT_RH = new Set([2, 3, 5]);
 
-type CommonRoom = {
-  roomId: number | string;
-  roomName: string;
-  logs: CommonRoomLog[];
-  avgTemperature?: NumericValue;
-  minTemperature?: NumericValue;
-  maxTemperature?: NumericValue;
-  avgRh?: NumericValue;
-  minRh?: NumericValue;
-  maxRh?: NumericValue;
-};
+function hideRH(categoryId?: number | null): boolean {
+  return categoryId != null && CATEGORY_WITHOUT_RH.has(categoryId);
+}
 
 type CommonReportFilter = {
   categoryName: string;
@@ -36,7 +25,7 @@ type CommonReportFilter = {
 };
 
 type CommonReportPDFProps = {
-  data?: CommonRoom[];
+  data?: CommonRoomResponse[];
   filter: CommonReportFilter;
   name: string;
 };
@@ -50,7 +39,7 @@ type SummaryRow = {
 
 type ReportRow = {
   timeStamp?: string | number | Date;
-  values: CommonRoomLog[];
+  values: CommonRoomLogResponse[];
 };
 
 function formatStat(value: NumericValue, type: "temperature" | "rh"): string {
@@ -86,7 +75,7 @@ export default function CommonReportPDF({ data = [], filter, name }: CommonRepor
   }
 
   // Split rooms into groups of 10.
-  const roomGroups: CommonRoom[][] = [];
+  const roomGroups: CommonRoomResponse[][] = [];
 
   for (let i = 0; i < data.length; i += ROOMS_PER_PAGE) {
     roomGroups.push(data.slice(i, i + ROOMS_PER_PAGE));
@@ -227,7 +216,7 @@ export default function CommonReportPDF({ data = [], filter, name }: CommonRepor
                   <View
                     key={room.roomId}
                     style={{
-                      flex: 2,
+                      flex: hideRH(room.categoryId) ? 1 : 2,
                       justifyContent: "center",
                       alignItems: "center",
                       borderRightWidth: 1,
@@ -266,55 +255,39 @@ export default function CommonReportPDF({ data = [], filter, name }: CommonRepor
                   }}
                 />
 
-                {rooms.map((room) => (
-                  <View
-                    key={room.roomId}
-                    style={{
-                      flex: 2,
-                      flexDirection: "row",
-                      borderRightWidth: 1,
-                      borderColor: "#fff",
-                    }}
-                  >
+                {rooms.map((room) => {
+                  const hide = hideRH(room.categoryId);
+
+                  return (
                     <View
+                      key={room.roomId}
                       style={{
-                        flex: 1,
-                        alignItems: "center",
+                        flex: hide ? 1 : 2,
+                        flexDirection: "row",
                         borderRightWidth: 1,
                         borderColor: "#fff",
-                        paddingVertical: 5,
                       }}
                     >
-                      <Text
+                      <View
                         style={{
-                          fontSize: 8,
-                          fontWeight: "bold",
-                          textAlign: "center",
+                          flex: 1,
+                          alignItems: "center",
+                          borderRightWidth: hide ? 0 : 1,
+                          borderColor: "#fff",
+                          paddingVertical: 5,
                         }}
                       >
-                        {"Temp\n°C"}
-                      </Text>
-                    </View>
+                        <Text style={{ fontSize: 8, fontWeight: "bold", textAlign: "center" }}>{"Temp\n°C"}</Text>
+                      </View>
 
-                    <View
-                      style={{
-                        flex: 1,
-                        alignItems: "center",
-                        paddingVertical: 5,
-                      }}
-                    >
-                      <Text
-                        style={{
-                          fontSize: 8,
-                          fontWeight: "bold",
-                          textAlign: "center",
-                        }}
-                      >
-                        {"RH\n%"}
-                      </Text>
+                      {!hide && (
+                        <View style={{ flex: 1, alignItems: "center", paddingVertical: 5 }}>
+                          <Text style={{ fontSize: 8, fontWeight: "bold", textAlign: "center" }}>{"RH\n%"}</Text>
+                        </View>
+                      )}
                     </View>
-                  </View>
-                ))}
+                  );
+                })}
               </View>
 
               {/* AVG / MIN / MAX */}
@@ -350,15 +323,15 @@ export default function CommonReportPDF({ data = [], filter, name }: CommonRepor
                   </View>
 
                   {rooms.map((room) => {
-                    const temperatureKey = `${type}Temperature` as keyof CommonRoom;
-
-                    const humidityKey = `${type}Rh` as keyof CommonRoom;
+                    const temperatureKey = `${type}Temperature` as keyof CommonRoomResponse;
+                    const humidityKey = `${type}Rh` as keyof CommonRoomResponse;
+                    const hide = hideRH(room.categoryId);
 
                     return (
                       <View
                         key={room.roomId}
                         style={{
-                          flex: 2,
+                          flex: hide ? 1 : 2,
                           flexDirection: "row",
                           borderRightWidth: 1,
                           borderColor: "#fff",
@@ -369,7 +342,7 @@ export default function CommonReportPDF({ data = [], filter, name }: CommonRepor
                             flex: 1,
                             alignItems: "center",
                             justifyContent: "center",
-                            borderRightWidth: 1,
+                            borderRightWidth: hide ? 0 : 1,
                             borderColor: "#fff",
                           }}
                         >
@@ -383,22 +356,17 @@ export default function CommonReportPDF({ data = [], filter, name }: CommonRepor
                           </Text>
                         </View>
 
-                        <View
-                          style={{
-                            flex: 1,
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
-                        >
-                          <Text
+                        {!hide && (
+                          <View
                             style={{
-                              fontSize: 8,
-                              fontWeight: "bold",
+                              flex: 1,
+                              alignItems: "center",
+                              justifyContent: "center",
                             }}
                           >
-                            {formatStat(room[humidityKey] as NumericValue, "rh")}
-                          </Text>
-                        </View>
+                            <Text style={{ fontSize: 8, fontWeight: "bold" }}>{formatStat(room[humidityKey] as NumericValue, "rh")}</Text>
+                          </View>
+                        )}
                       </View>
                     );
                   })}
@@ -429,41 +397,48 @@ export default function CommonReportPDF({ data = [], filter, name }: CommonRepor
                     <Text style={{ fontSize: 8 }}>{row.timeStamp != null ? formatDate(row.timeStamp, "dd MMM yyyy hh:mm a") : "-"}</Text>
                   </View>
 
-                  {row.values.map((log, index) => (
-                    <View
-                      key={index}
-                      style={{
-                        flex: 2,
-                        flexDirection: "row",
-                        borderRightWidth: 1,
-                        borderColor: THEME.border,
-                      }}
-                    >
-                      {/* TEMPERATURE */}
+                  {row.values.map((log, index) => {
+                    const room = rooms[index];
+                    const hide = hideRH(room?.categoryId);
+
+                    return (
                       <View
+                        key={index}
                         style={{
-                          flex: 1,
-                          alignItems: "center",
-                          justifyContent: "center",
+                          flex: hide ? 1 : 2,
+                          flexDirection: "row",
                           borderRightWidth: 1,
                           borderColor: THEME.border,
                         }}
                       >
-                        <Text style={{ fontSize: 8 }}>{formatStat(log.avgTemp, "temperature")}</Text>
-                      </View>
+                        {/* Temperature */}
+                        <View
+                          style={{
+                            flex: 1,
+                            alignItems: "center",
+                            justifyContent: "center",
+                            borderRightWidth: hide ? 0 : 1,
+                            borderColor: THEME.border,
+                          }}
+                        >
+                          <Text style={{ fontSize: 8 }}>{formatStat(log.avgTemp, "temperature")}</Text>
+                        </View>
 
-                      {/* RELATIVE HUMIDITY */}
-                      <View
-                        style={{
-                          flex: 1,
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <Text style={{ fontSize: 8 }}>{formatStat(log.rh, "rh")}</Text>
+                        {/* RH */}
+                        {!hide && (
+                          <View
+                            style={{
+                              flex: 1,
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <Text style={{ fontSize: 8 }}>{formatStat(log.rh, "rh")}</Text>
+                          </View>
+                        )}
                       </View>
-                    </View>
-                  ))}
+                    );
+                  })}
                 </View>
               ))}
             </View>

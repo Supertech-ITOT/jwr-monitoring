@@ -75,104 +75,110 @@ public interface TagLogRepository extends JpaRepository<TagLog, Long> {
             Pageable pageable);
 
     @Query(value = """
-            WITH raw_data AS (
-                SELECT
-                    tm.room_id,
-                    r.name AS room_name,
-                    tl.timestamp,
-                    tm.parameter_id,
-                    tl.value
+                        WITH raw_data AS (
+                            SELECT
+                            r.category_id,
+                                tm.room_id,
+                                r.name AS room_name,
+                                tl.timestamp,
+                                tm.parameter_id,
+                                tl.value
 
-                FROM tag_logs tl
+                            FROM tag_logs tl
 
-                JOIN tag_master tm
-                    ON tl.tag_id = tm.id
+                            JOIN tag_master tm
+                                ON tl.tag_id = tm.id
 
-                JOIN rooms r
-                    ON tm.room_id = r.id
+                            JOIN rooms r
+                                ON tm.room_id = r.id
 
-                WHERE tm.room_id IN (:roomIds)
-                  AND tl.timestamp BETWEEN :fromDate AND :toDate
-            ),
+                            WHERE tm.room_id IN (:roomIds)
+                              AND tl.timestamp BETWEEN :fromDate AND :toDate
+                        ),
 
-            bucketed_data AS (
-                SELECT
-                    room_id,
-                    room_name,
+                        bucketed_data AS (
+                            SELECT
+                            category_id,
+                                room_id,
+                                room_name,
 
-                    TIMESTAMP 'epoch'
-                        + floor(
-                            extract(epoch FROM timestamp)
-                            / (:interval * 60)
+                                TIMESTAMP 'epoch'
+                                    + floor(
+                                        extract(epoch FROM timestamp)
+                                        / (:interval * 60)
+                                    )
+                                    * (:interval * 60)
+                                    * INTERVAL '1 second' AS bucket_time,
+
+                                parameter_id,
+                                value
+
+                            FROM raw_data
+                        ),
+
+                        interval_data AS (
+                            SELECT
+                            category_id,
+                                room_id,
+                                room_name,
+                                bucket_time,
+
+                                ROUND(AVG(CASE WHEN parameter_id = 1 THEN value END)::numeric,1) AS temperature,
+                                ROUND(AVG(CASE WHEN parameter_id = 3 THEN value END)::numeric) AS rh
+
+                            FROM bucketed_data
+
+                            GROUP BY
+                            category_id,
+                                room_id,
+                                room_name,
+                                bucket_time
+                        ),
+
+                        room_stats AS (
+                            SELECT
+                            category_id,
+                                room_id,
+
+                                ROUND(AVG(temperature)::numeric,1) AS avg_temperature,
+                                ROUND(MIN(temperature)::numeric,1) AS min_temperature,
+                                ROUND(MAX(temperature)::numeric,1) AS max_temperature,
+
+                                ROUND(AVG(rh)::numeric) AS avg_rh,
+                                ROUND(MIN(rh)::numeric) AS min_rh,
+                                ROUND(MAX(rh)::numeric) AS max_rh
+
+                            FROM interval_data
+                            GROUP BY category_id, room_id
                         )
-                        * (:interval * 60)
-                        * INTERVAL '1 second' AS bucket_time,
 
-                    parameter_id,
-                    value
+                        SELECT
+            id.category_id,
+                            id.room_id,
+                            id.room_name,
+                            id.bucket_time,
 
-                FROM raw_data
-            ),
+                            id.temperature,
+                            id.rh,
 
-            interval_data AS (
-                SELECT
-                    room_id,
-                    room_name,
-                    bucket_time,
+                            rs.avg_temperature,
+                            rs.min_temperature,
+                            rs.max_temperature,
 
-                    ROUND(AVG(CASE WHEN parameter_id = 1 THEN value END)::numeric,1) AS temperature,
-                    ROUND(AVG(CASE WHEN parameter_id = 3 THEN value END)::numeric) AS rh
+                            rs.avg_rh,
+                            rs.min_rh,
+                            rs.max_rh
 
-                FROM bucketed_data
+                        FROM interval_data id
 
-                GROUP BY
-                    room_id,
-                    room_name,
-                    bucket_time
-            ),
+                        JOIN room_stats rs
+                            ON id.room_id = rs.room_id
 
-            room_stats AS (
-                SELECT
-                    room_id,
-
-                    ROUND(AVG(temperature)::numeric,1) AS avg_temperature,
-                    ROUND(MIN(temperature)::numeric,1) AS min_temperature,
-                    ROUND(MAX(temperature)::numeric,1) AS max_temperature,
-
-                    ROUND(AVG(rh)::numeric) AS avg_rh,
-                    ROUND(MIN(rh)::numeric) AS min_rh,
-                    ROUND(MAX(rh)::numeric) AS max_rh
-
-                FROM interval_data
-                GROUP BY room_id
-            )
-
-            SELECT
-
-                id.room_id,
-                id.room_name,
-                id.bucket_time,
-
-                id.temperature,
-                id.rh,
-
-                rs.avg_temperature,
-                rs.min_temperature,
-                rs.max_temperature,
-
-                rs.avg_rh,
-                rs.min_rh,
-                rs.max_rh
-
-            FROM interval_data id
-
-            JOIN room_stats rs
-                ON id.room_id = rs.room_id
-
-            ORDER BY
-                id.room_id,
-                id.bucket_time
-            """, nativeQuery = true)
+                        ORDER BY
+                            id.category_id,
+                            id.room_id,
+                            id.bucket_time
+                        """, nativeQuery = true)
     List<Object[]> getCommonRoomLogs(
             @Param("roomIds") List<Long> roomIds,
             @Param("interval") Integer interval,
@@ -293,7 +299,7 @@ public interface TagLogRepository extends JpaRepository<TagLog, Long> {
 
     @Query("""
             SELECT
-                t.id,
+                t.room.id,
                 (
                     SELECT MAX(e.value)
                     FROM TagLog e
@@ -304,8 +310,8 @@ public interface TagLogRepository extends JpaRepository<TagLog, Long> {
                           WHERE et.tag.id = t.id
                             AND et.timestamp <= :toDate
                       )
-                )
-                -
+                ),
+
                 (
                     SELECT MAX(s.value)
                     FROM TagLog s
@@ -339,6 +345,24 @@ public interface TagLogRepository extends JpaRepository<TagLog, Long> {
             """)
     Long countActiveTagsAtDate(
             @Param("tagIds") List<Long> tagIds,
+            @Param("toDate") LocalDateTime toDate);
+
+    @Query("""
+            SELECT DISTINCT tm.room.id
+            FROM TagMaster tm
+            JOIN TagLog tl ON tl.tag = tm
+            WHERE tm.parameter.id = 7
+              AND tl.value = 1.0
+              AND tm.room.id IN :roomIds
+              AND tl.timestamp = (
+                  SELECT MAX(tl2.timestamp)
+                  FROM TagLog tl2
+                  WHERE tl2.tag = tm
+                    AND tl2.timestamp <= :toDate
+              )
+            """)
+    List<Long> findRunningRoomIds(
+            @Param("roomIds") List<Long> roomIds,
             @Param("toDate") LocalDateTime toDate);
 
 }

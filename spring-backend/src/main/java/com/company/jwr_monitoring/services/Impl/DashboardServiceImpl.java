@@ -107,16 +107,17 @@ public class DashboardServiceImpl implements DashboardService {
                 List<CommonRoomLogFlatResponse> rows = result.stream()
                                 .map(r -> new CommonRoomLogFlatResponse(
                                                 ((Number) r[0]).longValue(),
-                                                (String) r[1],
-                                                ((java.sql.Timestamp) r[2]).toLocalDateTime(),
-                                                r[3] == null ? null : ((Number) r[3]).doubleValue(),
+                                                ((Number) r[1]).longValue(),
+                                                (String) r[2],
+                                                ((java.sql.Timestamp) r[3]).toLocalDateTime(),
                                                 r[4] == null ? null : ((Number) r[4]).doubleValue(),
                                                 r[5] == null ? null : ((Number) r[5]).doubleValue(),
                                                 r[6] == null ? null : ((Number) r[6]).doubleValue(),
                                                 r[7] == null ? null : ((Number) r[7]).doubleValue(),
                                                 r[8] == null ? null : ((Number) r[8]).doubleValue(),
                                                 r[9] == null ? null : ((Number) r[9]).doubleValue(),
-                                                r[10] == null ? null : ((Number) r[10]).doubleValue()))
+                                                r[10] == null ? null : ((Number) r[10]).doubleValue(),
+                                                r[11] == null ? null : ((Number) r[11]).doubleValue()))
                                 .toList();
 
                 Map<Long, CommonRoomResponse> map = new LinkedHashMap<>();
@@ -124,6 +125,7 @@ public class DashboardServiceImpl implements DashboardService {
                         CommonRoomResponse room = map.computeIfAbsent(
                                         row.roomId(),
                                         id -> new CommonRoomResponse(
+                                                        row.categoryId(),
                                                         row.roomId(),
                                                         row.roomName(),
                                                         new ArrayList<>(),
@@ -187,22 +189,17 @@ public class DashboardServiceImpl implements DashboardService {
                 List<CommonRoomLogFlatResponse> rows = result.stream()
                                 .map(r -> new CommonRoomLogFlatResponse(
                                                 ((Number) r[0]).longValue(),
-                                                (String) r[1],
-                                                ((java.sql.Timestamp) r[2]).toLocalDateTime(),
-
-                                                r[3] == null ? null : ((Number) r[3]).doubleValue(),
+                                                ((Number) r[1]).longValue(),
+                                                (String) r[2],
+                                                ((java.sql.Timestamp) r[3]).toLocalDateTime(),
                                                 r[4] == null ? null : ((Number) r[4]).doubleValue(),
-
-                                                // Temperature AVG / MIN / MAX
                                                 r[5] == null ? null : ((Number) r[5]).doubleValue(),
                                                 r[6] == null ? null : ((Number) r[6]).doubleValue(),
                                                 r[7] == null ? null : ((Number) r[7]).doubleValue(),
-
-                                                // RH AVG / MIN / MAX
                                                 r[8] == null ? null : ((Number) r[8]).doubleValue(),
                                                 r[9] == null ? null : ((Number) r[9]).doubleValue(),
-                                                r[10] == null ? null : ((Number) r[10]).doubleValue()))
-
+                                                r[10] == null ? null : ((Number) r[10]).doubleValue(),
+                                                r[11] == null ? null : ((Number) r[11]).doubleValue()))
                                 .toList();
 
                 Map<Long, CommonRoomResponse> map = new LinkedHashMap<>();
@@ -212,14 +209,13 @@ public class DashboardServiceImpl implements DashboardService {
                         CommonRoomResponse room = map.computeIfAbsent(
                                         row.roomId(),
                                         id -> new CommonRoomResponse(
+                                                        row.categoryId(),
                                                         row.roomId(),
                                                         row.roomName(),
                                                         new ArrayList<>(),
-
                                                         row.avgTemperature(),
                                                         row.minTemperature(),
                                                         row.maxTemperature(),
-
                                                         row.avgRh(),
                                                         row.minRh(),
                                                         row.maxRh()));

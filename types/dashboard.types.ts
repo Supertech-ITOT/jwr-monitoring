@@ -40,15 +40,16 @@ export interface CommonRoomLogResponse {
 }
 
 export interface CommonRoomResponse {
-  roomId: number;
+  categoryId: number;
+  roomId: number | string;
   roomName: string;
   logs: CommonRoomLogResponse[];
-  avgTemperature: number;
-  minTemperature: number;
-  maxTemperature: number;
-  avgRh: number;
-  minRh: number;
-  maxRh: number;
+  avgTemperature?: number | null;
+  minTemperature?: number | null;
+  maxTemperature?: number | null;
+  avgRh?: number | null;
+  minRh?: number | null;
+  maxRh?: number | null;
 }
 
 export interface EnergyRoomLogParams {

@@ -2,47 +2,37 @@
 
 import { Fragment } from "react";
 import { format } from "date-fns";
+import { CommonRoomLogResponse, CommonRoomResponse } from "@/types/dashboard.types";
 
 const MAX_ROOMS = 10;
-
-type RoomLog = {
-  timeStamp: string | number | Date;
-  avgTemp?: number | string | null;
-  rh?: number | string | null;
-};
-
-type Room = {
-  roomId: string | number;
-  roomName: string;
-  logs: RoomLog[];
-  avgTemperature?: number | string | null;
-  minTemperature?: number | string | null;
-  maxTemperature?: number | string | null;
-  avgRh?: number | string | null;
-  minRh?: number | string | null;
-  maxRh?: number | string | null;
-};
+const CATEGORY_WITHOUT_RH = new Set([2, 3, 5]);
 
 type TableRow = {
   timeStamp: string | number | Date;
-  values: Partial<RoomLog>[];
+  values: Partial<CommonRoomLogResponse>[];
 };
 
 type CommonRoomTableProps = {
-  rooms: Room[];
+  rooms: CommonRoomResponse[];
 };
+const cellClass = "border border-border p-0.5 text-center text-[10px] sm:text-sm";
+
+function hideRH(categoryId?: number | null): boolean {
+  return categoryId != null && CATEGORY_WITHOUT_RH.has(categoryId);
+}
 
 export default function CommonRoomTable({ rooms }: CommonRoomTableProps) {
   if (!rooms?.length) return null;
 
   // Pad rooms so the table always has 10 room columns.
-  const paddedRooms: Room[] = [
+  const paddedRooms: CommonRoomResponse[] = [
     ...rooms,
     ...Array.from(
       { length: Math.max(0, MAX_ROOMS - rooms.length) },
-      (_, i): Room => ({
+      (_, i): CommonRoomResponse => ({
         roomId: `empty-${i}`,
         roomName: "",
+        categoryId: rooms[0]?.categoryId ?? null,
         logs: [],
       }),
     ),
@@ -99,30 +89,40 @@ export default function CommonRoomTable({ rooms }: CommonRoomTableProps) {
               DATETIME
             </th>
 
-            {paddedRooms.map((room) => (
-              <th
-                key={room.roomId}
-                colSpan={2}
-                className="sticky top-0 z-40 border border-border bg-primary p-0.5 text-center text-[10px] font-semibold text-white sm:text-sm"
-              >
-                {room.roomName || "\u00A0"}
-              </th>
-            ))}
+            {paddedRooms.map((room) => {
+              const hide = hideRH(room.categoryId);
+
+              return (
+                <th
+                  key={room.roomId}
+                  colSpan={hide ? 1 : 2}
+                  className="sticky top-0 z-40 border border-border bg-primary p-0.5 text-center text-[10px] font-semibold text-white sm:text-sm"
+                >
+                  {room.roomName || "\u00A0"}
+                </th>
+              );
+            })}
           </tr>
 
           {/* ================= PARAMETERS ================= */}
           <tr>
-            {paddedRooms.map((room) => (
-              <Fragment key={room.roomId}>
-                <th className="sticky top-5 z-40 border border-border bg-primary p-0.5 text-center text-[10px] font-medium text-white sm:text-sm">
-                  Temp °C
-                </th>
+            {paddedRooms.map((room) => {
+              const hide = hideRH(room.categoryId);
 
-                <th className="sticky top-5 z-40 border border-border bg-primary p-0.5 text-center text-[10px] font-medium text-white sm:text-sm">
-                  RH %
-                </th>
-              </Fragment>
-            ))}
+              return (
+                <Fragment key={room.roomId}>
+                  <th className="sticky top-5 z-40 border border-border bg-primary p-0.5 text-center text-[10px] font-medium text-white sm:text-sm">
+                    Temp °C
+                  </th>
+
+                  {!hide && (
+                    <th className="sticky top-5 z-40 border border-border bg-primary p-0.5 text-center text-[10px] font-medium text-white sm:text-sm">
+                      RH %
+                    </th>
+                  )}
+                </Fragment>
+              );
+            })}
           </tr>
 
           {/* ================= AVG / MIN / MAX ================= */}
@@ -137,23 +137,27 @@ export default function CommonRoomTable({ rooms }: CommonRoomTableProps) {
                   {stat.label}
                 </th>
 
-                {paddedRooms.map((room) => (
-                  <Fragment key={room.roomId}>
-                    {/* Temperature */}
-                    <th
-                      className={`sticky z-40 border border-border bg-primary p-0.5 text-center text-[10px] font-medium text-white sm:text-sm ${stickyTop}`}
-                    >
-                      {formatStat(room[stat.temperature], "temperature")}
-                    </th>
+                {paddedRooms.map((room) => {
+                  const hide = hideRH(room.categoryId);
 
-                    {/* Relative Humidity */}
-                    <th
-                      className={`sticky z-40 border border-border bg-primary p-0.5 text-center text-[10px] font-medium text-white sm:text-sm ${stickyTop}`}
-                    >
-                      {formatStat(room[stat.rh], "rh")}
-                    </th>
-                  </Fragment>
-                ))}
+                  return (
+                    <Fragment key={room.roomId}>
+                      <th
+                        className={`sticky z-40 border border-border bg-primary p-0.5 text-center text-[10px] font-medium text-white sm:text-sm ${stickyTop}`}
+                      >
+                        {formatStat(room[stat.temperature], "temperature")}
+                      </th>
+
+                      {!hide && (
+                        <th
+                          className={`sticky z-40 border border-border bg-primary p-0.5 text-center text-[10px] font-medium text-white sm:text-sm ${stickyTop}`}
+                        >
+                          {formatStat(room[stat.rh], "rh")}
+                        </th>
+                      )}
+                    </Fragment>
+                  );
+                })}
               </tr>
             );
           })}
@@ -166,29 +170,26 @@ export default function CommonRoomTable({ rooms }: CommonRoomTableProps) {
 
             return (
               <tr key={`${row.timeStamp}-${index}`} className={`transition-colors hover:bg-muted/70 ${even ? "bg-background" : "bg-card"}`}>
-                {/* DATETIME */}
                 <td className="sticky left-0 z-30 whitespace-nowrap border border-border bg-primary p-0.5 text-center text-[10px] font-medium leading-none text-card sm:text-sm">
                   {format(new Date(row.timeStamp), "dd MMM yy")}
-
                   <br />
-
                   {format(new Date(row.timeStamp), "hh:mm a")}
                 </td>
 
-                {/* Room values */}
-                {row.values.map((log, i) => (
-                  <Fragment key={i}>
-                    {/* Temperature */}
-                    <td className="border border-border p-0.5 text-center text-[10px] sm:text-sm">
-                      {log.avgTemp != null ? Number(log.avgTemp).toFixed(1) : "-"}
-                    </td>
+                {row.values.map((log, i) => {
+                  const room = paddedRooms[i];
+                  const hide = hideRH(room?.categoryId);
 
-                    {/* Relative Humidity */}
-                    <td className="border border-border p-0.5 text-center text-[10px] sm:text-sm">
-                      {log.rh != null ? Math.round(Number(log.rh)) : "-"}
-                    </td>
-                  </Fragment>
-                ))}
+                  return (
+                    <Fragment key={i}>
+                      {/* Temperature */}
+                      <td className={cellClass}>{log.avgTemp != null ? formatStat(log.avgTemp, "temperature") : "-"}</td>
+
+                      {/* RH: hidden for categories 2, 3 and 5 */}
+                      {!hide && <td className={cellClass}>{log.rh != null ? formatStat(log.rh, "rh") : "-"}</td>}
+                    </Fragment>
+                  );
+                })}
               </tr>
             );
           })}

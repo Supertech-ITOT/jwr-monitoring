@@ -64,10 +64,12 @@ const Card = () => {
   };
 
   const stats: (RoomStat & CardConfig)[] =
-    (data as RoomStat[] | undefined)?.map((item) => ({
-      ...item,
-      ...getCardConfig(item.categoryName),
-    })) ?? [];
+    (data as RoomStat[] | undefined)
+      ?.filter((f) => f.id === 1 || f.id === 2 || f.id === 3 || f.id === 4 || f.id === 5)
+      .map((item) => ({
+        ...item,
+        ...getCardConfig(item.categoryName),
+      })) ?? [];
 
   if (isLoading) {
     return (
