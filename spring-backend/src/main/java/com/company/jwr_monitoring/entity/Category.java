@@ -1,5 +1,7 @@
+
 package com.company.jwr_monitoring.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.*;
@@ -20,9 +22,10 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "category")
-    private List<Room> rooms;
+    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<Room> rooms = new ArrayList<>();
 }

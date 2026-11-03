@@ -25,4 +25,9 @@ public class SpaController {
     public String power() {
         return "forward:/Power.html";
     }
+
+    @GetMapping("/Consumption")
+    public String consumption() {
+        return "forward:/Consumption.html";
+    }
 }

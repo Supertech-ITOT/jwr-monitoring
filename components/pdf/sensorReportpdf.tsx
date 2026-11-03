@@ -26,6 +26,11 @@ type prop = {
 };
 
 const SensorReportPDF = ({ data, roomName, tchartImg, rchartImg, categoryName, fromDate, toDate, name }: prop) => {
+  // Hide RH for Negative, Mezzanine and Truckdock
+  const normalizedCategory = categoryName.trim().toLowerCase();
+
+  const hideRH = ["negative", "mezzanine", "truckdock"].some((name) => normalizedCategory.includes(name));
+
   const pages = [];
 
   for (let start = 0; start < data.length; start += ITEM_PER_PAGE) {
@@ -37,7 +42,7 @@ const SensorReportPDF = ({ data, roomName, tchartImg, rchartImg, categoryName, f
       {/* Historical data pages */}
       {pages.map((pageRows, pageIndex) => (
         <Page key={pageIndex} size="A4" style={styles.page}>
-          {/* --- Header: unchanged --- */}
+          {/* Header */}
           <View style={styles.header}>
             <Image src="/logo.jpg" style={styles.icon} />
 
@@ -58,7 +63,7 @@ const SensorReportPDF = ({ data, roomName, tchartImg, rchartImg, categoryName, f
             </View>
           </View>
 
-          {/* --- Report details: unchanged --- */}
+          {/* Report details */}
           <View style={{ marginBottom: 6 }}>
             <Text style={styles.title}>{String(categoryName).toUpperCase()} REPORT</Text>
 
@@ -82,7 +87,7 @@ const SensorReportPDF = ({ data, roomName, tchartImg, rchartImg, categoryName, f
             </View>
           </View>
 
-          {/* --- Historical table: three columns --- */}
+          {/* Historical table */}
           <View
             style={{
               flexDirection: "row",
@@ -94,8 +99,6 @@ const SensorReportPDF = ({ data, roomName, tchartImg, rchartImg, categoryName, f
             {Array.from({ length: COLUMNS_PER_PAGE }, (_, colIndex) => {
               const columnRows = pageRows.slice(colIndex * ROWS_PER_COLUMN, (colIndex + 1) * ROWS_PER_COLUMN);
 
-              // Hide the complete table, including its header,
-              // when this section contains no data.
               if (columnRows.length === 0) {
                 return null;
               }
@@ -109,7 +112,7 @@ const SensorReportPDF = ({ data, roomName, tchartImg, rchartImg, categoryName, f
                     borderColor: BORDER_COLOR,
                   }}
                 >
-                  {/* Green header with white text */}
+                  {/* Table header */}
                   <View
                     style={{
                       flexDirection: "row",
@@ -124,7 +127,7 @@ const SensorReportPDF = ({ data, roomName, tchartImg, rchartImg, categoryName, f
                       { label: "S. No.", flex: 0.45 },
                       { label: "DATETIME", flex: 1.4 },
                       { label: "TEMP\n°C", flex: 0.9 },
-                      { label: "RH\n%", flex: 0.65 },
+                      ...(!hideRH ? [{ label: "RH\n%", flex: 0.65 }] : []),
                     ].map((col) => (
                       <Text
                         key={col.label}
@@ -196,16 +199,18 @@ const SensorReportPDF = ({ data, roomName, tchartImg, rchartImg, categoryName, f
                           {item.avgTemperature == null ? "-" : Number(item.avgTemperature).toFixed(2)}
                         </Text>
 
-                        {/* Relative humidity */}
-                        <Text
-                          style={{
-                            flex: 0.65,
-                            fontSize: 5.5,
-                            textAlign: "center",
-                          }}
-                        >
-                          {item.rh == null ? "-" : Math.round(Number(item.rh))}
-                        </Text>
+                        {/* Relative humidity - hidden for selected categories */}
+                        {!hideRH && (
+                          <Text
+                            style={{
+                              flex: 0.65,
+                              fontSize: 5.5,
+                              textAlign: "center",
+                            }}
+                          >
+                            {item.rh == null ? "-" : Math.round(Number(item.rh))}
+                          </Text>
+                        )}
                       </View>
                     );
                   })}
@@ -216,7 +221,7 @@ const SensorReportPDF = ({ data, roomName, tchartImg, rchartImg, categoryName, f
         </Page>
       ))}
 
-      {/* --- Overview page: unchanged --- */}
+      {/* Overview page */}
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
           <Image src="/logo.jpg" style={styles.icon} />
@@ -251,13 +256,17 @@ const SensorReportPDF = ({ data, roomName, tchartImg, rchartImg, categoryName, f
         </Text>
 
         <View style={{ gap: 20 }}>
+          {/* Temperature chart */}
           <View style={styles.chartContainer}>
             <Image src={tchartImg} style={styles.chartImg} />
           </View>
 
-          <View style={styles.chartContainer}>
-            <Image src={rchartImg} style={styles.chartImg} />
-          </View>
+          {/* RH chart - hidden for selected categories */}
+          {!hideRH && (
+            <View style={styles.chartContainer}>
+              <Image src={rchartImg} style={styles.chartImg} />
+            </View>
+          )}
         </View>
       </Page>
     </Document>

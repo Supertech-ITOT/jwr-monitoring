@@ -36,6 +36,11 @@ export default function Content() {
 
   const [draftFilter, setDraftFilter] = useState<FilterData>(initialFilter);
   const [appliedFilter, setAppliedFilter] = useState<FilterData>(initialFilter);
+
+  const { data: category } = useGetCategoryById(appliedFilter.categoryId ?? 1);
+
+  const { data: room } = useGetRoomById(appliedFilter.roomId ?? 1);
+
   const { data, isLoading } = useGetHistoricalRoomMetrics({
     categoryId: appliedFilter.categoryId ?? 1,
     fromDate: appliedFilter.fromDate,
@@ -46,8 +51,11 @@ export default function Content() {
     page: 0,
     size: 99999,
   });
-  const { data: category } = useGetCategoryById(appliedFilter.categoryId ?? 1);
-  const { data: room } = useGetRoomById(appliedFilter.roomId ?? 1);
+
+  // Hide RH for Negative, Mezzanine and Truckdock
+  const CATEGORY_WITHOUT_RH = new Set([2, 3, 5]);
+
+  const hideRH = appliedFilter.categoryId != null && CATEGORY_WITHOUT_RH.has(appliedFilter.categoryId);
 
   return (
     <>
@@ -77,8 +85,9 @@ export default function Content() {
       </div>
 
       <div className="flex flex-col xl:flex-row gap-6 w-full">
-        <div className="flex-2 bg-cardbackground border border-border rounded-xl shadow w-full h-[780px] gap-2 overflow-hidden">
-          <div className="flex-1 h-1/2! border">
+        <div className="flex-2 bg-cardbackground border border-border rounded-xl shadow w-full h-[780px] flex flex-col gap-2 overflow-hidden">
+          {/* Temperature Chart */}
+          <div className={hideRH ? "flex-1 min-h-0 border" : "flex-1 h-1/2 border"}>
             <TempChart data={data} />
 
             <div id="temp-chart-visible" className="hidden pointer-events-none" style={{ width: "1920px" }}>
@@ -86,17 +95,21 @@ export default function Content() {
             </div>
           </div>
 
-          <div className="flex-1 h-1/2! border">
-            <RhChart data={data} />
+          {/* RH Chart - Only for categories that support RH */}
+          {!hideRH && (
+            <div className="flex-1 h-1/2 border">
+              <RhChart data={data} />
 
-            <div id="rh-chart-visible" className="hidden pointer-events-none" style={{ width: "1920px" }}>
-              <RhChart isExport={true} data={data} />
+              <div id="rh-chart-visible" className="hidden pointer-events-none" style={{ width: "1920px" }}>
+                <RhChart isExport={true} data={data} />
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
+        {/* Single Room Table */}
         <div className="flex-1 bg-cardbackground border border-border rounded-xl shadow-xl w-full xl:w-1/3 h-[780px] flex flex-col overflow-hidden">
-          <TableUI filter={appliedFilter} />
+          <TableUI filter={appliedFilter} hideRH={hideRH} />
         </div>
       </div>
     </>

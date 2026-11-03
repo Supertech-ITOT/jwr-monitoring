@@ -96,11 +96,12 @@ export default function ConsumptionFilter({ filterData, onFilterChange, onApply 
           {/* Date Range */}
           <FilterDuration
             initial={filterData}
-            onChange={({ fromDate, toDate }) => {
+            onChange={({ fromDate, toDate, day }) => {
               onFilterChange((prev) => ({
                 ...prev,
                 fromDate: fromDate ? fromDate.format("YYYY-MM-DDTHH:mm:ss") : "",
                 toDate: toDate ? toDate.format("YYYY-MM-DDTHH:mm:ss") : "",
+                day: day ?? "",
               }));
             }}
           />

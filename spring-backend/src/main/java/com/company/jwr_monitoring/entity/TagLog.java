@@ -1,3 +1,4 @@
+
 package com.company.jwr_monitoring.entity;
 
 import java.time.LocalDateTime;
@@ -22,11 +23,13 @@ public class TagLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tag_id")
     private TagMaster tag;
 
+    @Column(name = "value")
     private Double value;
 
+    @Column(name = "timestamp")
     private LocalDateTime timestamp;
 }

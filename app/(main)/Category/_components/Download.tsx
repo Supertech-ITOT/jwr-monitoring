@@ -31,6 +31,11 @@ export default function Download({ fromDate, toDate, categoryName, roomName, dat
   const [open, setOpen] = useState<boolean>(false);
   const [generating, setGenerating] = useState<boolean>(false);
 
+  // Categories without RH
+  const normalizedCategory = categoryName.trim().toLowerCase();
+
+  const hideRH = ["negative", "mezzanine", "truckdock"].some((category) => normalizedCategory.includes(category));
+
   const handleDownload = async () => {
     if (!name.trim()) {
       toast.error("Please enter your name");
@@ -44,7 +49,9 @@ export default function Download({ fromDate, toDate, categoryName, roomName, dat
     const tchart = document.getElementById("temp-chart-visible");
     const rchart = document.getElementById("rh-chart-visible");
 
-    if (!tchart || !rchart) {
+    // Temperature chart is always required.
+    // RH chart is required only for categories that support RH.
+    if (!tchart || (!hideRH && !rchart)) {
       toast.error("Chart elements could not be found.");
       return;
     }
@@ -52,9 +59,10 @@ export default function Download({ fromDate, toDate, categoryName, roomName, dat
     setGenerating(true);
 
     try {
+      // Capture Temperature chart
       tchart.style.display = "block";
 
-      await new Promise((resolve) => setTimeout(resolve, 10));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       const tdataUrl = await toPng(tchart, {
         cacheBust: true,
@@ -63,17 +71,23 @@ export default function Download({ fromDate, toDate, categoryName, roomName, dat
 
       tchart.style.display = "none";
 
-      rchart.style.display = "block";
+      // Capture RH chart only when required
+      let rdataUrl = "";
 
-      await new Promise((resolve) => setTimeout(resolve, 10));
+      if (!hideRH && rchart) {
+        rchart.style.display = "block";
 
-      const rdataUrl = await toPng(rchart, {
-        cacheBust: true,
-        pixelRatio: 1,
-      });
+        await new Promise((resolve) => setTimeout(resolve, 100));
 
-      rchart.style.display = "none";
+        rdataUrl = await toPng(rchart, {
+          cacheBust: true,
+          pixelRatio: 1,
+        });
 
+        rchart.style.display = "none";
+      }
+
+      // Generate PDF
       const blob = await pdf(
         <SensorReportPDF
           data={rows}
@@ -107,8 +121,15 @@ export default function Download({ fromDate, toDate, categoryName, roomName, dat
       console.error("Report generation failed:", error);
       toast.error("Failed to generate report.");
     } finally {
-      tchart.style.display = "";
-      rchart.style.display = "";
+      // Restore chart visibility
+      if (tchart) {
+        tchart.style.display = "";
+      }
+
+      if (rchart) {
+        rchart.style.display = "";
+      }
+
       setGenerating(false);
     }
   };

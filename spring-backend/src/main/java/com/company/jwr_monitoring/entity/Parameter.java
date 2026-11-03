@@ -1,3 +1,4 @@
+
 package com.company.jwr_monitoring.entity;
 
 import jakarta.persistence.*;
@@ -16,15 +17,16 @@ import lombok.*;
 public class Parameter {
 
     @Id
+    @Column(name = "id")
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(name = "uom", nullable = false)
     private String uom;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "type", nullable = false)
     private DataType type;
 }
