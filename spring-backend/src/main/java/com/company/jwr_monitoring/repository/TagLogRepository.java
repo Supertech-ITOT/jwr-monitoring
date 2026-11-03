@@ -332,16 +332,16 @@ public interface TagLogRepository extends JpaRepository<TagLog, Long> {
             @Param("toDate") LocalDateTime toDate);
 
     @Query("""
-            SELECT COUNT(DISTINCT t.tag.id)
-            FROM TagLog t
-            WHERE t.tag.id IN :tagIds
-              AND t.timestamp = (
-                  SELECT MAX(l.timestamp)
-                  FROM TagLog l
-                  WHERE l.tag.id = t.tag.id
-                    AND l.timestamp <= :toDate
-              )
-              AND t.value = 1
+                SELECT COUNT(DISTINCT t.tag.room.id)
+                FROM TagLog t
+                WHERE t.tag.id IN :tagIds
+                  AND t.timestamp = (
+                      SELECT MAX(l.timestamp)
+                      FROM TagLog l
+                      WHERE l.tag.id = t.tag.id
+                        AND l.timestamp <= :toDate
+                  )
+                  AND t.value = 1
             """)
     Long countActiveTagsAtDate(
             @Param("tagIds") List<Long> tagIds,

@@ -58,17 +58,17 @@ public class EnergyServiceImpl implements EnergyService {
                                 .orElse(0L);
 
                 // Component A: calculate consumption for each room
-                List<Long> componentATagIds = tagMasterRepository.getTagIdByRoom(roomIds);
+                List<Long> componentATagIds = tagMasterRepository.getEnergyTagIdsByRoom(roomIds);
                 Map<Long, Double> componentAByRoom = new HashMap<>();
                 List<Object[]> componentARows = tagLogRepository.getEnergyConsumptionByTagIds(
                                 componentATagIds,
                                 request.fromDate(),
                                 request.toDate());
                 for (Object[] row : componentARows) {
-                        Long roomId = ((Number) row[1]).longValue();
-                        double consumption = row[2] == null || row[3] == null ? 0.0
-                                        : Math.max(0.0, ((Number) row[2]).doubleValue()
-                                                        - ((Number) row[3]).doubleValue());
+                        Long roomId = ((Number) row[0]).longValue();
+                        double consumption = row[1] == null || row[2] == null ? 0.0
+                                        : Math.max(0.0, ((Number) row[1]).doubleValue()
+                                                        - ((Number) row[2]).doubleValue());
                         componentAByRoom.merge(roomId, consumption, Double::sum);
                 }
 
@@ -86,8 +86,12 @@ public class EnergyServiceImpl implements EnergyService {
                                         .getEnergyConsumptionByTagIds(componentBTagIds, request.fromDate(),
                                                         request.toDate())
                                         .stream()
-                                        .filter(row -> row[1] != null)
-                                        .mapToDouble(row -> ((Number) row[1]).doubleValue())
+                                        .filter(row -> row[1] != null && row[2] != null)
+                                        .mapToDouble(row -> {
+                                                double endValue = ((Number) row[1]).doubleValue();
+                                                double startValue = ((Number) row[2]).doubleValue();
+                                                return endValue - startValue;
+                                        })
                                         .sum();
                 }
                 double componentBTotal = componentBActiveRooms > 0 ? componentBSum / componentBActiveRooms : 0.0;
@@ -101,8 +105,12 @@ public class EnergyServiceImpl implements EnergyService {
                                         .getEnergyConsumptionByTagIds(componentCTagIds, request.fromDate(),
                                                         request.toDate())
                                         .stream()
-                                        .filter(row -> row[1] != null)
-                                        .mapToDouble(row -> ((Number) row[1]).doubleValue())
+                                        .filter(row -> row[1] != null && row[2] != null)
+                                        .mapToDouble(row -> {
+                                                double endValue = ((Number) row[1]).doubleValue();
+                                                double startValue = ((Number) row[2]).doubleValue();
+                                                return endValue - startValue;
+                                        })
                                         .sum();
                 }
                 long allActiveRooms = positiveActiveRooms + negativeActiveRooms;

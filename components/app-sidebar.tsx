@@ -1,6 +1,6 @@
 "use client";
 
-import { BatteryCharging, LayoutDashboard, LogOut, Radio, Warehouse } from "lucide-react";
+import { BatteryCharging, LayoutDashboard, LogOut, Radio, Warehouse, Zap } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
@@ -48,6 +48,11 @@ const items: NavigationItem[] = [
     title: "Energy Report",
     url: "/Power",
     icon: BatteryCharging,
+  },
+  {
+    title: "Consumption Report",
+    url: "/Consumption",
+    icon: Zap,
   },
 ];
 
