@@ -6,14 +6,12 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
 import com.company.jwr_monitoring.dto.Dashboard.CommonRoomLogFlatResponse;
 import com.company.jwr_monitoring.dto.Dashboard.CommonRoomLogResponse;
 import com.company.jwr_monitoring.dto.Dashboard.CommonRoomRequest;
@@ -29,12 +27,12 @@ import com.company.jwr_monitoring.dto.Dashboard.RoomStatCardDto;
 import com.company.jwr_monitoring.dto.Energy.EnergyConsumptionRequestDto;
 import com.company.jwr_monitoring.dto.Energy.EnergyConsumptionResponseDto;
 import com.company.jwr_monitoring.entity.Room;
+import com.company.jwr_monitoring.mapper.DashboardMapper;
 import com.company.jwr_monitoring.repository.CategoryRepository;
 import com.company.jwr_monitoring.repository.RoomRepository;
 import com.company.jwr_monitoring.repository.TagCurrentValueRepository;
 import com.company.jwr_monitoring.repository.TagLogRepository;
 import com.company.jwr_monitoring.services.DashboardService;
-
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -45,16 +43,16 @@ public class DashboardServiceImpl implements DashboardService {
         private final TagCurrentValueRepository tagCurrentValueRepository;
         private final CategoryRepository categoryRepository;
         private final RoomRepository roomRepository;
+        private final DashboardMapper dashboardMapper;
 
         @Override
         public Page<RoomHistoricalValueDto> getHistoricalRoomMetrics(
                         RoomHistoricalValueRequest request,
                         Pageable pageable) {
 
-                Pageable finalPageable = pageable.getPageSize() == 20
-                                && pageable.getPageNumber() == 0
-                                                ? Pageable.unpaged()
-                                                : pageable;
+                Pageable finalPageable = pageable.getPageSize() == 20 && pageable.getPageNumber() == 0
+                                ? Pageable.unpaged()
+                                : pageable;
 
                 Page<Object[]> page = tagLogRepository.getRoomHistoricalValues(
                                 request.categoryId(),
@@ -64,10 +62,7 @@ public class DashboardServiceImpl implements DashboardService {
                                 request.toDate(),
                                 finalPageable);
 
-                return page.map(row -> new RoomHistoricalValueDto(
-                                row[0] == null ? null : ((Number) row[0]).doubleValue(),
-                                row[1] == null ? null : ((Number) row[1]).doubleValue(),
-                                ((java.sql.Timestamp) row[2]).toLocalDateTime()));
+                return page.map(dashboardMapper::toDto);
         }
 
         @Override
@@ -88,7 +83,6 @@ public class DashboardServiceImpl implements DashboardService {
         public List<RoomStatCardDto> getRoomStatCard() {
                 List<RoomStatCardDto> response = new ArrayList<>();
                 response.addAll(categoryRepository.getRoomStatCard());
-
                 return response;
         }
 

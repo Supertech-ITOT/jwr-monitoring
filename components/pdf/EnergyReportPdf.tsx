@@ -2,7 +2,6 @@
 
 import { Document, Image, Page, Text, View } from "@react-pdf/renderer";
 import { format } from "date-fns";
-
 import { styles } from "./style";
 import { THEME } from "./theme";
 
@@ -94,7 +93,6 @@ function formatStat(value: NumericValue, type: ParameterType): string {
   const number = Number(value);
 
   if (!Number.isFinite(number)) return "-";
-
   if (type === "energy") return number.toFixed(1);
   if (type === "current") return number.toFixed(2);
   if (type === "voltage") return String(Math.round(number));

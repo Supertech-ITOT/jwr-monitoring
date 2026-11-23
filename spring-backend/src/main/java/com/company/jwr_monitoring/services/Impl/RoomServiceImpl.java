@@ -1,19 +1,22 @@
+
 package com.company.jwr_monitoring.services.Impl;
 
+import java.util.List;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import com.company.jwr_monitoring.dto.Room.RoomDto;
 import com.company.jwr_monitoring.entity.Room;
 import com.company.jwr_monitoring.exception.ResourceNotFoundException;
 import com.company.jwr_monitoring.mapper.RoomMapper;
 import com.company.jwr_monitoring.repository.RoomRepository;
 import com.company.jwr_monitoring.services.RoomService;
-
 import lombok.RequiredArgsConstructor;
-import java.util.List;
-import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class RoomServiceImpl implements RoomService {
+
     private final RoomRepository roomRepository;
     private final RoomMapper roomMapper;
 

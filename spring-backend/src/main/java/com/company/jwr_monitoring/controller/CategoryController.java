@@ -1,15 +1,13 @@
+
 package com.company.jwr_monitoring.controller;
 
+import java.util.List;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import com.company.jwr_monitoring.dto.Category.CategoryDto;
 import com.company.jwr_monitoring.dto.Common.ApiResponse;
 import com.company.jwr_monitoring.services.CategoryService;
-
 import lombok.RequiredArgsConstructor;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/categories")
@@ -27,8 +25,7 @@ public class CategoryController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<CategoryDto>> getCategoryById(@PathVariable Long id) {
-        CategoryDto categories = categoryService.getCategoryById(id);
-        return ResponseEntity.ok(ApiResponse.success("Categories fetched by id successfully", categories));
+        CategoryDto category = categoryService.getCategoryById(id);
+        return ResponseEntity.ok(ApiResponse.success("Categories fetched by id successfully", category));
     }
-
 }

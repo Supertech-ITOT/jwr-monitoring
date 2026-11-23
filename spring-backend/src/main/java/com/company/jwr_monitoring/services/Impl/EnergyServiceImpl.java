@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.company.jwr_monitoring.dto.Energy.EnergyConsumptionRequestDto;
 import com.company.jwr_monitoring.dto.Energy.EnergyConsumptionResponseDto;
 import com.company.jwr_monitoring.dto.Energy.RoomEnergyDto;
+import com.company.jwr_monitoring.entity.Room;
 import com.company.jwr_monitoring.enums.RoomType;
 import com.company.jwr_monitoring.repository.TagLogRepository;
 import com.company.jwr_monitoring.repository.TagMasterRepository;
@@ -44,8 +45,8 @@ public class EnergyServiceImpl implements EnergyService {
                 Map<Long, String> roomNames = roomRepository.findAllById(roomIds)
                                 .stream()
                                 .collect(Collectors.toMap(
-                                                room -> room.getId(),
-                                                room -> room.getName()));
+                                                Room::getId,
+                                                Room::getName));
 
                 // Get active positive and negative rooms
                 List<Long> positiveRunTagIds = tagMasterRepository.getTagIdByCategoryIdAndParameterId(1L, 7L);
@@ -60,25 +61,30 @@ public class EnergyServiceImpl implements EnergyService {
                 // Component A: calculate consumption for each room
                 List<Long> componentATagIds = tagMasterRepository.getEnergyTagIdsByRoom(roomIds);
                 Map<Long, Double> componentAByRoom = new HashMap<>();
-                List<Object[]> componentARows = tagLogRepository.getEnergyConsumptionByTagIds(
-                                componentATagIds,
-                                request.fromDate(),
-                                request.toDate());
-                for (Object[] row : componentARows) {
-                        Long roomId = ((Number) row[0]).longValue();
-                        double consumption = row[1] == null || row[2] == null ? 0.0
-                                        : Math.max(0.0, ((Number) row[1]).doubleValue()
-                                                        - ((Number) row[2]).doubleValue());
-                        componentAByRoom.merge(roomId, consumption, Double::sum);
+                if (componentATagIds != null && !componentATagIds.isEmpty()) {
+
+                        List<Object[]> componentARows = tagLogRepository.getEnergyConsumptionByTagIds(
+                                        componentATagIds,
+                                        request.fromDate(),
+                                        request.toDate());
+                        for (Object[] row : componentARows) {
+                                Long roomId = ((Number) row[0]).longValue();
+                                double consumption = row[1] == null || row[2] == null ? 0.0
+                                                : Math.max(0.0, ((Number) row[1]).doubleValue()
+                                                                - ((Number) row[2]).doubleValue());
+                                componentAByRoom.merge(roomId, consumption, Double::sum);
+                        }
                 }
 
                 // Component B: select tags according to room type
                 List<Long> positiveCategoryIds = List.of(7L, 6L, 9L);
                 List<Long> negativeCategoryIds = List.of(8L, 11L, 12L);
+                boolean isPositive = request.roomType() == RoomType.POSITIVE;
+
                 List<Long> componentBTagIds = tagMasterRepository.getTagIdsByCategoryIdsAndParameterId(
-                                request.roomType() == RoomType.POSITIVE ? positiveCategoryIds : negativeCategoryIds,
+                                isPositive ? positiveCategoryIds : negativeCategoryIds,
                                 2L);
-                long componentBActiveRooms = request.roomType() == RoomType.POSITIVE ? positiveActiveRooms
+                long componentBActiveRooms = isPositive ? positiveActiveRooms
                                 : negativeActiveRooms;
                 double componentBSum = 0.0;
                 if (componentBTagIds != null && !componentBTagIds.isEmpty()) {

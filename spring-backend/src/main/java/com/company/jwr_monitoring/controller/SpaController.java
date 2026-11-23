@@ -3,31 +3,20 @@ package com.company.jwr_monitoring.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 @Controller
 public class SpaController {
 
-    @GetMapping("/Home")
-    public String home() {
-        return "forward:/Home.html";
-    }
-
-    @GetMapping("/Category")
-    public String category() {
-        return "forward:/Category.html";
-    }
-
-    @GetMapping("/Common")
-    public String common() {
-        return "forward:/Common.html";
-    }
-
-    @GetMapping("/Power")
-    public String power() {
-        return "forward:/Power.html";
-    }
-
-    @GetMapping("/Consumption")
-    public String consumption() {
-        return "forward:/Consumption.html";
+    @GetMapping({
+            "/Home",
+            "/Category",
+            "/Common",
+            "/Power",
+            "/Consumption"
+    })
+    public String forwardToPage(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        return "forward:" + path + ".html";
     }
 }

@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 
 import com.company.jwr_monitoring.dto.Category.CategoryDto;
 import com.company.jwr_monitoring.entity.Category;
-import com.company.jwr_monitoring.entity.Room;
 import com.company.jwr_monitoring.exception.ResourceNotFoundException;
 import com.company.jwr_monitoring.mapper.CategoryMapper;
 import com.company.jwr_monitoring.repository.CategoryRepository;
@@ -17,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
+
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
 

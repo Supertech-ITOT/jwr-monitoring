@@ -1,6 +1,8 @@
+
 package com.company.jwr_monitoring.mapper;
 
 import org.springframework.stereotype.Component;
+
 import com.company.jwr_monitoring.dto.TagLog.TagLogDto;
 import com.company.jwr_monitoring.entity.TagLog;
 import com.company.jwr_monitoring.entity.TagMaster;
@@ -9,6 +11,7 @@ import com.company.jwr_monitoring.entity.TagMaster;
 public class TagLogMapper {
 
     public TagLog toEntity(TagLogDto dto, TagMaster tag) {
+
         return TagLog.builder()
                 .tag(tag)
                 .value(dto.value())
@@ -17,9 +20,12 @@ public class TagLogMapper {
     }
 
     public TagLogDto toDto(TagLog entity) {
+
+        TagMaster tag = entity.getTag();
+
         return new TagLogDto(
-                entity.getTag().getId(),
-                entity.getTag().getTagName(),
+                tag.getId(),
+                tag.getTagName(),
                 entity.getValue(),
                 entity.getTimestamp());
     }

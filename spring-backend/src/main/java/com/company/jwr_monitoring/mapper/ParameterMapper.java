@@ -1,3 +1,4 @@
+
 package com.company.jwr_monitoring.mapper;
 
 import org.springframework.stereotype.Component;
@@ -7,7 +8,13 @@ import com.company.jwr_monitoring.entity.Parameter;
 
 @Component
 public class ParameterMapper {
+
     public ParameterDto toDto(Parameter parameter) {
+
+        if (parameter == null) {
+            return null;
+        }
+
         return new ParameterDto(
                 parameter.getId(),
                 parameter.getName());
