@@ -5,18 +5,16 @@ import { format, isValid, parseISO } from "date-fns";
 import { EnergyRoomLogResponse, EnergyRoomResponse } from "@/types/dashboard.types";
 
 const MAX_ROOMS = 3;
-const CATEGORY_WITHOUT_FREQUENCY = new Set([6, 7, 8, 9, 10, 11, 12]);
 
 type EnergyRoomTableProps = {
   rooms: EnergyRoomResponse[];
 };
 
 type SummaryRow = {
-  label: "AVG" | "MIN" | "MAX";
-  energy: "avgEnergy" | "minEnergy" | "maxEnergy";
+  label: "AVG" | "MIN" | "MAX" | "TOTAL";
+  energy: "avgEnergy" | "minEnergy" | "maxEnergy" | "totalEnergy";
   current: "avgCurrent" | "minCurrent" | "maxCurrent";
   voltage: "avgVoltage" | "minVoltage" | "maxVoltage";
-  frequency: "avgFrequency" | "minFrequency" | "maxFrequency";
 };
 
 type PaddedRoom = Partial<Omit<EnergyRoomResponse, "roomId" | "roomName" | "logs">> & {
@@ -36,29 +34,28 @@ const summaryRows: SummaryRow[] = [
     energy: "avgEnergy",
     current: "avgCurrent",
     voltage: "avgVoltage",
-    frequency: "avgFrequency",
   },
   {
     label: "MIN",
     energy: "minEnergy",
     current: "minCurrent",
     voltage: "minVoltage",
-    frequency: "minFrequency",
   },
   {
     label: "MAX",
     energy: "maxEnergy",
     current: "maxCurrent",
     voltage: "maxVoltage",
-    frequency: "maxFrequency",
+  },
+  {
+    label: "TOTAL",
+    energy: "totalEnergy",
+    current: "maxCurrent",
+    voltage: "maxVoltage",
   },
 ];
 
-function hideFrequency(categoryId: number): boolean {
-  return CATEGORY_WITHOUT_FREQUENCY.has(categoryId);
-}
-
-function formatStat(value: number | string | null | undefined, type: "energy" | "current" | "voltage" | "frequency"): string {
+function formatStat(value: number | string | null | undefined, type: "energy" | "current" | "voltage"): string {
   if (value == null || value === "") return "-";
 
   const number = Number(value);
@@ -68,7 +65,6 @@ function formatStat(value: number | string | null | undefined, type: "energy" | 
   if (type === "energy") return number.toFixed(1);
   if (type === "current") return number.toFixed(2);
   if (type === "voltage") return String(Math.round(number));
-  if (type === "frequency") return number.toFixed(1);
 
   return String(number);
 }
@@ -106,106 +102,85 @@ export default function EnergyRoomTable({ rooms }: EnergyRoomTableProps) {
   }));
 
   const getStickyTopClass = (index: number): string => {
-    if (index === 0) return "top-[45px]";
-    if (index === 1) return "top-[65px]";
-    return "top-[85px]";
-  };
+    const positions = [
+      "top-[75px]", // AVG
+      "top-[95px]", // MIN
+      "top-[115px]", // MAX
+      "top-[135px]", // TOTAL
+    ];
 
+    return positions[index] ?? "top-[135px]";
+  };
   const cellClass = "border border-border p-0.5 text-center text-[10px] sm:text-sm";
 
   const summaryCellClass = (index: number) =>
-    `sticky z-40 border border-border bg-primary p-0.5 text-center text-[10px] font-medium text-white sm:text-sm ${getStickyTopClass(index)}`;
+    `sticky z-40 h-[20px] min-h-[20px] whitespace-nowrap border border-border bg-primary p-0.5 text-center text-[10px] font-medium leading-none text-white sm:text-sm ${getStickyTopClass(index)}`;
+
+  const headers = ["Energy kWh", "Current A", "Voltage V"];
 
   return (
-    <div className="scrollbar-prop h-full overflow-auto rounded-lg border bg-background shadow-sm">
-      <table className="min-w-max w-full border-separate border-spacing-0">
+    <div className="h-full overflow-auto rounded-lg border bg-background shadow-sm">
+      <table className="w-max min-w-full table-fixed border-separate border-spacing-0">
         <thead>
           {/* Room names */}
-          <tr>
+          <tr className="h-10">
             <th
               rowSpan={2}
-              className="sticky left-0 top-0 z-50 border border-border bg-primary px-1.5 text-center text-[10px] font-semibold text-white sm:text-sm"
+              className="sticky left-0 top-0 z-50 h-10 border border-border bg-primary px-1.5 text-center align-middle text-[10px] font-semibold text-white sm:text-sm"
             >
               DATETIME
             </th>
 
-            {paddedRooms.map((room) => {
-              const hide = hideFrequency(room.categoryId ?? 1);
-
-              return (
-                <th
-                  key={room.roomId}
-                  colSpan={hide ? 3 : 4}
-                  className="sticky top-0 z-40 border border-border bg-primary p-0.5 text-center text-[10px] font-semibold text-white sm:text-sm"
-                >
-                  {room.roomName || "\u00A0"}
-                </th>
-              );
-            })}
+            {paddedRooms.map((room) => (
+              <th
+                key={room.roomId}
+                colSpan={3}
+                className="sticky top-0 z-40 h-10 border border-border bg-primary p-1 text-center align-middle text-[10px] font-semibold text-white sm:text-sm"
+              >
+                {room.roomName || "\u00A0"}
+              </th>
+            ))}
           </tr>
 
           {/* Parameter headers */}
-          <tr>
-            {paddedRooms.map((room) => {
-              const headers = ["Energy kWh", "Current A", "Voltage V", "Frequency Hz"];
-              const hide = hideFrequency(room.categoryId ?? 1);
-              const visibleHeaders = hide ? headers.slice(0, 3) : headers;
-
-              return (
-                <Fragment key={room.roomId}>
-                  {visibleHeaders.map((label) => (
-                    <th
-                      key={label}
-                      className="sticky top-5 z-40 border border-border bg-primary p-0.5 text-center text-[10px] font-medium text-white sm:text-sm"
-                    >
-                      {label}
-                    </th>
-                  ))}
-                </Fragment>
-              );
-            })}
+          <tr className="h-[35px]">
+            {paddedRooms.map((room) => (
+              <Fragment key={room.roomId}>
+                {headers.map((label) => (
+                  <th
+                    key={label}
+                    className="sticky top-10 z-40 h-[35px] min-h-[35px] whitespace-nowrap border border-border bg-primary p-1 text-center align-middle text-[10px] font-medium leading-normal text-white sm:text-sm"
+                  >
+                    {label}
+                  </th>
+                ))}
+              </Fragment>
+            ))}
           </tr>
 
           {/* AVG / MIN / MAX summary rows */}
           {summaryRows.map((stat, index) => (
-            <tr key={stat.label}>
+            <tr key={stat.label} className="h-5">
               <th
-                className={`sticky left-0 z-40 border border-border bg-primary px-1.5 text-center text-[10px] font-semibold text-white sm:text-sm ${getStickyTopClass(index)}`}
+                className={`sticky  left-0 z-50 border border-border bg-primary px-1.5 text-center text-[10px] font-semibold text-white sm:text-sm ${getStickyTopClass(index)}`}
               >
                 {stat.label}
               </th>
 
               {paddedRooms.map((room) => {
-                const hide = hideFrequency(room.categoryId ?? 1);
-
                 const summaryCells = [
-                  {
-                    key: stat.energy,
-                    type: "energy" as const,
-                  },
-                  {
-                    key: stat.current,
-                    type: "current" as const,
-                  },
-                  {
-                    key: stat.voltage,
-                    type: "voltage" as const,
-                  },
-                  ...(!hide
-                    ? [
-                        {
-                          key: stat.frequency,
-                          type: "frequency" as const,
-                        },
-                      ]
-                    : []),
+                  { key: stat.energy, type: "energy" as const },
+                  { key: stat.current, type: "current" as const },
+                  { key: stat.voltage, type: "voltage" as const },
                 ];
 
                 return (
                   <Fragment key={room.roomId}>
                     {summaryCells.map(({ key, type }) => (
                       <th key={key} className={summaryCellClass(index)}>
-                        {formatStat(room[key], type)}
+                        {(stat.label === "AVG" && type === "energy") || (stat.label === "TOTAL" && type !== "energy")
+                          ? "-"
+                          : formatStat(room[key], type)}
                       </th>
                     ))}
                   </Fragment>
@@ -230,22 +205,15 @@ export default function EnergyRoomTable({ rooms }: EnergyRoomTableProps) {
                   {formatTimestamp(row.timeStamp, "hh:mm a")}
                 </td>
 
-                {row.values.map((log, roomIndex) => {
-                  const room = paddedRooms[roomIndex];
-                  const hide = room ? hideFrequency(room.categoryId ?? 1) : false;
+                {row.values.map((log, roomIndex) => (
+                  <Fragment key={roomIndex}>
+                    <td className={cellClass}>{formatStat(log.energy, "energy")}</td>
 
-                  return (
-                    <Fragment key={roomIndex}>
-                      <td className={cellClass}>{formatStat(log.energy, "energy")}</td>
+                    <td className={cellClass}>{formatStat(log.current, "current")}</td>
 
-                      <td className={cellClass}>{formatStat(log.current, "current")}</td>
-
-                      <td className={cellClass}>{formatStat(log.voltage, "voltage")}</td>
-
-                      {!hide && <td className={cellClass}>{formatStat(log.frequency, "frequency")}</td>}
-                    </Fragment>
-                  );
-                })}
+                    <td className={cellClass}>{formatStat(log.voltage, "voltage")}</td>
+                  </Fragment>
+                ))}
               </tr>
             );
           })}

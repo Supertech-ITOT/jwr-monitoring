@@ -227,11 +227,27 @@ public interface TagLogRepository extends JpaRepository<TagLog, Long> {
 
                     AVG(CASE WHEN parameter_id = 2 THEN value END) AS energy,
                     AVG(CASE WHEN parameter_id = 4 THEN value END) AS current,
-                    AVG(CASE WHEN parameter_id = 5 THEN value END) AS voltage,
-                    AVG(CASE WHEN parameter_id = 6 THEN value END) AS frequency
+                    AVG(CASE WHEN parameter_id = 5 THEN value END) AS voltage
 
                 FROM bucketed_data
                 GROUP BY room_id, room_name,category_id, bucket_time
+            ),
+
+            energy_total AS (
+                SELECT
+                    room_id,
+                    ROUND(
+                        (
+                            (ARRAY_AGG(energy ORDER BY bucket_time DESC)
+                                FILTER (WHERE energy IS NOT NULL))[1]
+                            -
+                            (ARRAY_AGG(energy ORDER BY bucket_time ASC)
+                                FILTER (WHERE energy IS NOT NULL))[1]
+                        )::numeric,
+                        2
+                    ) AS total_energy
+                FROM interval_data
+                GROUP BY room_id
             ),
 
             room_stats AS (
@@ -248,11 +264,7 @@ public interface TagLogRepository extends JpaRepository<TagLog, Long> {
 
                     ROUND(AVG(voltage)::numeric, 2) AS avg_voltage,
                     ROUND(MIN(voltage)::numeric, 2) AS min_voltage,
-                    ROUND(MAX(voltage)::numeric, 2) AS max_voltage,
-
-                    ROUND(AVG(frequency)::numeric, 2) AS avg_frequency,
-                    ROUND(MIN(frequency)::numeric, 2) AS min_frequency,
-                    ROUND(MAX(frequency)::numeric, 2) AS max_frequency
+                    ROUND(MAX(voltage)::numeric, 2) AS max_voltage
 
                 FROM interval_data
                 GROUP BY room_id
@@ -267,7 +279,6 @@ public interface TagLogRepository extends JpaRepository<TagLog, Long> {
                 ROUND(id.energy::numeric, 2),
                 ROUND(id.current::numeric, 2),
                 ROUND(id.voltage::numeric, 2),
-                ROUND(id.frequency::numeric, 2),
 
                 rs.avg_energy,
                 rs.min_energy,
@@ -281,13 +292,13 @@ public interface TagLogRepository extends JpaRepository<TagLog, Long> {
                 rs.min_voltage,
                 rs.max_voltage,
 
-                rs.avg_frequency,
-                rs.min_frequency,
-                rs.max_frequency
+                et.total_energy
 
             FROM interval_data id
             JOIN room_stats rs
                 ON id.room_id = rs.room_id
+            LEFT JOIN energy_total et
+                ON id.room_id = et.room_id
 
             ORDER BY id.room_id, id.bucket_time
             """, nativeQuery = true)

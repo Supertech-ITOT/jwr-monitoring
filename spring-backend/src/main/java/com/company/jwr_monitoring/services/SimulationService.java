@@ -36,7 +36,7 @@ public class SimulationService implements CommandLineRunner {
 
         log.info("Simulation Service Started...");
 
-        generateMonthLogs(2026, 10);
+        generateMonthLogs(2026, 11);
     }
 
     public void generateMonthLogs(int year, int month) {
@@ -63,7 +63,6 @@ public class SimulationService implements CommandLineRunner {
         double energy = 100.0;
         double cur = 35.0;
         double voltage = 85.0;
-        double frequency = 87.0;
         double start_main = 1.0;
 
         List<Object[]> batch = new ArrayList<>(BATCH_SIZE);
@@ -79,7 +78,6 @@ public class SimulationService implements CommandLineRunner {
             energy = simulateEnergy(energy);
             cur = simulateCurrent(cur);
             voltage = simulateVoltage(voltage);
-            frequency = simulateFrequency(frequency);
             start_main = simulateStartMain(start_main);
 
             Timestamp timestamp = Timestamp.valueOf(current);
@@ -108,9 +106,6 @@ public class SimulationService implements CommandLineRunner {
                         value = voltage;
                         break;
                     case 6:
-                        value = frequency;
-                        break;
-                    case 7:
                         value = start_main;
                         break;
 
@@ -159,7 +154,6 @@ public class SimulationService implements CommandLineRunner {
                 rh,
                 cur,
                 voltage,
-                frequency,
                 start_main,
                 end);
         log.info("Total Records : {}", totalInserted);
@@ -236,17 +230,6 @@ public class SimulationService implements CommandLineRunner {
         return roundHalf(next);
     }
 
-    private double simulateFrequency(double frequency) {
-
-        double change = (random.nextDouble() - 0.5) * 0.2; // ±0.1Hz
-
-        double next = frequency + change;
-
-        next = Math.max(49.5, Math.min(50.5, next));
-
-        return Math.round(next * 100.0) / 100.0;
-    }
-
     private double simulateStartMain(double currentState) {
 
         // 1% chance to toggle state
@@ -264,7 +247,6 @@ public class SimulationService implements CommandLineRunner {
             double rh,
             double current,
             double voltage,
-            double frequency,
             double startMain,
             LocalDateTime timestamp) {
 
@@ -291,9 +273,6 @@ public class SimulationService implements CommandLineRunner {
                     value = voltage;
                     break;
                 case 6:
-                    value = frequency;
-                    break;
-                case 7:
                     value = startMain;
                     break;
                 default:

@@ -68,7 +68,6 @@ export interface EnergyRoomLogResponse {
   energy: number;
   current: number;
   voltage: number;
-  frequency: number;
 }
 
 export interface EnergyRoomResponse {
@@ -85,7 +84,5 @@ export interface EnergyRoomResponse {
   avgVoltage: number;
   minVoltage: number;
   maxVoltage: number;
-  avgFrequency: number;
-  minFrequency: number;
-  maxFrequency: number;
+  totalEnergy: number;
 }

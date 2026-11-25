@@ -20,9 +20,7 @@ public record EnergyRoomResponse(
         Double minVoltage,
         Double maxVoltage,
 
-        Double avgFrequency,
-        Double minFrequency,
-        Double maxFrequency
+        Double totalEnergy
 
 ) {
 
